@@ -1,4 +1,4 @@
-package my.everyconti.every_conti.mail.service;
+package my.everyconti.every_conti.modules.mail.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -31,7 +31,6 @@ public class MailService {
             String body = "";
             body += "<h3>" + "요청하신 인증 번호입니다." + "</h3>";
             body += "<h1>" + number + "</h1>";
-            body += "<h3>" + "감사합니다." + "</h3>";
             message.setText(body, "UTF-8", "html");
         } catch (MessagingException e){
             e.printStackTrace();

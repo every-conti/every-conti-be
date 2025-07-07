@@ -1,8 +1,8 @@
-package my.everyconti.every_conti.auth.controller;
+package my.everyconti.every_conti.modules.auth.controller;
 
-import my.everyconti.every_conti.mail.service.MailService;
-import my.everyconti.every_conti.member.domain.Member;
-import my.everyconti.every_conti.member.service.MemberService;
+import my.everyconti.every_conti.modules.mail.service.MailService;
+import my.everyconti.every_conti.modules.member.domain.Member;
+import my.everyconti.every_conti.modules.member.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;

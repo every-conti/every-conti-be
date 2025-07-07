@@ -2,13 +2,11 @@ package my.everyconti.every_conti.member;
 
 
 import jakarta.transaction.Transactional;
-import my.everyconti.every_conti.member.domain.Member;
-import my.everyconti.every_conti.member.repository.MemberRepository;
+import my.everyconti.every_conti.modules.member.domain.Member;
+import my.everyconti.every_conti.modules.member.repository.MemberRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Commit;
-import org.springframework.test.annotation.Rollback;
 
 @SpringBootTest
 @Transactional

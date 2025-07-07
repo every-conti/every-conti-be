@@ -1,6 +1,6 @@
-package my.everyconti.every_conti.mail.controller;
+package my.everyconti.every_conti.modules.mail.controller;
 
-import my.everyconti.every_conti.mail.service.MailService;
+import my.everyconti.every_conti.modules.mail.service.MailService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;

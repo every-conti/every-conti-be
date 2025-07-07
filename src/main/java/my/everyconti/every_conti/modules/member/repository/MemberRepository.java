@@ -1,6 +1,6 @@
-package my.everyconti.every_conti.member.repository;
+package my.everyconti.every_conti.modules.member.repository;
 
-import my.everyconti.every_conti.member.domain.Member;
+import my.everyconti.every_conti.modules.member.domain.Member;
 
 import java.util.Optional;
 

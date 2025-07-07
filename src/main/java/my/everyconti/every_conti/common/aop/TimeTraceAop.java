@@ -1,4 +1,4 @@
-package my.everyconti.every_conti.aop;
+package my.everyconti.every_conti.common.aop;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;

@@ -1,4 +1,4 @@
-package my.everyconti.every_conti.member.domain;
+package my.everyconti.every_conti.modules.member.domain;
 
 import jakarta.persistence.*;
 

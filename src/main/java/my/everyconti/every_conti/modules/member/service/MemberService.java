@@ -1,9 +1,8 @@
-package my.everyconti.every_conti.member.service;
+package my.everyconti.every_conti.modules.member.service;
 
 import jakarta.persistence.EntityExistsException;
-import my.everyconti.every_conti.member.domain.Member;
-import my.everyconti.every_conti.member.repository.SpringDataJpaMemberRepository;
-import my.everyconti.every_conti.member.repository.MemberRepository;
+import my.everyconti.every_conti.modules.member.domain.Member;
+import my.everyconti.every_conti.modules.member.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Optional;
