@@ -1,6 +1,7 @@
 package my.everyconti.every_conti.modules.mail.controller;
 
 import my.everyconti.every_conti.modules.mail.service.MailService;
+import my.everyconti.every_conti.modules.redis.service.RedisService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -8,42 +9,31 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
-@Controller("mail")
+@Controller
+@RequestMapping("mail")
 public class MailController {
     private final MailService mailService;
-    private int number;
+    private final RedisService redisService;
 
-    public MailController(MailService mailService) {
+    public MailController(MailService mailService, RedisService redisService) {
         this.mailService = mailService;
+        this.redisService = redisService;
     }
 
-    @PostMapping("/mailSend")
+    @PostMapping("/code")
     @ResponseBody
-    public HashMap<String, Object> mailSend(@RequestBody Map<String, String> request) {
+    public ResponseEntity<?> sendVerificationMail(@RequestBody Map<String, String> request) {
         HashMap<String, Object> map = new HashMap<>();
-        String mail = request.get("mail");
 
-        try {
-            number = mailService.sendMail(mail);
-            String num = String.valueOf(number);
-
-            map.put("success", Boolean.TRUE);
-            map.put("number", num);
-        } catch (Exception e) {
-            map.put("success", Boolean.FALSE);
-            map.put("error", e.getMessage());
-        }
-
-        return map;
+        String email = request.get("email");
+        return mailService.sendVerificationMail(email);
     }
-
     // 인증번호 일치여부 확인
-    @GetMapping("/mailCheck")
+    @GetMapping("/code/verify")
     @ResponseBody
-    public ResponseEntity<?> mailCheck(@RequestParam String userNumber) {
-
-        boolean isMatch = userNumber.equals(String.valueOf(number));
-
-        return ResponseEntity.ok(isMatch);
+    public ResponseEntity<?> verifyCode(@RequestParam String email, String userCode) {
+        boolean isMatch = mailService.verifyCode(email, userCode);
+        if (isMatch) return ResponseEntity.ok().build();
+        else return ResponseEntity.badRequest().build();
     }
 }
