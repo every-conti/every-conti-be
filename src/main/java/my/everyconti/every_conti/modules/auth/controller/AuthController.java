@@ -1,6 +1,9 @@
 package my.everyconti.every_conti.modules.auth.controller;
 
 import lombok.RequiredArgsConstructor;
+import my.everyconti.every_conti.common.util.jwt.JwtMode;
+import my.everyconti.every_conti.common.util.jwt.JwtUtil;
+import my.everyconti.every_conti.constant.jwt.JwtTimeout;
 import my.everyconti.every_conti.constant.redis.EmailVerified;
 import my.everyconti.every_conti.modules.auth.service.AuthService;
 import my.everyconti.every_conti.modules.mail.service.MailService;
@@ -9,7 +12,9 @@ import my.everyconti.every_conti.modules.member.repository.MemberRepository;
 import my.everyconti.every_conti.modules.member.service.MemberService;
 import my.everyconti.every_conti.modules.redis.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,6 +36,7 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
     private final AuthService authService;
+    private final JwtUtil jwtUtil;
 
 
     @PostMapping("member")
@@ -71,12 +77,41 @@ public class AuthController {
         String accessToken = authService.getAccessToken(email);
         String refreshToken = authService.getAccessToken(email);
         responseData.put("accessToken", accessToken);
-        responseData.put("refreshToken", refreshToken);
-        return ResponseEntity.ok(responseData);
+
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(JwtTimeout.REFRESH_TOKEN_TIMEOUT)  // 7일
+                .sameSite("Strict")
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+                .body(responseData);
     }
 
-//    @GetMapping("accessToken")
-//    public ResponseEntity<?> getAccessToken(){
-//
-//    }
+    @GetMapping("accessToken")
+    @ResponseBody
+    public ResponseEntity<?> getNewAccessToken(@CookieValue(value = "refreshToken", required = false) String token) {
+        if (token == null || token.isBlank()) {
+            return ResponseEntity.badRequest().body("쿠키에 refreshToken이 없습니다.");
+        }
+//        public ResponseEntity<?> getNewAccessToken(@RequestHeader("Authorization") String authorizationHeader) {
+//        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+//            return ResponseEntity.badRequest().body("Authorization 헤더가 유효하지 않습니다.");
+//        }
+//        String token = authorizationHeader.substring(7); // "Bearer " 이후 토큰 부분만 추출
+        System.out.println("token = " + token);
+
+        boolean isValid = jwtUtil.validateToken(JwtMode.ACCESS, token);
+        if (!isValid) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 토큰입니다.");
+        }
+
+        // 이메일 추출
+        String subject = jwtUtil.extractSubject(JwtMode.ACCESS, token);
+        String newAccessToken = jwtUtil.createToken(JwtMode.ACCESS, subject);
+        return ResponseEntity.ok().body(Map.of("accessToken", newAccessToken));
+    }
 }
