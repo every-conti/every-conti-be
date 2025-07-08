@@ -19,7 +19,7 @@ public class MemberServiceTest {
     @Test
 //    @Commit
     public void userSave(){
-        Member member = new Member("이영찬", "dhapdhap123@naver.com", "아바교회");
+        Member member = new Member("이영찬", "dhapdhap123@naver.com", "아바교회", "1111");
         // 최초 생성
         memberService.createMember(member);
         // 이미 존재

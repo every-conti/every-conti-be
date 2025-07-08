@@ -1,11 +1,14 @@
 package my.everyconti.every_conti.modules.member.repository;
 
 import my.everyconti.every_conti.modules.member.domain.Member;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface MemberRepository {
+public interface MemberRepository extends JpaRepository<Member, Long> {
 
-    public Member save(Member member);
-    public Optional<Member> findByEmail(String email);
+    @Override
+    Member save(Member member);
+
+    Optional<Member> findByEmail(String email);
 }

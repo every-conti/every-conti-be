@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>이메일 인증</title>
+</head>
+<body>
+<h2>이메일 인증 요청</h2>
+<input type="email" id="email" placeholder="이메일 입력" required />
+<button onclick="sendCode()">인증 코드 보내기</button>
+<br />
+
+<input type="email_code" id="email_code" placeholder="이메일 인증 코드 입력" required />
+<button onclick="verifyCode()">이메일 인증 코드 확인</button>
+<br />
+
+<input type="nickname" id="nickname" placeholder="닉네임" required />
+<input type="church" id="church" placeholder="교회" required />
+<input type="password" id="password" placeholder="비밀번호" required />
+<button onclick="signUp()">회원가입</button>
+
+<p id="result"></p>
+
+<script>
+    function sendCode() {
+        const email = document.getElementById('email').value;
+
+        fetch('mail/code', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email: email })
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.text(); // 또는 json() 형태
+                } else {
+                    throw new Error('요청 실패: ' + response.status);
+                }
+            })
+            .then(data => {
+                document.getElementById('result').textContent = '성공: ' + data;
+            })
+            .catch(error => {
+                document.getElementById('result').textContent = '오류: ' + error.message;
+            });
+    }
+    function verifyCode() {
+        const email = document.getElementById('email').value;
+        const code = document.getElementById('email_code').value;
+        console.log("email: ", email);
+        console.log("code: ", code);
+        fetch(`mail/code/verify?email=${email}&userCode=${code}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.text(); // 또는 json() 형태
+                } else {
+                    throw new Error('요청 실패: ' + response.status);
+                }
+            })
+            .then(data => {
+                document.getElementById('result').textContent = '성공: ' + data;
+            })
+            .catch(error => {
+                document.getElementById('result').textContent = '오류: ' + error.message;
+            });
+    }
+    function signUp() {
+        const email = document.getElementById('email').value;
+        const nickname = document.getElementById('nickname').value;
+        const church = document.getElementById('church').value;
+        const password = document.getElementById('password').value;
+
+        fetch('auth/member', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email: email, nickname: nickname, church: church, password: password })
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.text(); // 또는 json() 형태
+                } else {
+                    throw new Error('요청 실패: ' + response.status);
+                }
+            })
+            .then(data => {
+                document.getElementById('result').textContent = '성공: ' + data;
+            })
+            .catch(error => {
+                document.getElementById('result').textContent = '오류: ' + error.message;
+            });
+    }
+</script>
+</body>
+</html>

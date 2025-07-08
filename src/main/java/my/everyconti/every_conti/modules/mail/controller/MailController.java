@@ -1,5 +1,6 @@
 package my.everyconti.every_conti.modules.mail.controller;
 
+import lombok.RequiredArgsConstructor;
 import my.everyconti.every_conti.modules.mail.service.MailService;
 import my.everyconti.every_conti.modules.redis.service.RedisService;
 import org.springframework.http.ResponseEntity;
@@ -11,14 +12,10 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("mail")
+@RequiredArgsConstructor
 public class MailController {
     private final MailService mailService;
     private final RedisService redisService;
-
-    public MailController(MailService mailService, RedisService redisService) {
-        this.mailService = mailService;
-        this.redisService = redisService;
-    }
 
     @PostMapping("/code")
     @ResponseBody

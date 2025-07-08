@@ -2,6 +2,7 @@ package my.everyconti.every_conti.modules.mail.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import lombok.RequiredArgsConstructor;
 import my.everyconti.every_conti.constant.redis.EmailVerified;
 import my.everyconti.every_conti.constant.redis.RedisTimeout;
 import my.everyconti.every_conti.modules.redis.service.RedisService;
@@ -11,17 +12,13 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class MailService {
 
     private final JavaMailSender javaMailSender;
     private final RedisService redisService;
     @Value("${spring.mail.username}")
     private String senderEmail;
-
-    public MailService(JavaMailSender javaMailSender, RedisService redisService) {
-        this.javaMailSender = javaMailSender;
-        this.redisService = redisService;
-    }
 
     private static int createRandomCode(){
         return (int)(Math.random() * (90000)) + 100000;

@@ -1,6 +1,7 @@
 package my.everyconti.every_conti.redis;
 
 import jakarta.transaction.Transactional;
+import my.everyconti.every_conti.constant.redis.RedisTimeout;
 import my.everyconti.every_conti.modules.member.domain.Member;
 import my.everyconti.every_conti.modules.member.service.MemberService;
 import my.everyconti.every_conti.modules.redis.service.RedisService;
@@ -20,7 +21,7 @@ public class RedisTest {
     public void userSave(){
         String number = "123456";
         String email = "dhapdhap123@naver.com";
-        redisService.setCode(email, number);
-        System.out.println("email: " + redisService.getCode(email));
+        redisService.setRedisKeyValue(email, number, RedisTimeout.EMAIL_VERIFICATION_TIMEOUT);
+        System.out.println("email: " + redisService.getRedisValueByKey(email));
     }
 }

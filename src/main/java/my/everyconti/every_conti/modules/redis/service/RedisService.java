@@ -20,11 +20,9 @@ public class RedisService {
 
     public void setRedisKeyValue(String key,String value, Integer timeout){
         ValueOperations<String, Object> valOperations = redisTemplate.opsForValue();
-        //만료기간 3분
         valOperations.set(key, value,timeout, TimeUnit.SECONDS);
     }
 
-    //key값인 email에 있는 value를 가져온다.
     public String getRedisValueByKey(String key){
         ValueOperations<String, Object> valOperations = redisTemplate.opsForValue();
         Object value = valOperations.get(key);
