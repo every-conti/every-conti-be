@@ -22,9 +22,16 @@ public class MemberRepositoryTest {
     @Test
 //    @Commit
     public void userSave(){
-        Member member = new Member("이영찬", "dhapdhap123@naver.com", "아바교회", "1111");
+        Member member = Member.builder()
+                .nickname("dhapdhap123")
+                .email("dhapdhap123@naver.com")
+                .password("11111")
+                .church("aaaa교회")
+                .activated(true)
+                .build();
+//                .church("")
         Member result = memberRepository.save(member);
-        System.out.println("result = " + result);
+        System.out.println("member: " + Arrays.toString(result.toString().toCharArray()));
     }
 
     @Test

@@ -1,10 +1,7 @@
 package my.everyconti.every_conti.redis;
 
-import jakarta.transaction.Transactional;
 import my.everyconti.every_conti.constant.redis.RedisTimeout;
-import my.everyconti.every_conti.modules.member.domain.Member;
-import my.everyconti.every_conti.modules.member.service.MemberService;
-import my.everyconti.every_conti.modules.redis.service.RedisService;
+import my.everyconti.every_conti.modules.redis.RedisService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

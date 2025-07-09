@@ -1,5 +1,6 @@
-package my.everyconti.every_conti.modules.redis.service;
+package my.everyconti.every_conti.modules.redis;
 
+import my.everyconti.every_conti.common.exception.UnAuthorizationException;
 import my.everyconti.every_conti.constant.ResponseMessage;
 import my.everyconti.every_conti.common.exception.UnAuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public class RedisService {
         ValueOperations<String, Object> valOperations = redisTemplate.opsForValue();
         Object value = valOperations.get(key);
         if(value == null){
-            throw new UnAuthenticationException(ResponseMessage.UN_AUTHORIZED);
+            throw new UnAuthorizationException(ResponseMessage.UN_AUTHORIZED);
         }
         return value.toString();
     }

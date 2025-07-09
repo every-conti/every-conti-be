@@ -1,11 +1,14 @@
-package my.everyconti.every_conti.modules.mail.service;
+package my.everyconti.every_conti.modules.mail;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import my.everyconti.every_conti.common.dto.response.CommonResponseDto;
 import my.everyconti.every_conti.constant.redis.EmailVerified;
 import my.everyconti.every_conti.constant.redis.RedisTimeout;
-import my.everyconti.every_conti.modules.redis.service.RedisService;
+import my.everyconti.every_conti.modules.mail.dto.EmailDto;
+import my.everyconti.every_conti.modules.mail.dto.EmailVerifyDto;
+import my.everyconti.every_conti.modules.redis.RedisService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -42,27 +45,28 @@ public class MailService {
         return message;
     }
 
-    public ResponseEntity<?> sendVerificationMail(String email){
+    public ResponseEntity<CommonResponseDto> sendVerificationMail(EmailDto emailDto){
         int code = createRandomCode();
+        String email = emailDto.getEmail();
         try {
             MimeMessage message = CreateMail(code, email);
             redisService.setRedisKeyValue(email, String.valueOf(code), RedisTimeout.EMAIL_VERIFICATION_TIMEOUT);
             javaMailSender.send(message);
         } catch (Exception e){
+            throw new RuntimeException("이메일 발송 실패");
             // 로그 추가
-            System.out.println("실패실패");
-            e.printStackTrace();
+//            e.printStackTrace();
         }
-        return ResponseEntity.ok(true);
+        return ResponseEntity.ok(new CommonResponseDto(true, "이메일 발송 완료"));
     }
 
-    // 인증번호 일치여부 확인
-    public boolean verifyCode(String email, String userCode) {
+    public ResponseEntity<CommonResponseDto> verifyCode(EmailVerifyDto emailVerifyDto) {
+        String email = emailVerifyDto.getEmail();
         String numFromRedis = redisService.getRedisValueByKey(email);
-        System.out.println("numFromRedis = " + numFromRedis);
 
-        boolean isMatch = userCode.equals(String.valueOf(numFromRedis));
+        boolean isMatch = emailVerifyDto.getUserCode().equals(String.valueOf(numFromRedis));
         if (isMatch) redisService.setRedisKeyValue(email, EmailVerified.EMAIL_VERIFIED, RedisTimeout.EMAIL_VERIFICATION_TIMEOUT);
-        return isMatch;
+
+        return ResponseEntity.ok(new CommonResponseDto(true, String.format("이메일 인증 성공. %d분 간 유효합니다", (int) (RedisTimeout.EMAIL_VERIFICATION_TIMEOUT / 60))));
     }
 }
