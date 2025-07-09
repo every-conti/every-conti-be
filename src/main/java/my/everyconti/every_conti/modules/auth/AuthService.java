@@ -44,12 +44,12 @@ public class AuthService {
     }
 
     public AccessTokenDto parseTokenAndGetNewToken(String token){
-        boolean isValid = jwtTokenProvider.validateToken(JwtMode.ACCESS, token);
+        boolean isValid = jwtTokenProvider.validateToken(JwtMode.REFRESH, token);
         if (!isValid) {
             throw new UnAuthorizationException(ResponseMessage.UN_AUTHORIZED);
         }
 
-        String email = jwtTokenProvider.extractSubject(JwtMode.ACCESS, token);
+        String email = jwtTokenProvider.extractSubject(JwtMode.REFRESH, token);
         return new AccessTokenDto(getNewAccessToken(email));
     }
 

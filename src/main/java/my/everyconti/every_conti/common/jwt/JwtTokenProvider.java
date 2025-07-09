@@ -3,7 +3,6 @@ package my.everyconti.every_conti.common.jwt;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import my.everyconti.every_conti.constant.jwt.JwtTimeout;
 import org.slf4j.Logger;
@@ -19,7 +18,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
@@ -50,7 +48,7 @@ public class JwtTokenProvider implements InitializingBean {
     }
 
     public String createToken(JwtMode jwtMode, String subject) {
-        int timeout = getTimeoutByMode(jwtMode);
+        long timeout = getTimeoutByMode(jwtMode);
         Key key = getKeyByMode(jwtMode);
 
         return Jwts.builder()
@@ -83,6 +81,7 @@ public class JwtTokenProvider implements InitializingBean {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (JwtException e) {
+            System.out.println(e.getMessage());
             return false;
         }
     }
@@ -126,8 +125,8 @@ public class JwtTokenProvider implements InitializingBean {
         }
         return key;
     }
-    private int getTimeoutByMode(JwtMode jwtMode){
-        int timeout;
+    private long getTimeoutByMode(JwtMode jwtMode){
+        long timeout;
         switch (jwtMode){
             case ACCESS ->
                 timeout = JwtTimeout.ACCESS_TOKEN_TIMEOUT;

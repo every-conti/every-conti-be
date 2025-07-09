@@ -40,10 +40,9 @@ public class SpringConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/**").permitAll()
-                        .requestMatchers("/static/**").permitAll()
+                        .requestMatchers("/", "/**").permitAll()
 //                        .requestMatchers("/qrcode/create").hasRole(Roles.ADMIN)
-                        .anyRequest().permitAll()
-//                      .anyRequest().authenticated()
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
