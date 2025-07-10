@@ -38,3 +38,8 @@ out/
 
 ### configuration ###
 application.properties
+
+### log ###
+*.log
+*.log.gz
+/log/

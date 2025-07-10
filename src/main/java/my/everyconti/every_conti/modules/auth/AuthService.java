@@ -17,11 +17,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,26 +31,15 @@ public class AuthService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
     public LoginTokenDto login(LoginDto loginDto){
-        String email = loginDto.getEmail();
-        Optional<Member> member = memberRepository.findByEmail(email);
-        if (member.isEmpty()) throw new NotFoundException(ResponseMessage.USER_NOT_EXIST);
-
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        if (!encoder.matches(loginDto.getPassword(), member.get().getPassword())){
-            throw new InvalidRequestException(ResponseMessage.PASSWORD_INCONSISTENCY);
-        }
-
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword());
 
-        // authenticate 메소드가 실행이 될 때 CustomUserDetailsService class의 loadUserByUsername 메소드가 실행
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        // 해당 객체를 SecurityContextHolder에 저장하고
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String accessToken = jwtTokenProvider.createAccessToken(JwtMode.ACCESS, authentication);
-        String refreshToken = jwtTokenProvider.createRefreshToken(JwtMode.REFRESH, email);
-        return (new LoginTokenDto(accessToken, refreshToken));
+        String refreshToken = jwtTokenProvider.createRefreshToken(JwtMode.REFRESH, loginDto.getEmail());
+        return new LoginTokenDto(accessToken, refreshToken);
     }
 
     public AccessTokenDto parseTokenAndGetNewToken(String token){
@@ -63,7 +50,6 @@ public class AuthService {
                 .orElseThrow(() -> new NotFoundException(ResponseMessage.USER_NOT_EXIST));
 
         // Authentication 객체를 만들기 위한 코드
-
         List<GrantedAuthority> roles = member.getMemberRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getRole().getRoleName().toString()))
                 .collect(Collectors.toList());

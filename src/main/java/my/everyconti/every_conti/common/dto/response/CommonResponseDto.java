@@ -10,8 +10,16 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommonResponseDto {
+public class CommonResponseDto<T> {
 
     private boolean success;
-    private String message;
+    private T data;
+
+    @Override
+    public String toString() {
+        return "CommonResponseDto{" +
+                "success='" + success + '\'' +
+                ", data='" + data.toString() + '\'' +
+                '}';
+    }
 }

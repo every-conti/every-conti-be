@@ -1,6 +1,7 @@
 package my.everyconti.every_conti.config;
 
 import lombok.RequiredArgsConstructor;
+import my.everyconti.every_conti.aop.logging.LoggingAop;
 import my.everyconti.every_conti.constant.role.RoleType;
 import my.everyconti.every_conti.modules.jwt.error.JwtAccessDeniedHandler;
 import my.everyconti.every_conti.modules.jwt.error.JwtAuthenticationEntryPoint;
@@ -25,12 +26,14 @@ public class SpringConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
-    private final JwtFilter jwtFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
+
+    @Bean
+    public LoggingAop loggingAspect() { return new LoggingAop(); }
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -63,7 +66,7 @@ public class SpringConfig {
                 )
 
                 // JWT 필터 등록
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
 
 
         return http.build();

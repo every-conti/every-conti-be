@@ -1,4 +1,4 @@
-package my.everyconti.every_conti.modules.member;
+package my.everyconti.every_conti.modules.auth;
 
 import lombok.RequiredArgsConstructor;
 import my.everyconti.every_conti.modules.member.domain.Member;
@@ -11,7 +11,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 

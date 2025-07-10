@@ -27,4 +27,13 @@ public class SignUpDto {
 
     @Size(max = 50)
     private String church;
+
+    @Override
+    public String toString() {
+        return "signUpDto{" +
+                "nickname='" + nickname + '\'' +
+                ", email='" + email + '\'' +
+                ", church='" + church + '\'' +
+                '}';
+    }
 }
