@@ -4,9 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import my.everyconti.every_conti.common.entity.NowTimeForJpa;
+import my.everyconti.every_conti.modules.auth.domain.Role;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -17,28 +21,32 @@ import java.time.LocalDateTime;
 public class Member extends NowTimeForJpa {
     @JsonIgnore
     @Id
+    @Column(name = "member_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 50)
+    @Column(name = "nickname", nullable = false, length = 50)
     private String nickname;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "email", nullable = false, unique = true, updatable = false)
     private String email;
 
-    @Column()
+    @Column(name = "church")
     private String church;
 
     @JsonIgnore
-    @Column(nullable = false, length = 100)
+    @Column(name = "password", nullable = false, length = 100)
     private String password;
 
     @JsonIgnore
     @CreatedDate
-    @Column(updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @JsonIgnore
-    @Column(name = "activated")
+    @Column(name = "activated", nullable = false)
     private boolean activated;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<MemberRole> memberRoles;
 }

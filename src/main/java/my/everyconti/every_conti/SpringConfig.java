@@ -1,10 +1,9 @@
 package my.everyconti.every_conti;
 
 import lombok.RequiredArgsConstructor;
-import my.everyconti.every_conti.common.jwt.JwtAccessDeniedHandler;
-import my.everyconti.every_conti.common.jwt.JwtAuthenticationEntryPoint;
-import my.everyconti.every_conti.common.jwt.JwtFilter;
-import my.everyconti.every_conti.common.jwt.JwtTokenProvider;
+import my.everyconti.every_conti.common.jwt.*;
+import my.everyconti.every_conti.constant.role.RoleType;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -37,15 +36,34 @@ public class SpringConfig {
                 .httpBasic(httpBasic -> httpBasic.disable()) // 기본 인증 비활성화
                 .formLogin(form -> form.disable())
                 .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/**").permitAll()
-                        .requestMatchers("/", "/**").permitAll()
-//                        .requestMatchers("/qrcode/create").hasRole(Roles.ADMIN)
-                        .anyRequest().authenticated()
-                )
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-        return http.build();
 
+                // 예외처리
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                        .accessDeniedHandler(jwtAccessDeniedHandler)
+                )
+
+                // H2 Console 프레임 허용
+                .headers(headers -> headers
+                        .frameOptions(frame -> frame.sameOrigin())
+                )
+
+                // 세션 정책 설정
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+
+                // 요청 인증 설정
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/member/{email}").hasAuthority(RoleType.ROLE_ADMIN.toString())
+                        .requestMatchers(PathRequest.toH2Console()).permitAll()
+                        .anyRequest().permitAll()
+                )
+
+                // JWT 필터 등록
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
+
+        return http.build();
     }
 }

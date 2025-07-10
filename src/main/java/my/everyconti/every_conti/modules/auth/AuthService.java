@@ -3,23 +3,28 @@ package my.everyconti.every_conti.modules.auth;
 import lombok.RequiredArgsConstructor;
 import my.everyconti.every_conti.common.exception.InvalidRequestException;
 import my.everyconti.every_conti.common.exception.NotFoundException;
-import my.everyconti.every_conti.common.exception.UnAuthorizationException;
 import my.everyconti.every_conti.common.jwt.JwtMode;
 import my.everyconti.every_conti.common.jwt.JwtTokenProvider;
+import my.everyconti.every_conti.common.jwt.SecurityUtil;
 import my.everyconti.every_conti.constant.ResponseMessage;
 import my.everyconti.every_conti.modules.auth.dto.AccessTokenDto;
 import my.everyconti.every_conti.modules.auth.dto.LoginDto;
 import my.everyconti.every_conti.modules.auth.dto.LoginTokenDto;
 import my.everyconti.every_conti.modules.member.domain.Member;
 import my.everyconti.every_conti.modules.member.repository.MemberRepository;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +32,7 @@ public class AuthService {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
     public LoginTokenDto login(LoginDto loginDto){
         String email = loginDto.getEmail();
@@ -38,26 +44,49 @@ public class AuthService {
             throw new InvalidRequestException(ResponseMessage.PASSWORD_INCONSISTENCY);
         }
 
-        String accessToken = getNewAccessToken(email);
-        String refreshToken = getNewRefreshToken(email);
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword());
+
+        // authenticate 메소드가 실행이 될 때 CustomUserDetailsService class의 loadUserByUsername 메소드가 실행
+        System.out.println("AuthService의 login 전까지 실행");
+        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        // 해당 객체를 SecurityContextHolder에 저장하고
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        System.out.println("AuthService의 login 실행");
+
+        String accessToken = jwtTokenProvider.createAccessToken(JwtMode.ACCESS, authentication);
+        String refreshToken = jwtTokenProvider.createRefreshToken(JwtMode.REFRESH, email);
         return (new LoginTokenDto(accessToken, refreshToken));
     }
 
     public AccessTokenDto parseTokenAndGetNewToken(String token){
-        boolean isValid = jwtTokenProvider.validateToken(JwtMode.REFRESH, token);
-        if (!isValid) {
-            throw new UnAuthorizationException(ResponseMessage.UN_AUTHORIZED);
-        }
-
         String email = jwtTokenProvider.extractSubject(JwtMode.REFRESH, token);
-        return new AccessTokenDto(getNewAccessToken(email));
+
+        // 사용자 권한이 필요하다면 여기서 로드
+        Member member = memberRepository.findOneWithRolesByEmail(email)
+                .orElseThrow(() -> new NotFoundException(ResponseMessage.USER_NOT_EXIST));
+
+        // Authentication 객체를 만들기 위한 코드
+
+        List<GrantedAuthority> roles = member.getMemberRoles().stream()
+                .map(role -> new SimpleGrantedAuthority(role.getRole().getRoleName().toString()))
+                .collect(Collectors.toList());
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(email, null, roles);
+
+        return new AccessTokenDto(jwtTokenProvider.createAccessToken(JwtMode.ACCESS, authentication));
     }
 
-    private String getNewAccessToken(String email){
-        return jwtTokenProvider.createToken(JwtMode.ACCESS, email);
+    // 유저,권한 정보를 가져오는 메소드
+    @Transactional(readOnly = true)
+    public Optional<Member> getUserWithRolse(String username) {
+        return memberRepository.findOneWithRolesByEmail(username);
     }
 
-    private String getNewRefreshToken(String email){
-        return jwtTokenProvider.createToken(JwtMode.REFRESH, email);
+    // 현재 securityContext에 저장된 username의 정보만 가져오는 메소드
+    @Transactional(readOnly = true)
+    public Optional<Member> getMyUserWithRoles() {
+        return SecurityUtil.getCurrentUsername()
+                .flatMap(memberRepository::findOneWithRolesByEmail);
     }
 }

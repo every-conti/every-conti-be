@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 public class JwtTokenProvider implements InitializingBean {
 
     private final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
-    private static final String AUTHORITIES_KEY = "auth";
+    private static final String AUTHORITIES_KEY = "roles";
     public static final String AUTHORIZATION_HEADER = "Authorization";
 
     @Value("${spring.jwt.access-secret-key}")
@@ -47,7 +47,23 @@ public class JwtTokenProvider implements InitializingBean {
         this.refreshSecretKey = Keys.hmacShaKeyFor(refreshKeyBytes);
     }
 
-    public String createToken(JwtMode jwtMode, String subject) {
+    public String createAccessToken(JwtMode jwtMode, Authentication authentication) {
+        long timeout = getTimeoutByMode(jwtMode);
+        Key key = getKeyByMode(jwtMode);
+
+        String authorities = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+
+        return Jwts.builder()
+                .setSubject(authentication.getName())
+                .claim(AUTHORITIES_KEY, authorities)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + timeout))
+                .signWith(key, SignatureAlgorithm.HS512)
+                .compact();
+    }
+    public String createRefreshToken(JwtMode jwtMode, String subject) {
         long timeout = getTimeoutByMode(jwtMode);
         Key key = getKeyByMode(jwtMode);
 
@@ -55,7 +71,7 @@ public class JwtTokenProvider implements InitializingBean {
                 .setSubject(subject)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + timeout))
-                .signWith(key)
+                .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
     }
 
@@ -80,10 +96,16 @@ public class JwtTokenProvider implements InitializingBean {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
-        } catch (JwtException e) {
-            System.out.println(e.getMessage());
-            return false;
+        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
+            logger.info("잘못된 JWT 서명입니다.");
+        } catch (ExpiredJwtException e) {
+            logger.info("만료된 JWT 토큰입니다.");
+        } catch (UnsupportedJwtException e) {
+            logger.info("지원되지 않는 JWT 토큰입니다.");
+        } catch (IllegalArgumentException e) {
+            logger.info("JWT 토큰이 잘못되었습니다.");
         }
+        return false;
     }
 
     public Authentication getAuthentication(String token) {
@@ -96,10 +118,12 @@ public class JwtTokenProvider implements InitializingBean {
                 .parseClaimsJws(token)
                 .getBody();
 
+        System.out.println("JwtTokenProvider의 getAuthentication 전까지 실행");
         Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
+        System.out.println("JwtTokenProvider의 getAuthentication : " + Arrays.toString(authorities.toArray()));
 
         User principal = new User(claims.getSubject(), "", authorities);
 

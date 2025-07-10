@@ -5,12 +5,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import my.everyconti.every_conti.modules.member.domain.Member;
 import my.everyconti.every_conti.modules.member.dto.MemberDto;
+import my.everyconti.every_conti.modules.member.dto.SignUpDto;
+import my.everyconti.every_conti.modules.member.repository.MemberRepository;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("api/member")
@@ -18,10 +18,17 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class MemberController {
 
     private final MemberService memberService;
+    private final MemberRepository memberRepository;
 
     @PostMapping("")
     @ResponseBody
-    public ResponseEntity<Member> signUp(@Valid @RequestBody MemberDto memberDto){
-        return ResponseEntity.ok(memberService.signUp(memberDto));
+    public ResponseEntity<MemberDto> signUp(@Valid @RequestBody SignUpDto signUpDto){
+        return ResponseEntity.ok(memberService.signUp(signUpDto));
+    }
+
+    @GetMapping("/{email}")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public ResponseEntity<MemberDto> getMyUserInfo(@PathVariable String email) {
+        return ResponseEntity.ok(memberService.getMyUserWithRoles(email));
     }
 }
