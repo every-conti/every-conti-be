@@ -2,11 +2,12 @@ package my.everyconti.every_conti.modules.logging;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Slf4j // spring-boot-starter-web 의존성 있다면
-//@Slf4j 애노테이션으로 바로 log 사용 가능
+@RequestMapping("api/log")
+@Slf4j
 public class LogController {
 
     @GetMapping("/")

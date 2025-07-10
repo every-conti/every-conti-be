@@ -1,7 +1,7 @@
 package my.everyconti.every_conti.modules.auth;
 
 import lombok.RequiredArgsConstructor;
-import my.everyconti.every_conti.common.exception.UnAuthorizationException;
+import my.everyconti.every_conti.common.exception.types.UnAuthorizationException;
 import my.everyconti.every_conti.modules.jwt.JwtTokenProvider;
 import my.everyconti.every_conti.constant.ResponseMessage;
 import my.everyconti.every_conti.constant.jwt.JwtTimeout;
@@ -15,7 +15,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
 @RequestMapping("api/auth")
 @RequiredArgsConstructor
 public class AuthController {
@@ -25,7 +25,6 @@ public class AuthController {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
     @PostMapping("login")
-    @ResponseBody
     public ResponseEntity<AccessTokenDto> login(@RequestBody LoginDto loginDto){
         LoginTokenDto loginTokenDto = authService.login(loginDto);
 
@@ -43,7 +42,6 @@ public class AuthController {
     }
 
     @GetMapping("accessToken")
-    @ResponseBody
     public ResponseEntity<AccessTokenDto> getNewAccessToken(@CookieValue(value = "refreshToken") String token) {
         if (token == null || token.isBlank()) {
             throw new UnAuthorizationException(ResponseMessage.UN_AUTHORIZED);

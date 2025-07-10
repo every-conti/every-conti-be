@@ -1,5 +1,6 @@
 package my.everyconti.every_conti.modules.mail.dto;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -12,9 +13,10 @@ import lombok.*;
 public class EmailVerifyDto {
 
     @NotBlank
-    @Size(min = 3, max = 50)
+    @Email
     private String email;
 
     @NotBlank
+    @Size(min=6, max=6)
     private String userCode;
 }

@@ -1,8 +1,7 @@
 package my.everyconti.every_conti.modules.redis;
 
-import my.everyconti.every_conti.common.exception.UnAuthorizationException;
+import my.everyconti.every_conti.common.exception.types.UnAuthorizationException;
 import my.everyconti.every_conti.constant.ResponseMessage;
-import my.everyconti.every_conti.common.exception.UnAuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;

@@ -6,9 +6,12 @@ import lombok.RequiredArgsConstructor;
 import my.everyconti.every_conti.common.dto.response.CommonResponseDto;
 import my.everyconti.every_conti.constant.redis.EmailVerified;
 import my.everyconti.every_conti.constant.redis.RedisTimeout;
+import my.everyconti.every_conti.modules.jwt.JwtFilter;
 import my.everyconti.every_conti.modules.mail.dto.EmailDto;
 import my.everyconti.every_conti.modules.mail.dto.EmailVerifyDto;
 import my.everyconti.every_conti.modules.redis.RedisService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -22,6 +25,8 @@ public class MailService {
     private final RedisService redisService;
     @Value("${spring.mail.username}")
     private String senderEmail;
+    private static final Logger log = LoggerFactory.getLogger(JwtFilter.class);
+
 
     private static int createRandomCode(){
         return (int)(Math.random() * (90000)) + 100000;
@@ -39,8 +44,7 @@ public class MailService {
             body += "<h1>" + code + "</h1>";
             message.setText(body, "UTF-8", "html");
         } catch (MessagingException e){
-            // 로그 추가
-            e.printStackTrace();
+            log.info("이메일 발송 실패");
         }
         return message;
     }

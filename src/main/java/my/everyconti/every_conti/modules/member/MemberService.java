@@ -1,9 +1,8 @@
 package my.everyconti.every_conti.modules.member;
 
 import lombok.RequiredArgsConstructor;
-import my.everyconti.every_conti.common.exception.AlreadyExistsInDBException;
-import my.everyconti.every_conti.common.exception.EmailNotVerifiedException;
-import my.everyconti.every_conti.common.exception.NotFoundException;
+import my.everyconti.every_conti.common.exception.types.*;
+import my.everyconti.every_conti.common.exception.types.custom.EmailNotVerifiedException;
 import my.everyconti.every_conti.constant.ResponseMessage;
 import my.everyconti.every_conti.constant.redis.EmailVerified;
 import my.everyconti.every_conti.constant.role.RoleType;
@@ -14,6 +13,7 @@ import my.everyconti.every_conti.modules.member.dto.MemberDto;
 import my.everyconti.every_conti.modules.member.dto.SignUpDto;
 import my.everyconti.every_conti.modules.member.repository.MemberRepository;
 import my.everyconti.every_conti.modules.redis.RedisService;
+import org.apache.logging.log4j.util.InternalException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +35,7 @@ public class MemberService {
             throw new EmailNotVerifiedException(ResponseMessage.UN_AUTHORIZED);
         }
         if (memberRepository.findByEmail(signUpDto.getEmail()).isPresent()){
-            throw new AlreadyExistsInDBException(ResponseMessage.CONFLICT);
+            throw new AlreadyExistElementException(ResponseMessage.CONFLICT);
         }
         Member member = Member.builder()
                 .nickname(signUpDto.getNickname())

@@ -1,11 +1,11 @@
-package my.everyconti.every_conti.common.exception;
+package my.everyconti.every_conti.common.exception.types;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.FORBIDDEN)
-public class UnAuthenticationException extends RuntimeException {
-    public UnAuthenticationException(String message) {
+public class AccessDeniedException extends RuntimeException {
+    public AccessDeniedException(String message) {
         super(message);
     }
 }

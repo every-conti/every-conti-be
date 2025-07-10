@@ -11,7 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
 @RequestMapping("api/member")
 @RequiredArgsConstructor
 public class MemberController {
@@ -19,8 +19,7 @@ public class MemberController {
     private final MemberService memberService;
     private final MemberRepository memberRepository;
 
-    @PostMapping("")
-    @ResponseBody
+    @PostMapping("/")
     public ResponseEntity<MemberDto> signUp(@Valid @RequestBody SignUpDto signUpDto){
         return ResponseEntity.ok(memberService.signUp(signUpDto));
     }

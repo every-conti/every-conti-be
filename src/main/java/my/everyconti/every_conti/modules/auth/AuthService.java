@@ -1,8 +1,7 @@
 package my.everyconti.every_conti.modules.auth;
 
 import lombok.RequiredArgsConstructor;
-import my.everyconti.every_conti.common.exception.InvalidRequestException;
-import my.everyconti.every_conti.common.exception.NotFoundException;
+import my.everyconti.every_conti.common.exception.types.NotFoundException;
 import my.everyconti.every_conti.constant.jwt.JwtMode;
 import my.everyconti.every_conti.modules.jwt.JwtTokenProvider;
 import my.everyconti.every_conti.constant.ResponseMessage;
