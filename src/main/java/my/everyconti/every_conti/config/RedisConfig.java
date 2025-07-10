@@ -1,4 +1,4 @@
-package my.everyconti.every_conti;
+package my.everyconti.every_conti.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

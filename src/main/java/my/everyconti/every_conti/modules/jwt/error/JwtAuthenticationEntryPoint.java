@@ -1,4 +1,4 @@
-package my.everyconti.every_conti.common.jwt;
+package my.everyconti.every_conti.modules.jwt.error;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

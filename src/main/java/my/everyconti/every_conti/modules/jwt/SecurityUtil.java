@@ -1,4 +1,4 @@
-package my.everyconti.every_conti.common.jwt;
+package my.everyconti.every_conti.modules.jwt;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

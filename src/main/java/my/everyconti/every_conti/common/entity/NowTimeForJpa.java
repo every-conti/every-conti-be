@@ -8,6 +8,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
+// 현재 시간 기준 Column 생성 시에 extends로 사용
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public class NowTimeForJpa {

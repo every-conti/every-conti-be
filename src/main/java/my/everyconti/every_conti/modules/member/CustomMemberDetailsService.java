@@ -35,12 +35,9 @@ public class CustomMemberDetailsService implements UserDetailsService {
             throw new RuntimeException(email + " -> 활성화되어 있지 않습니다.");
         }
 
-
-        System.out.println("CustomMemberDetailsService.createUser의 grantedAuthorities 전까지 실행");
         List<GrantedAuthority> grantedAuthorities = member.getMemberRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getRole().getRoleName().toString()))
                 .collect(Collectors.toList());
-        System.out.println("CustomMemberDetailsService.createUser의 grantedAuthorities : " + Arrays.toString(grantedAuthorities.toArray()));
 
         return new org.springframework.security.core.userdetails.User(member.getEmail(),
                 member.getPassword(),

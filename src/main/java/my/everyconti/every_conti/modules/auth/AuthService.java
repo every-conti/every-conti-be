@@ -3,9 +3,8 @@ package my.everyconti.every_conti.modules.auth;
 import lombok.RequiredArgsConstructor;
 import my.everyconti.every_conti.common.exception.InvalidRequestException;
 import my.everyconti.every_conti.common.exception.NotFoundException;
-import my.everyconti.every_conti.common.jwt.JwtMode;
-import my.everyconti.every_conti.common.jwt.JwtTokenProvider;
-import my.everyconti.every_conti.common.jwt.SecurityUtil;
+import my.everyconti.every_conti.constant.jwt.JwtMode;
+import my.everyconti.every_conti.modules.jwt.JwtTokenProvider;
 import my.everyconti.every_conti.constant.ResponseMessage;
 import my.everyconti.every_conti.modules.auth.dto.AccessTokenDto;
 import my.everyconti.every_conti.modules.auth.dto.LoginDto;
@@ -20,7 +19,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -48,11 +46,9 @@ public class AuthService {
                 new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword());
 
         // authenticate 메소드가 실행이 될 때 CustomUserDetailsService class의 loadUserByUsername 메소드가 실행
-        System.out.println("AuthService의 login 전까지 실행");
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         // 해당 객체를 SecurityContextHolder에 저장하고
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        System.out.println("AuthService의 login 실행");
 
         String accessToken = jwtTokenProvider.createAccessToken(JwtMode.ACCESS, authentication);
         String refreshToken = jwtTokenProvider.createRefreshToken(JwtMode.REFRESH, email);
@@ -75,18 +71,5 @@ public class AuthService {
         Authentication authentication = new UsernamePasswordAuthenticationToken(email, null, roles);
 
         return new AccessTokenDto(jwtTokenProvider.createAccessToken(JwtMode.ACCESS, authentication));
-    }
-
-    // 유저,권한 정보를 가져오는 메소드
-    @Transactional(readOnly = true)
-    public Optional<Member> getUserWithRolse(String username) {
-        return memberRepository.findOneWithRolesByEmail(username);
-    }
-
-    // 현재 securityContext에 저장된 username의 정보만 가져오는 메소드
-    @Transactional(readOnly = true)
-    public Optional<Member> getMyUserWithRoles() {
-        return SecurityUtil.getCurrentUsername()
-                .flatMap(memberRepository::findOneWithRolesByEmail);
     }
 }

@@ -23,18 +23,8 @@ public class MemberServiceTest {
         MemberDto result = memberService.getMyUserWithRoles("dhapdhap123@naver.com");
         System.out.println("이메일: " + result.getEmail());
         System.out.println("닉네임: " + result.getNickname());
-//        System.out.println("권한 목록: " + result.getRoles());
         for (MemberRoleDto role : result.getRoles()){
             System.out.println("role = " + role.getRoleName());
         }
     }
-//    @Test
-//    @Commit
-//    public void userSave(){
-//
-//        // 최초 생성
-//        memberService.signUp(member);
-//        // 이미 존재
-//        memberService.signUp(member);
-//    }
 }

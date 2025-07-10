@@ -3,7 +3,6 @@ package my.everyconti.every_conti.modules.member;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import my.everyconti.every_conti.modules.member.domain.Member;
 import my.everyconti.every_conti.modules.member.dto.MemberDto;
 import my.everyconti.every_conti.modules.member.dto.SignUpDto;
 import my.everyconti.every_conti.modules.member.repository.MemberRepository;

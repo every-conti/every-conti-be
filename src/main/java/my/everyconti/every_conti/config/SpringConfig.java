@@ -1,12 +1,14 @@
-package my.everyconti.every_conti;
+package my.everyconti.every_conti.config;
 
 import lombok.RequiredArgsConstructor;
-import my.everyconti.every_conti.common.jwt.*;
 import my.everyconti.every_conti.constant.role.RoleType;
+import my.everyconti.every_conti.modules.jwt.error.JwtAccessDeniedHandler;
+import my.everyconti.every_conti.modules.jwt.error.JwtAuthenticationEntryPoint;
+import my.everyconti.every_conti.modules.jwt.JwtFilter;
+import my.everyconti.every_conti.modules.jwt.JwtTokenProvider;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;

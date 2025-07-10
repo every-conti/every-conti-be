@@ -1,9 +1,10 @@
-package my.everyconti.every_conti.common.jwt;
+package my.everyconti.every_conti.modules.jwt;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
+import my.everyconti.every_conti.constant.jwt.JwtMode;
 import my.everyconti.every_conti.constant.jwt.JwtTimeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,12 +119,10 @@ public class JwtTokenProvider implements InitializingBean {
                 .parseClaimsJws(token)
                 .getBody();
 
-        System.out.println("JwtTokenProvider의 getAuthentication 전까지 실행");
         Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
-        System.out.println("JwtTokenProvider의 getAuthentication : " + Arrays.toString(authorities.toArray()));
 
         User principal = new User(claims.getSubject(), "", authorities);
 
