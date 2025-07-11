@@ -6,6 +6,7 @@ import my.everyconti.every_conti.common.dto.error.ErrorResponseDto;
 import my.everyconti.every_conti.common.exception.types.*;
 import my.everyconti.every_conti.constant.ResponseMessage;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -74,6 +75,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return buildErrorResponse(exception, ResponseMessage.FORBIDDEN, HttpStatus.FORBIDDEN, request);
     }
 
+    // 404 Not Found Exception
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND) // 404 NotFound
     public ResponseEntity<Object> handleNotfoundException(NotFoundException exception, WebRequest request) {
