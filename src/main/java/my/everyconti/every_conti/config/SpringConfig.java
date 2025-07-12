@@ -3,15 +3,15 @@ package my.everyconti.every_conti.config;
 import lombok.RequiredArgsConstructor;
 import my.everyconti.every_conti.aop.logging.LoggingAop;
 import my.everyconti.every_conti.common.utils.HashIdUtil;
-import my.everyconti.every_conti.common.utils.jwt.error.JwtAccessDeniedHandler;
-import my.everyconti.every_conti.common.utils.jwt.error.JwtAuthenticationEntryPoint;
-import my.everyconti.every_conti.common.utils.jwt.JwtFilter;
-import my.everyconti.every_conti.common.utils.jwt.JwtTokenProvider;
+import my.everyconti.every_conti.common.exception.JwtAccessDeniedHandler;
+import my.everyconti.every_conti.common.exception.JwtAuthenticationEntryPoint;
+import my.everyconti.every_conti.common.filter.JwtFilter;
 import my.everyconti.every_conti.config.properties.JwtProperties;
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
+import my.everyconti.every_conti.constant.role.RoleType;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -22,11 +22,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 @RequiredArgsConstructor
 @EnableConfigurationProperties(JwtProperties.class)
 public class SpringConfig {
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final HashIdUtil.JwtTokenProvider jwtTokenProvider;
     private final JwtProperties jwtProperties;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
@@ -65,12 +66,23 @@ public class SpringConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
-                // 요청 인증 설정
+                // 요청 인가 설정
                 .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/api/member/{email}").hasAuthority(RoleType.ROLE_ADMIN.toString())
-                        .requestMatchers("/api/auth/login", "/api/song/lists").permitAll()
-                        .requestMatchers(PathRequest.toH2Console()).permitAll()
-                        .anyRequest().authenticated()
+                            // auth
+                            .requestMatchers("/api/auth/**").permitAll()
+                            // logging
+                            .requestMatchers("/api/logging/**").hasAuthority(RoleType.ROLE_ADMIN.toString())
+                            // mail
+                            .requestMatchers("/api/mail/**").permitAll()
+                            // member
+                            .requestMatchers("/api/member/").permitAll()
+                            // song
+                            .requestMatchers("/api/song/lists").permitAll()
+
+                            // dev(html)
+                            // .requestMatchers("**").permitAll()
+                            // etc
+                            .anyRequest().hasAuthority(RoleType.ROLE_USER.toString())
                 )
 
                 // JWT 필터 등록

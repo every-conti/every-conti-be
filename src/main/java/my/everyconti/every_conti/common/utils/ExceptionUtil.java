@@ -1,4 +1,4 @@
-package my.everyconti.every_conti.common.exception;
+package my.everyconti.every_conti.common.utils;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

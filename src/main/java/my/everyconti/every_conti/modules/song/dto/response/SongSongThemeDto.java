@@ -1,8 +1,6 @@
 package my.everyconti.every_conti.modules.song.dto.response;
 
-import jakarta.persistence.*;
 import lombok.*;
-import my.everyconti.every_conti.modules.member.domain.MemberRole;
 import my.everyconti.every_conti.modules.song.domain.SongSongTheme;
 
 @Getter

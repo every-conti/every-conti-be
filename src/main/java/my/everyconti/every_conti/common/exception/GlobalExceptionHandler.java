@@ -4,9 +4,9 @@ import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import my.everyconti.every_conti.common.dto.error.ErrorResponseDto;
 import my.everyconti.every_conti.common.exception.types.*;
+import my.everyconti.every_conti.common.utils.ExceptionUtil;
 import my.everyconti.every_conti.constant.ResponseMessage;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -71,6 +71,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN) // 403 Forbidden
     public ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException exception, WebRequest request) {
+        log.error(ResponseMessage.FORBIDDEN, exception);
+        return buildErrorResponse(exception, ResponseMessage.FORBIDDEN, HttpStatus.FORBIDDEN, request);
+    }
+    // 403 Access Denied Exception
+    @ExceptionHandler(org.springframework.security.authorization.AuthorizationDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN) // 403 Forbidden
+    public ResponseEntity<Object> handleAuthorizationDeniedException(org.springframework.security.authorization.AuthorizationDeniedException exception, WebRequest request) {
         log.error(ResponseMessage.FORBIDDEN, exception);
         return buildErrorResponse(exception, ResponseMessage.FORBIDDEN, HttpStatus.FORBIDDEN, request);
     }

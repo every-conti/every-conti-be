@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Search Songs</title>
+</head>
+<body>
+    <input type="text" id="text" placeholder="검색 키워드" />
+    <input type="text" id="praise-team-id" placeholder="찬양팀 아이디" />
+    <input type="text" id="theme-ids" placeholder="주제 아이디 (여러 개)" />
+    <input type="text" id="song-tempo" placeholder="곡 빠르기" />
+    <input type="text" id="season-id" placeholder="절기 아이디" />
+    <input type="text" id="bible-book" placeholder="성경 책" />
+    <input type="text" id="bible-chapter" placeholder="성경 장" />
+    <input type="text" id="bible-verse" placeholder="성경 절" />
+    <button onclick="search()">검색</button>
+    <p id="result"></p>
+</body>
+<script>
+    function search() {
+        const text = document.getElementById('text').value;
+        const praiseTeamId = document.getElementById('praise-team-id').value;
+        const themeIds = document.getElementById('theme-ids').value;
+        const songTempo = document.getElementById('song-tempo').value;
+        const seasonId = document.getElementById('season-id').value;
+        const bibleBook = document.getElementById('bible-book').value;
+        const bibleChapter = document.getElementById('bible-chapter').value;
+        const bibleVerse = document.getElementById('bible-verse').value;
+
+        fetch(`api/song/lists?text=${text}&praiseTeamId=${praiseTeamId}&themeIds=${themeIds}&songTempo=${songTempo}&seasonId=${seasonId}&bibleBook=${bibleBook}&bibleChapter=${bibleChapter}&bibleVerse=${bibleVerse}`,
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+            },
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.text(); // 또는 json() 형태
+                } else {
+                    throw new Error('요청 실패: ' + response.status);
+                }
+            })
+            .then(data => {
+                document.getElementById('result').textContent = '성공: ' + data;
+            })
+            .catch(error => {
+                document.getElementById('result').textContent = '오류: ' + error.message;
+            });
+    }
+</script>
+</html>

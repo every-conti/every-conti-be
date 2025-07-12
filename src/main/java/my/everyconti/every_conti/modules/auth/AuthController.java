@@ -2,7 +2,7 @@ package my.everyconti.every_conti.modules.auth;
 
 import lombok.RequiredArgsConstructor;
 import my.everyconti.every_conti.common.exception.types.UnAuthorizationException;
-import my.everyconti.every_conti.common.utils.jwt.JwtTokenProvider;
+import my.everyconti.every_conti.common.utils.HashIdUtil;
 import my.everyconti.every_conti.constant.ResponseMessage;
 import my.everyconti.every_conti.constant.jwt.JwtTimeout;
 import my.everyconti.every_conti.modules.auth.dto.AccessTokenDto;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     private final AuthService authService;
 
-    private final JwtTokenProvider tokenProvider;
+    private final HashIdUtil.JwtTokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
     @PostMapping("login")
