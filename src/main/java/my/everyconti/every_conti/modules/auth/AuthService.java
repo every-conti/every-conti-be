@@ -3,7 +3,7 @@ package my.everyconti.every_conti.modules.auth;
 import lombok.RequiredArgsConstructor;
 import my.everyconti.every_conti.common.exception.types.NotFoundException;
 import my.everyconti.every_conti.constant.jwt.JwtMode;
-import my.everyconti.every_conti.modules.jwt.JwtTokenProvider;
+import my.everyconti.every_conti.common.utils.jwt.JwtTokenProvider;
 import my.everyconti.every_conti.constant.ResponseMessage;
 import my.everyconti.every_conti.modules.auth.dto.AccessTokenDto;
 import my.everyconti.every_conti.modules.auth.dto.LoginDto;

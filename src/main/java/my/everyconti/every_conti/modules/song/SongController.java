@@ -3,7 +3,6 @@ package my.everyconti.every_conti.modules.song;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import my.everyconti.every_conti.common.dto.response.CommonResponseDto;
-import my.everyconti.every_conti.modules.song.domain.Song;
 import my.everyconti.every_conti.modules.song.dto.request.CreateSongDto;
 import my.everyconti.every_conti.modules.song.dto.request.SearchSongDto;
 import my.everyconti.every_conti.modules.song.dto.response.SongDto;
@@ -20,6 +19,8 @@ public class SongController {
 
     private final SongService songService;
 
+
+
     // 찬양 생성
     @PostMapping("")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
@@ -27,17 +28,23 @@ public class SongController {
         return ResponseEntity.ok(songService.createSong(createSongDto));
     }
 
-    // 찬양 삭제
-    @DeleteMapping("/{songId}")
-    @PreAuthorize("hasAnyRole('ADMIN')")
-    public ResponseEntity<CommonResponseDto<String>> createSong(@Valid @PathVariable Long songId) {
-        return ResponseEntity.ok(songService.deleteSong(songId));
-    }
-    
     // 찬양 검색
     @GetMapping("/lists")
     public ResponseEntity<List<SongDto>> searchSong(@Valid @ModelAttribute SearchSongDto searchSongDto) {
         return ResponseEntity.ok(songService.searchSong(searchSongDto));
     }
 
+    // 찬양 삭제
+    @DeleteMapping("/{innerSongId}")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public ResponseEntity<CommonResponseDto<String>> createSong(@PathVariable Long innerSongId) {
+        return ResponseEntity.ok(songService.deleteSong(innerSongId));
+    }
+
+    // 찬양 신고
+//    @PostMapping("/report/{songId}")
+//    @PreAuthorize("hasAnyRole('USER')")
+//    public ResponseEntity<CommonResponseDto<String>> reportSong(@PathVariable ReportSongDto reportSongDto){
+//        return songService.reportSong(reportSongDto);
+//    }
 }

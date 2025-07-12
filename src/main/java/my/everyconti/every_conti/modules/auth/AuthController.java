@@ -2,7 +2,7 @@ package my.everyconti.every_conti.modules.auth;
 
 import lombok.RequiredArgsConstructor;
 import my.everyconti.every_conti.common.exception.types.UnAuthorizationException;
-import my.everyconti.every_conti.modules.jwt.JwtTokenProvider;
+import my.everyconti.every_conti.common.utils.jwt.JwtTokenProvider;
 import my.everyconti.every_conti.constant.ResponseMessage;
 import my.everyconti.every_conti.constant.jwt.JwtTimeout;
 import my.everyconti.every_conti.modules.auth.dto.AccessTokenDto;
@@ -12,7 +12,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

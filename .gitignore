@@ -38,6 +38,7 @@ out/
 
 ### configuration ###
 application.properties
+application.yml
 
 ### log ###
 *.log

@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import my.everyconti.every_conti.common.dto.response.CommonResponseDto;
 import my.everyconti.every_conti.constant.redis.EmailVerified;
 import my.everyconti.every_conti.constant.redis.RedisTimeout;
-import my.everyconti.every_conti.modules.jwt.JwtFilter;
+import my.everyconti.every_conti.common.utils.jwt.JwtFilter;
 import my.everyconti.every_conti.modules.mail.dto.EmailDto;
 import my.everyconti.every_conti.modules.mail.dto.EmailVerifyDto;
 import my.everyconti.every_conti.modules.redis.RedisService;

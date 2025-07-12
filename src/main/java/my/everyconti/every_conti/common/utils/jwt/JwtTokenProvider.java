@@ -1,9 +1,8 @@
-package my.everyconti.every_conti.modules.jwt;
+package my.everyconti.every_conti.common.utils.jwt;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.http.HttpServletRequest;
 import my.everyconti.every_conti.constant.jwt.JwtMode;
 import my.everyconti.every_conti.constant.jwt.JwtTimeout;
 import org.slf4j.Logger;
@@ -17,7 +16,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import java.security.Key;
 import java.util.Arrays;
@@ -30,11 +28,10 @@ public class JwtTokenProvider implements InitializingBean {
 
     private final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
     private static final String AUTHORITIES_KEY = "roles";
-    public static final String AUTHORIZATION_HEADER = "Authorization";
 
-    @Value("${spring.jwt.access-secret-key}")
+    @Value("${security.jwt.access-secret-key}")
     private String accessSecret;
-    @Value("${spring.jwt.refresh-secret-key}")
+    @Value("${security.jwt.refresh-secret-key}")
     private String refreshSecret;
 
     private Key accessSecretKey;
@@ -127,16 +124,6 @@ public class JwtTokenProvider implements InitializingBean {
         User principal = new User(claims.getSubject(), "", authorities);
 
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
-    }
-
-    public String extractTokenFromHeader(HttpServletRequest request) {
-        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
-
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
-
-        return null;
     }
 
     private Key getKeyByMode(JwtMode jwtMode){

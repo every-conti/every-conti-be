@@ -68,22 +68,11 @@ public class LoggingAop {
         MethodSignature signature = (MethodSignature) JoinPoint.getSignature();
         return signature.getMethod();
     }
-    private Method getMethod(ProceedingJoinPoint proceedingJoinPoint) {
-        MethodSignature signature = (MethodSignature) proceedingJoinPoint.getSignature();
-        return signature.getMethod();
-    }
 
     private HttpServletRequest getCurrentHttpRequest() {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         if (requestAttributes instanceof ServletRequestAttributes servletRequestAttributes) {
             return servletRequestAttributes.getRequest();
-        }
-        return null;
-    }
-    private HttpServletResponse getCurrentHttpResponse() {
-        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-        if (requestAttributes instanceof ServletRequestAttributes servletRequestAttributes) {
-            return servletRequestAttributes.getResponse();
         }
         return null;
     }
@@ -105,16 +94,5 @@ public class LoggingAop {
                 .collect(Collectors.joining(", "));
 
         return "{" + paramsStr + "}";
-    }
-
-    public int getCurrentResponseStatus() {
-        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-        if (requestAttributes instanceof ServletRequestAttributes sra) {
-            HttpServletResponse response = sra.getResponse();
-            if (response != null) {
-                return response.getStatus();  // 서블릿 3.0 이상에서 지원
-            }
-        }
-        return -1;
     }
 }

@@ -21,4 +21,5 @@ public class ResponseMessage {
     public static final String PASSWORD_INCONSISTENCY = "비밀번호가 일치하지 않습니다.";
     public static final String USER_NOT_EXIST = "일치하는 유저정보가 없습니다.";
     public static final String DELETED = "삭제 완료 되었습니다.";
+    public static final String INVALID_JWT = "만료되었거나 유효하지 않은 토큰입니다.";
 }

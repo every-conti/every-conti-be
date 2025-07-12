@@ -3,9 +3,9 @@ package my.everyconti.every_conti.modules.song;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import my.everyconti.every_conti.common.dto.response.CommonResponseDto;
+import my.everyconti.every_conti.common.utils.HashIdUtil;
 import my.everyconti.every_conti.constant.ResponseMessage;
 import my.everyconti.every_conti.constant.song.SongTempo;
 import my.everyconti.every_conti.constant.song.SongType;
@@ -36,6 +36,7 @@ public class SongService {
     private final SongThemeRepository songThemeRepository;
     private final SeasonRepository seasonRepository;
     private final EntityManager em;
+    private final HashIdUtil hashIdUtil;
 
     public SongDto createSong(CreateSongDto createSongDto){
         Member creator = memberRepository.findById(Long.valueOf(createSongDto.getCreatorId()))
@@ -74,15 +75,10 @@ public class SongService {
         song.setSongThemes(songThemes);
 
         Song result = songRepository.save(song);
-        return new SongDto(result);
+        return new SongDto(result, hashIdUtil);
     }
 
-    public CommonResponseDto<String> deleteSong(@Valid Long songId) {
-        songRepository.deleteById(songId);
-        return new CommonResponseDto<String>(true, ResponseMessage.DELETED);
-    }
-
-    public List<SongDto> searchSong(@Valid SearchSongDto searchSongDto) {
+    public List<SongDto> searchSong(SearchSongDto searchSongDto) {
         String text = searchSongDto.getText();
 
         SongType songType = searchSongDto.getSongType();
@@ -162,7 +158,16 @@ public class SongService {
 
         List<Song> resultList = query.getResultList();
         return resultList.stream()
-                .map(SongDto::new)
+                .map(s -> new SongDto(s, hashIdUtil))
                 .collect(Collectors.toList());
     }
+
+    public CommonResponseDto<String> deleteSong(Long innerSongId) {
+        songRepository.deleteById(innerSongId);
+        return new CommonResponseDto<>(true, ResponseMessage.DELETED);
+    }
+
+//    public CommonResponseDto<String> reportSong(String songId){
+//        Long innerSongId = hashIdUtil.decode(songId);
+//    }
 }

@@ -1,16 +1,13 @@
 package my.everyconti.every_conti.modules.song.dto.response;
 
 import lombok.*;
+import my.everyconti.every_conti.common.utils.HashIdUtil;
 import my.everyconti.every_conti.constant.song.SongTempo;
 import my.everyconti.every_conti.constant.song.SongType;
-import my.everyconti.every_conti.modules.member.domain.Member;
-import my.everyconti.every_conti.modules.member.dto.MemberDto;
 import my.everyconti.every_conti.modules.member.dto.MemberNicknameDto;
-import my.everyconti.every_conti.modules.member.dto.MemberRoleDto;
 import my.everyconti.every_conti.modules.song.domain.*;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Getter
@@ -19,6 +16,8 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SongDto {
+
+    private String id;
 
     private String songName;
 
@@ -49,7 +48,8 @@ public class SongDto {
 
 
 
-    public SongDto(Song song) {
+    public SongDto(Song song, HashIdUtil hashIdUtil) {
+        id= hashIdUtil.encode(song.getId());
         songName = song.getSongName();
         lyrics = song.getLyrics();
         reference = song.getReference();
@@ -69,6 +69,7 @@ public class SongDto {
     @Override
     public String toString() {
         String string = "SongDto{" +
+                "id='" + id + '\'' +
                 "songName='" + songName + '\'' +
                 ", lyrics='" + lyrics + '\'' +
                 ", reference='" + reference + '\'' +
