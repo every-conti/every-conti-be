@@ -5,40 +5,116 @@
     <title>Search Songs</title>
 </head>
 <body>
-    <input type="text" id="text" placeholder="검색 키워드" /><br />
-    <input type="text" id="praise-team-id" placeholder="찬양팀 아이디" /><br />
-    <input type="text" id="theme-ids" placeholder="주제 아이디 (여러 개)" /><br />
-    <input type="text" id="song-type" placeholder="곡 타입" /><br />
-    <input type="text" id="song-tempo" placeholder="곡 빠르기" /><br />
-    <input type="text" id="season-id" placeholder="절기 아이디" /><br />
-    <input type="text" id="bible-book" placeholder="성경 책" /><br />
-    <input type="text" id="bible-chapter" placeholder="성경 장" /><br />
-    <input type="text" id="bible-verse" placeholder="성경 절" /><br />
-    <button onclick="search()">검색</button>
-    <p id="result"></p>
-</body>
+<input type="text" id="text" placeholder="검색 키워드" /><br />
+
+<label>찬양팀:</label>
+<select id="praise-team-id">
+    <option value="">전체</option>
+</select><br />
+
+<label>주제:</label>
+<div id="theme-checkboxes">
+    <!-- 주제 체크박스 들어갈 자리 -->
+</div><br />
+
+<label>절기:</label>
+<select id="season-id">
+    <option value="">전체</option>
+</select><br />
+
+<input type="text" id="song-type" placeholder="곡 타입" /><br />
+<input type="text" id="song-tempo" placeholder="곡 빠르기" /><br />
+<input type="text" id="bible-book" placeholder="성경 책" /><br />
+<input type="text" id="bible-chapter" placeholder="성경 장" /><br />
+<input type="text" id="bible-verse" placeholder="성경 절" /><br />
+
+<button onclick="search()">검색</button>
+<p id="result"></p>
+
 <script>
+    window.onload = function () {
+        fetch('/api/song/searchProperties')
+            .then(res => res.json())
+            .then(data => {
+                populatePraiseTeams(data.praiseTeams);
+                populateSeasons(data.seasons);
+                populateThemes(data.songThemes);
+            })
+            .catch(error => {
+                console.error('데이터 로딩 오류:', error);
+            });
+    };
+
+    function populatePraiseTeams(praiseTeams) {
+        const select = document.getElementById('praise-team-id');
+        praiseTeams.forEach(team => {
+            const option = document.createElement('option');
+            option.value = team.id;
+            option.textContent = team.praiseTeamName;
+            select.appendChild(option);
+        });
+    }
+
+    function populateSeasons(seasons) {
+        const select = document.getElementById('season-id');
+        seasons.forEach(season => {
+            const option = document.createElement('option');
+            option.value = season.id;
+            option.textContent = season.seasonName;
+            select.appendChild(option);
+        });
+    }
+
+    function populateThemes(themes) {
+        const container = document.getElementById('theme-checkboxes');
+        themes.forEach(theme => {
+            const label = document.createElement('label');
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = theme.id;
+            checkbox.name = 'themeIds';
+            label.appendChild(checkbox);
+            label.appendChild(document.createTextNode(' ' + theme.themeName));
+            container.appendChild(label);
+            container.appendChild(document.createElement('br'));
+        });
+    }
+
     function search() {
         const text = document.getElementById('text').value;
         const praiseTeamId = document.getElementById('praise-team-id').value;
         const songType = document.getElementById('song-type').value;
-        const themeIds = document.getElementById('theme-ids').value;
         const songTempo = document.getElementById('song-tempo').value;
         const seasonId = document.getElementById('season-id').value;
         const bibleBook = document.getElementById('bible-book').value;
         const bibleChapter = document.getElementById('bible-chapter').value;
         const bibleVerse = document.getElementById('bible-verse').value;
 
-        fetch(`api/song/lists?text=${text}&praiseTeamId=${praiseTeamId}&themeIds=${themeIds}&songTempo=${songTempo}&seasonId=${seasonId}&bibleBook=${bibleBook}&bibleChapter=${bibleChapter}&bibleVerse=${bibleVerse}&songType=${songType}`,
-            {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-            },
+        const themeIds = Array.from(document.querySelectorAll('input[name="themeIds"]:checked'))
+            .map(cb => cb.value)
+            .join(',');
+
+        const queryParams = new URLSearchParams({
+            text,
+            praiseTeamId,
+            songType,
+            tempo:songTempo,
+            seasonId,
+            bibleBook,
+            bibleChapter,
+            bibleVerse,
+            themeIds
+        });
+
+        fetch(`/api/song/search?${queryParams.toString()}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
         })
             .then(response => {
                 if (response.ok) {
-                    return response.text(); // 또는 json() 형태
+                    return response.text();
                 } else {
                     throw new Error('요청 실패: ' + response.status);
                 }
@@ -51,4 +127,5 @@
             });
     }
 </script>
+</body>
 </html>

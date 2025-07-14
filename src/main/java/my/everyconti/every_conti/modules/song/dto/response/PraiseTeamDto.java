@@ -1,7 +1,7 @@
 package my.everyconti.every_conti.modules.song.dto.response;
 
-import jakarta.persistence.*;
 import lombok.*;
+import my.everyconti.every_conti.common.utils.HashIdUtil;
 import my.everyconti.every_conti.modules.song.domain.PraiseTeam;
 
 @Getter
@@ -10,12 +10,12 @@ import my.everyconti.every_conti.modules.song.domain.PraiseTeam;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PraiseTeamDto {
-    private Long id;
+    private String id;
 
     private String praiseTeamName;
 
-    public PraiseTeamDto(PraiseTeam praiseTeam) {
-        id = praiseTeam.getId();
+    public PraiseTeamDto(PraiseTeam praiseTeam, HashIdUtil hashIdUtil) {
+        id = hashIdUtil.encode(praiseTeam.getId());
         praiseTeamName = praiseTeam.getPraiseTeamName();
     }
 

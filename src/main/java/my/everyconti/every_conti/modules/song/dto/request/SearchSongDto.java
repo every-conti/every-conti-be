@@ -15,10 +15,10 @@ public class SearchSongDto {
     private String text;
     private SongType songType;
 //    private Integer creatorId;
-    private Integer praiseTeamId;
-    private List<Integer> themeIds;;
+    private String praiseTeamId;
+    private List<String> themeIds;;
     private SongTempo tempo;
-    private Integer seasonId;
+    private String seasonId;
     private String bibleBook;
     private Integer bibleChapter;
     private Integer bibleVerse;

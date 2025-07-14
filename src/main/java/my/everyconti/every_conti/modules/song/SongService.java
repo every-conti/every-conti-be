@@ -1,6 +1,7 @@
 package my.everyconti.every_conti.modules.song;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
@@ -14,13 +15,14 @@ import my.everyconti.every_conti.modules.member.repository.MemberRepository;
 import my.everyconti.every_conti.modules.song.domain.*;
 import my.everyconti.every_conti.modules.song.dto.request.CreateSongDto;
 import my.everyconti.every_conti.modules.song.dto.request.SearchSongDto;
-import my.everyconti.every_conti.modules.song.dto.response.SongDto;
+import my.everyconti.every_conti.modules.song.dto.response.*;
 import my.everyconti.every_conti.modules.song.repository.PraiseTeamRepository;
 import my.everyconti.every_conti.modules.song.repository.SeasonRepository;
 import my.everyconti.every_conti.modules.song.repository.SongRepository;
 import my.everyconti.every_conti.modules.song.repository.SongThemeRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -39,17 +41,17 @@ public class SongService {
     private final JPAQueryFactory queryFactory;
 
     public SongDto createSong(CreateSongDto createSongDto){
-        Member creator = memberRepository.findById(Long.valueOf(createSongDto.getCreatorId()))
+        Member creator = memberRepository.findById(hashIdUtil.decode(createSongDto.getCreatorId()))
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다"));
 
-        PraiseTeam team = praiseTeamRepository.findById(Long.valueOf(createSongDto.getPraiseTeamId()))
+        PraiseTeam team = praiseTeamRepository.findById(hashIdUtil.decode(createSongDto.getPraiseTeamId()))
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 찬양팀입니다"));
 
         List<SongTheme> themes = songThemeRepository.findAllById(createSongDto.getThemeIds().stream().map(Long::valueOf).toList());
 
         Season season = null;
         if (createSongDto.getSeasonId() != null) {
-            season = seasonRepository.findById(Long.valueOf(createSongDto.getSeasonId()))
+            season = seasonRepository.findById(hashIdUtil.decode(createSongDto.getSeasonId()))
                     .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 절기입니다"));
         }
 
@@ -82,14 +84,23 @@ public class SongService {
         String text = searchSongDto.getText();
 
         SongType songType = searchSongDto.getSongType();
-        Integer praiseTeamId = searchSongDto.getPraiseTeamId();
-        List<Integer> themeIds = searchSongDto.getThemeIds();
-        Integer seasonId = searchSongDto.getSeasonId();
+        System.out.println("songType = " + songType);
+        String praiseTeamId = searchSongDto.getPraiseTeamId();
+        System.out.println("praiseTeamId = " + praiseTeamId);
+        List<String> themeIds = searchSongDto.getThemeIds();
+        System.out.println("themeIds = " + themeIds);
+        String seasonId = searchSongDto.getSeasonId();
+        System.out.println("seasonId = " + seasonId);
         SongTempo tempo = searchSongDto.getTempo();
+        System.out.println("tempo = " + tempo);
         String bibleBook = searchSongDto.getBibleBook();
+        System.out.println("bibleBook = " + bibleBook);
         Integer bibleChapter = searchSongDto.getBibleChapter();
+        System.out.println("bibleChapter = " + bibleChapter);
         Integer bibleVerse = searchSongDto.getBibleVerse();
+        System.out.println("bibleVerse = " + bibleVerse);
         Integer offset = searchSongDto.getOffset() != null ? searchSongDto.getOffset() : 0;
+        System.out.println("offset = " + offset);
 
         QSong song = QSong.song;
         BooleanBuilder builder = new BooleanBuilder();
@@ -103,12 +114,12 @@ public class SongService {
             builder.and(song.songType.eq(songType));
         }
 
-        if (praiseTeamId != null) {
-            builder.and(song.praiseTeam.id.eq(Long.valueOf(praiseTeamId)));
+        if (praiseTeamId != null && !praiseTeamId.isBlank()) {
+            builder.and(song.praiseTeam.id.eq(hashIdUtil.decode(praiseTeamId)));
         }
 
-        if (seasonId != null) {
-            builder.and(song.season.id.eq(Long.valueOf(seasonId)));
+        if (seasonId != null && !seasonId.isBlank()) {
+            builder.and(song.season.id.eq(hashIdUtil.decode(seasonId)));
         }
 
         if (tempo != null) {
@@ -127,22 +138,41 @@ public class SongService {
             builder.and(song.bibleVerse.eq(bibleVerse));
         }
 
-        if (themeIds != null && !themeIds.isEmpty()) {
-            builder.and(QSongSongTheme.songSongTheme.songTheme.id.in(themeIds.stream().map(Long::valueOf).toList()));
-        }
-
-        List<Song> resultList = queryFactory
+        JPAQuery<Song> query = queryFactory
                 .selectFrom(song)
                 .leftJoin(song.creator).fetchJoin()
                 .leftJoin(song.praiseTeam).fetchJoin()
                 .leftJoin(song.season).fetchJoin()
                 .leftJoin(song.songThemes, QSongSongTheme.songSongTheme).fetchJoin()
                 .leftJoin(QSongSongTheme.songSongTheme.songTheme).fetchJoin()
-                .distinct()
+                .distinct();
+
+        if (themeIds != null && !themeIds.isEmpty()) {
+            Set<Long> themeIdLongs = new HashSet<>(themeIds.stream().map(hashIdUtil::decode).toList());
+            System.out.println("themeIdLongs = " + themeIdLongs);
+
+            QSongSongTheme songSongTheme = QSongSongTheme.songSongTheme;
+            QSongTheme songTheme = QSongTheme.songTheme;
+
+            List<Long> matchedSongIds = queryFactory
+                    .select(song.id)
+                    .from(song)
+                    .leftJoin(song.songThemes, songSongTheme)
+                    .leftJoin(songSongTheme.songTheme, songTheme)
+                    .where(songTheme.id.in(themeIdLongs))
+                    .groupBy(song.id)
+                    .having(songTheme.id.countDistinct().eq((long) themeIdLongs.size()))
+                    .fetch();
+
+            query.where(song.id.in(matchedSongIds));
+        }
+
+        List<Song> resultList = query
                 .where(builder)
                 .offset(offset != null ? offset : 0)
                 .limit(20)
                 .fetch();
+        System.out.println("resultList = " + resultList);
         return resultList.stream()
                 .map(s -> new SongDto(s, hashIdUtil))
                 .collect(Collectors.toList());
@@ -151,6 +181,23 @@ public class SongService {
     public CommonResponseDto<String> deleteSong(Long innerSongId) {
         songRepository.deleteById(innerSongId);
         return new CommonResponseDto<>(true, ResponseMessage.DELETED);
+    }
+
+    public SearchPropertiesDto getSearchProperties(){
+        return SearchPropertiesDto
+                .builder()
+                .praiseTeams(getPraiseTeamLists())
+                .seasons(getSeasonLists())
+                .songThemes(getSongThemeLists()).build();
+    }
+    public List<PraiseTeamDto> getPraiseTeamLists(){
+        return praiseTeamRepository.findAll().stream().map(t -> new PraiseTeamDto(t, hashIdUtil)).toList();
+    }
+    public List<SeasonDto> getSeasonLists(){
+        return seasonRepository.findAll().stream().map(s -> new SeasonDto(s, hashIdUtil)).toList();
+    }
+    public List<SongThemeDto> getSongThemeLists(){
+        return songThemeRepository.findAll().stream().map(th -> new SongThemeDto(th, hashIdUtil)).toList();
     }
 
 //    public CommonResponseDto<String> reportSong(String songId){

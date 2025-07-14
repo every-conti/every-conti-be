@@ -1,6 +1,7 @@
 package my.everyconti.every_conti.modules.song.dto.response;
 
 import lombok.*;
+import my.everyconti.every_conti.common.utils.HashIdUtil;
 import my.everyconti.every_conti.modules.song.domain.SongSongTheme;
 
 @Getter
@@ -9,11 +10,11 @@ import my.everyconti.every_conti.modules.song.domain.SongSongTheme;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SongSongThemeDto {
-    private Long id;
+    private String id;
     private String songThemeName;
 
-    public SongSongThemeDto(SongSongTheme theme) {
-        id = theme.getSongTheme().getId();
+    public SongSongThemeDto(SongSongTheme theme, HashIdUtil hashIdUtil) {
+        id = hashIdUtil.encode(theme.getSongTheme().getId());
         songThemeName = theme.getSongTheme().getThemeName();
     }
 

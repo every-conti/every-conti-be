@@ -54,13 +54,13 @@ public class SongDto {
         lyrics = song.getLyrics();
         reference = song.getReference();
         songType = song.getSongType();
-        praiseTeam = new PraiseTeamDto(song.getPraiseTeam());
+        praiseTeam = new PraiseTeamDto(song.getPraiseTeam(), hashIdUtil);
         creatorNickname = new MemberNicknameDto(song.getCreator());
         songThemes = song.getSongThemes().stream()
-                .map(SongSongThemeDto::new)
+                .map(s -> new SongSongThemeDto(s, hashIdUtil))
                 .collect(Collectors.toList());
         tempo = song.getTempo();
-        season = song.getSeason() == null ? null : new SeasonDto(song.getSeason());
+        season = song.getSeason() == null ? null : new SeasonDto(song.getSeason(), hashIdUtil);
         bibleBook = song.getBibleBook();
         bibleChapter = song.getBibleChapter();
         bibleVerse = song.getBibleVerse();

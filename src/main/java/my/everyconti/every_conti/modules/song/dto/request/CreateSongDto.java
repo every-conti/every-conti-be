@@ -36,20 +36,20 @@ public class CreateSongDto {
     private SongType songType;
 
     @NotNull(message = "등록자 아이디는 필수입니다.")
-    private Integer creatorId;
+    private String creatorId;
 
     @NotNull(message = "찬양팀 아이디는 필수입니다.")
-    private Integer praiseTeamId;
+    private String praiseTeamId;
 
     @NotEmpty(message = "themeIds는 비어 있을 수 없습니다.")
-    private List<Integer> themeIds;;
+    private List<String> themeIds;;
 
     /*
     --------Sub columns--------
      */
     private SongTempo tempo;
 
-    private Integer seasonId;
+    private String seasonId;
 
     private String bibleBook;
 

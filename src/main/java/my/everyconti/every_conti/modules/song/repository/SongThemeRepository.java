@@ -1,5 +1,6 @@
 package my.everyconti.every_conti.modules.song.repository;
 
+import my.everyconti.every_conti.modules.song.domain.Season;
 import my.everyconti.every_conti.modules.song.domain.SongTheme;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -16,6 +17,9 @@ public interface SongThemeRepository extends JpaRepository<SongTheme, Long> {
 
     @Override
     List<SongTheme> findAllById(Iterable<Long> longs);
+
+    @Override
+    List<SongTheme> findAll();
 
     //    @EntityGraph
 //    Optional<Member> findOneWithRolesByEmail(String email);

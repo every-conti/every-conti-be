@@ -55,12 +55,12 @@ public class LoggingAop {
 
         String returnStr = result == null ? "null" : result.getClass().getSimpleName() + "=" + result;
 
-        log.info("{} {} {} | {} returned {}",
+        log.info("{} {} {} | {}",
                 request != null ? request.getMethod() : "UNKNOWN",
                 uri + (queryString != null ? "?" + queryString : ""),
                 ip,
-                joinPoint.getSignature().getDeclaringTypeName() + "#" + joinPoint.getSignature().getName() + " | " + username,
-                returnStr
+                joinPoint.getSignature().getDeclaringTypeName() + "#" + joinPoint.getSignature().getName() + " | " + username
+//                returnStr
         );
     }
 

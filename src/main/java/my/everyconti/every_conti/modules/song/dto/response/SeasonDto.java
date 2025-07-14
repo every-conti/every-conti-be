@@ -1,6 +1,7 @@
 package my.everyconti.every_conti.modules.song.dto.response;
 
 import lombok.*;
+import my.everyconti.every_conti.common.utils.HashIdUtil;
 import my.everyconti.every_conti.modules.song.domain.Season;
 
 import java.time.LocalDate;
@@ -11,7 +12,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SeasonDto {
-    private Long id;
+    private String id;
 
     private String seasonName;
 
@@ -19,8 +20,8 @@ public class SeasonDto {
 
     private LocalDate endDate;
 
-    public SeasonDto(Season season) {
-        id = season.getId();
+    public SeasonDto(Season season, HashIdUtil hashIdUtil) {
+        id = hashIdUtil.encode(season.getId());
         seasonName = season.getSeasonName();
         startDate = season.getStartDate();
         endDate = season.getEndDate();
