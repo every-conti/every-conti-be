@@ -5,14 +5,15 @@
     <title>Search Songs</title>
 </head>
 <body>
-    <input type="text" id="text" placeholder="검색 키워드" />
-    <input type="text" id="praise-team-id" placeholder="찬양팀 아이디" />
-    <input type="text" id="theme-ids" placeholder="주제 아이디 (여러 개)" />
-    <input type="text" id="song-tempo" placeholder="곡 빠르기" />
-    <input type="text" id="season-id" placeholder="절기 아이디" />
-    <input type="text" id="bible-book" placeholder="성경 책" />
-    <input type="text" id="bible-chapter" placeholder="성경 장" />
-    <input type="text" id="bible-verse" placeholder="성경 절" />
+    <input type="text" id="text" placeholder="검색 키워드" /><br />
+    <input type="text" id="praise-team-id" placeholder="찬양팀 아이디" /><br />
+    <input type="text" id="theme-ids" placeholder="주제 아이디 (여러 개)" /><br />
+    <input type="text" id="song-type" placeholder="곡 타입" /><br />
+    <input type="text" id="song-tempo" placeholder="곡 빠르기" /><br />
+    <input type="text" id="season-id" placeholder="절기 아이디" /><br />
+    <input type="text" id="bible-book" placeholder="성경 책" /><br />
+    <input type="text" id="bible-chapter" placeholder="성경 장" /><br />
+    <input type="text" id="bible-verse" placeholder="성경 절" /><br />
     <button onclick="search()">검색</button>
     <p id="result"></p>
 </body>
@@ -20,6 +21,7 @@
     function search() {
         const text = document.getElementById('text').value;
         const praiseTeamId = document.getElementById('praise-team-id').value;
+        const songType = document.getElementById('song-type').value;
         const themeIds = document.getElementById('theme-ids').value;
         const songTempo = document.getElementById('song-tempo').value;
         const seasonId = document.getElementById('season-id').value;
@@ -27,7 +29,7 @@
         const bibleChapter = document.getElementById('bible-chapter').value;
         const bibleVerse = document.getElementById('bible-verse').value;
 
-        fetch(`api/song/lists?text=${text}&praiseTeamId=${praiseTeamId}&themeIds=${themeIds}&songTempo=${songTempo}&seasonId=${seasonId}&bibleBook=${bibleBook}&bibleChapter=${bibleChapter}&bibleVerse=${bibleVerse}`,
+        fetch(`api/song/lists?text=${text}&praiseTeamId=${praiseTeamId}&themeIds=${themeIds}&songTempo=${songTempo}&seasonId=${seasonId}&bibleBook=${bibleBook}&bibleChapter=${bibleChapter}&bibleVerse=${bibleVerse}&songType=${songType}`,
             {
                 method: 'GET',
                 headers: {

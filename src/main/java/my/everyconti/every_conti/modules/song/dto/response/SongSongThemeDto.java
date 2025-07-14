@@ -13,7 +13,7 @@ public class SongSongThemeDto {
     private String songThemeName;
 
     public SongSongThemeDto(SongSongTheme theme) {
-        id = theme.getId();
+        id = theme.getSongTheme().getId();
         songThemeName = theme.getSongTheme().getThemeName();
     }
 

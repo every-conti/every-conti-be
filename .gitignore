@@ -44,3 +44,6 @@ application.yml
 *.log
 *.log.gz
 /log/
+
+### querydsl ###
+/src/main/generated

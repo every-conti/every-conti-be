@@ -80,7 +80,7 @@ public class SpringConfig {
                             .requestMatchers("/api/song/lists").permitAll()
 
                             // dev(html)
-                            // .requestMatchers("**").permitAll()
+                             .requestMatchers("**").permitAll()
                             // etc
                             .anyRequest().hasAuthority(RoleType.ROLE_USER.toString())
                 )

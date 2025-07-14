@@ -1,8 +1,8 @@
 package my.everyconti.every_conti.modules.song;
 
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.*;
 import lombok.RequiredArgsConstructor;
 import my.everyconti.every_conti.common.dto.response.CommonResponseDto;
 import my.everyconti.every_conti.common.utils.HashIdUtil;
@@ -21,7 +21,6 @@ import my.everyconti.every_conti.modules.song.repository.SongRepository;
 import my.everyconti.every_conti.modules.song.repository.SongThemeRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -37,6 +36,7 @@ public class SongService {
     private final SeasonRepository seasonRepository;
     private final EntityManager em;
     private final HashIdUtil hashIdUtil;
+    private final JPAQueryFactory queryFactory;
 
     public SongDto createSong(CreateSongDto createSongDto){
         Member creator = memberRepository.findById(Long.valueOf(createSongDto.getCreatorId()))
@@ -91,72 +91,58 @@ public class SongService {
         Integer bibleVerse = searchSongDto.getBibleVerse();
         Integer offset = searchSongDto.getOffset() != null ? searchSongDto.getOffset() : 0;
 
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Song> cq = cb.createQuery(Song.class);
-        Root<Song> song = cq.from(Song.class);
-
-        song.fetch("creator", JoinType.LEFT);
-        song.fetch("praiseTeam", JoinType.LEFT);
-        song.fetch("season", JoinType.LEFT);
-        Fetch<Song, SongSongTheme> songThemesFetch = song.fetch("songThemes", JoinType.LEFT);
-
-        songThemesFetch.fetch("songTheme", JoinType.LEFT);
-        cq.distinct(true);
-
-        List<Predicate> predicates = new ArrayList<>();
+        QSong song = QSong.song;
+        BooleanBuilder builder = new BooleanBuilder();
 
         if (text != null && !text.isBlank()) {
-            String pattern = "%" + text.toLowerCase() + "%";
-            Predicate titlePredicate = cb.like(song.get("songName"), pattern);
-            Predicate lyricsPredicate = cb.like(song.get("lyrics"), pattern);
-            predicates.add(cb.or(titlePredicate, lyricsPredicate));
+            builder.and(song.songName.containsIgnoreCase(text)
+                    .or(song.lyrics.containsIgnoreCase(text)));
         }
 
         if (songType != null) {
-            predicates.add(cb.equal(song.get("songType"), songType));
+            builder.and(song.songType.eq(songType));
         }
 
         if (praiseTeamId != null) {
-            Join<Song, PraiseTeam> praiseTeamJoin = song.join("praiseTeam", JoinType.INNER);
-            predicates.add(cb.equal(praiseTeamJoin.get("id"), praiseTeamId));
+            builder.and(song.praiseTeam.id.eq(Long.valueOf(praiseTeamId)));
         }
 
         if (seasonId != null) {
-            Join<Song, Season> seasonJoin = song.join("season", JoinType.INNER);
-            predicates.add(cb.equal(seasonJoin.get("id"), seasonId));
+            builder.and(song.season.id.eq(Long.valueOf(seasonId)));
         }
 
         if (tempo != null) {
-            predicates.add(cb.equal(song.get("tempo"), tempo));
+            builder.and(song.tempo.eq(tempo));
         }
 
         if (bibleBook != null && !bibleBook.isBlank()) {
-            predicates.add(cb.equal(song.get("bibleBook"), bibleBook));
+            builder.and(song.bibleBook.eq(bibleBook));
         }
 
         if (bibleChapter != null) {
-            predicates.add(cb.equal(song.get("bibleChapter"), bibleChapter));
+            builder.and(song.bibleChapter.eq(bibleChapter));
         }
 
         if (bibleVerse != null) {
-            predicates.add(cb.equal(song.get("bibleVerse"), bibleVerse));
+            builder.and(song.bibleVerse.eq(bibleVerse));
         }
 
         if (themeIds != null && !themeIds.isEmpty()) {
-            Join<Song, SongSongTheme> SongthemeJoin = song.join("songThemes", JoinType.INNER);
-            predicates.add(SongthemeJoin.get("id").in(themeIds));
-            cq.distinct(true);
+            builder.and(QSongSongTheme.songSongTheme.songTheme.id.in(themeIds.stream().map(Long::valueOf).toList()));
         }
 
-        cq.where(cb.and(predicates.toArray(new Predicate[0])));
-
-        TypedQuery<Song> query = em.createQuery(cq);
-
-        // 페이징 offset 기본 0, limit 20 (필요시 조정)
-        query.setFirstResult(offset != null ? offset : 0);
-        query.setMaxResults(20);
-
-        List<Song> resultList = query.getResultList();
+        List<Song> resultList = queryFactory
+                .selectFrom(song)
+                .leftJoin(song.creator).fetchJoin()
+                .leftJoin(song.praiseTeam).fetchJoin()
+                .leftJoin(song.season).fetchJoin()
+                .leftJoin(song.songThemes, QSongSongTheme.songSongTheme).fetchJoin()
+                .leftJoin(QSongSongTheme.songSongTheme.songTheme).fetchJoin()
+                .distinct()
+                .where(builder)
+                .offset(offset != null ? offset : 0)
+                .limit(20)
+                .fetch();
         return resultList.stream()
                 .map(s -> new SongDto(s, hashIdUtil))
                 .collect(Collectors.toList());
