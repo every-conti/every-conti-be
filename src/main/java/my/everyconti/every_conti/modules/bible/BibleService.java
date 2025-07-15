@@ -44,7 +44,7 @@ public class BibleService {
         ).collect(Collectors.toList());
     }
 
-    public List<BibleChapterDto> getBibleChapterLists(String bibleId){
+    public List<BibleChapterDto> getChapterListsByBibleId(String bibleId){
         QBibleChapter bibleChapter = QBibleChapter.bibleChapter;
 
         List<BibleChapter> chapters = queryFactory
@@ -62,7 +62,7 @@ public class BibleService {
                     .build()
         ).collect(Collectors.toList());
     }
-    public List<BibleVerseDto> getBibleVerseLists(String chapterId){
+    public List<BibleVerseDto> getVerseListsByChapterId(String chapterId){
         QBibleVerse bibleVerse = QBibleVerse.bibleVerse;
 
         List<BibleVerse> verses = queryFactory

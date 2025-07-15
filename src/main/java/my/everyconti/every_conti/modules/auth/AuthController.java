@@ -40,7 +40,7 @@ public class AuthController {
                 .body(new AccessTokenDto(loginTokenDto.getAccessToken()));
     }
 
-    @GetMapping("accessToken")
+    @GetMapping("token")
     public ResponseEntity<AccessTokenDto> getNewAccessToken(@CookieValue(value = "refreshToken") String token) {
         if (token == null || token.isBlank()) {
             throw new UnAuthorizationException(ResponseMessage.UN_AUTHORIZED);

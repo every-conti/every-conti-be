@@ -42,7 +42,7 @@
 
 <script>
     window.onload = function () {
-        fetch('/api/song/searchProperties')
+        fetch('/api/song/search-properties')
             .then(res => res.json())
             .then(data => {
                 populatePraiseTeams(data.praiseTeams);

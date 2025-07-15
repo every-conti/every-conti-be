@@ -39,7 +39,7 @@ public class SongController {
         return ResponseEntity.ok(songService.deleteSong(innerSongId));
     }
 
-    @GetMapping("/searchProperties")
+    @GetMapping("/search-properties")
     public ResponseEntity<SearchPropertiesDto> getSearchProperties(){
         return ResponseEntity.ok(songService.getSearchProperties());
     }
