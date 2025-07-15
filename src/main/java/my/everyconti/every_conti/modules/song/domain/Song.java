@@ -25,8 +25,6 @@ public class Song extends NowTimeForJpa {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "public_id", unique = true)
-    private String publicId;
     /*
     --------Main columns--------
      */

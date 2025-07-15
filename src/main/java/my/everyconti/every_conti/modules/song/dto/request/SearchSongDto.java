@@ -14,7 +14,6 @@ import java.util.List;
 public class SearchSongDto {
     private String text;
     private SongType songType;
-//    private Integer creatorId;
     private String praiseTeamId;
     private List<String> themeIds;;
     private SongTempo tempo;

@@ -41,9 +41,6 @@ public class JwtFilter extends GenericFilterBean {
         String uri = request.getRequestURI();
         boolean shouldSkip = jwtProperties.getSkipUris().stream()
                 .anyMatch(skipUri -> pathMatcher.match(skipUri, uri));
-        System.out.println("uri = " + uri);
-        System.out.println("jwtProperties.getSkipUris() = " + jwtProperties.getSkipUris());
-        System.out.println("shouldSkip = " + shouldSkip);
         if (shouldSkip) {
             filterChain.doFilter(request, response);
             return;

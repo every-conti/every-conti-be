@@ -22,8 +22,14 @@
     <option value="">전체</option>
 </select><br />
 
-<input type="text" id="song-type" placeholder="곡 타입" /><br />
-<input type="text" id="song-tempo" placeholder="곡 빠르기" /><br />
+<label>곡 타입:</label>
+<select id="song-type">
+    <option value="">전체</option>
+</select><br />
+<label>곡 빠르기:</label>
+<select id="song-tempo">
+    <option value="">전체</option>
+</select><br />
 <input type="text" id="bible-book" placeholder="성경 책" /><br />
 <input type="text" id="bible-chapter" placeholder="성경 장" /><br />
 <input type="text" id="bible-verse" placeholder="성경 절" /><br />
@@ -39,6 +45,8 @@
                 populatePraiseTeams(data.praiseTeams);
                 populateSeasons(data.seasons);
                 populateThemes(data.songThemes);
+                populateTempos(data.songTempos);
+                populateTypes(data.songTypes);
             })
             .catch(error => {
                 console.error('데이터 로딩 오류:', error);
@@ -77,6 +85,24 @@
             label.appendChild(document.createTextNode(' ' + theme.themeName));
             container.appendChild(label);
             container.appendChild(document.createElement('br'));
+        });
+    }
+    function populateTypes(types) {
+        const select = document.getElementById('song-type');
+        types.forEach(type => {
+            const option = document.createElement('option');
+            option.value = type;
+            option.textContent = type;
+            select.appendChild(option);
+        });
+    }
+    function populateTempos(tempos) {
+        const select = document.getElementById('song-tempo');
+        tempos.forEach(tempo => {
+            const option = document.createElement('option');
+            option.value = tempo;
+            option.textContent = tempo;
+            select.appendChild(option);
         });
     }
 

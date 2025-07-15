@@ -10,6 +10,7 @@ import my.everyconti.every_conti.common.utils.HashIdUtil;
 import my.everyconti.every_conti.constant.ResponseMessage;
 import my.everyconti.every_conti.constant.song.SongTempo;
 import my.everyconti.every_conti.constant.song.SongType;
+import my.everyconti.every_conti.modules.bible.BibleService;
 import my.everyconti.every_conti.modules.member.domain.Member;
 import my.everyconti.every_conti.modules.member.repository.MemberRepository;
 import my.everyconti.every_conti.modules.song.domain.*;
@@ -39,6 +40,7 @@ public class SongService {
     private final EntityManager em;
     private final HashIdUtil hashIdUtil;
     private final JPAQueryFactory queryFactory;
+    private final BibleService bibleService;
 
     public SongDto createSong(CreateSongDto createSongDto){
         Member creator = memberRepository.findById(hashIdUtil.decode(createSongDto.getCreatorId()))
@@ -84,23 +86,14 @@ public class SongService {
         String text = searchSongDto.getText();
 
         SongType songType = searchSongDto.getSongType();
-        System.out.println("songType = " + songType);
         String praiseTeamId = searchSongDto.getPraiseTeamId();
-        System.out.println("praiseTeamId = " + praiseTeamId);
         List<String> themeIds = searchSongDto.getThemeIds();
-        System.out.println("themeIds = " + themeIds);
         String seasonId = searchSongDto.getSeasonId();
-        System.out.println("seasonId = " + seasonId);
         SongTempo tempo = searchSongDto.getTempo();
-        System.out.println("tempo = " + tempo);
         String bibleBook = searchSongDto.getBibleBook();
-        System.out.println("bibleBook = " + bibleBook);
         Integer bibleChapter = searchSongDto.getBibleChapter();
-        System.out.println("bibleChapter = " + bibleChapter);
         Integer bibleVerse = searchSongDto.getBibleVerse();
-        System.out.println("bibleVerse = " + bibleVerse);
         Integer offset = searchSongDto.getOffset() != null ? searchSongDto.getOffset() : 0;
-        System.out.println("offset = " + offset);
 
         QSong song = QSong.song;
         BooleanBuilder builder = new BooleanBuilder();
@@ -149,7 +142,6 @@ public class SongService {
 
         if (themeIds != null && !themeIds.isEmpty()) {
             Set<Long> themeIdLongs = new HashSet<>(themeIds.stream().map(hashIdUtil::decode).toList());
-            System.out.println("themeIdLongs = " + themeIdLongs);
 
             QSongSongTheme songSongTheme = QSongSongTheme.songSongTheme;
             QSongTheme songTheme = QSongTheme.songTheme;
@@ -172,7 +164,6 @@ public class SongService {
                 .offset(offset != null ? offset : 0)
                 .limit(20)
                 .fetch();
-        System.out.println("resultList = " + resultList);
         return resultList.stream()
                 .map(s -> new SongDto(s, hashIdUtil))
                 .collect(Collectors.toList());
@@ -188,7 +179,9 @@ public class SongService {
                 .builder()
                 .praiseTeams(getPraiseTeamLists())
                 .seasons(getSeasonLists())
-                .songThemes(getSongThemeLists()).build();
+                .songThemes(getSongThemeLists())
+                .bibles(bibleService.getBibles())
+                .build();
     }
     public List<PraiseTeamDto> getPraiseTeamLists(){
         return praiseTeamRepository.findAll().stream().map(t -> new PraiseTeamDto(t, hashIdUtil)).toList();
