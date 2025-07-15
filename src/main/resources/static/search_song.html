@@ -31,10 +31,9 @@
     <option value="">전체</option>
 </select><br />
 <label>성경:</label>
-<select id="bible-book">
+<select id="bible-id">
     <option value="">전체</option>
 </select><br />
-<!--<input type="text" id="bible-book" placeholder="성경 책" /><br />-->
 <input type="text" id="bible-chapter" placeholder="성경 장" /><br />
 <input type="text" id="bible-verse" placeholder="성경 절" /><br />
 
@@ -111,12 +110,11 @@
         });
     }
     function populateBibles(bibles) {
-        const select = document.getElementById('bible-book');
-        console.log("bibles:", bibles)
+        const select = document.getElementById('bible-id');
         bibles.forEach(bible => {
             const option = document.createElement('option');
             option.value = bible.id;
-            option.textContent = bible.bibleEnName;
+            option.textContent = bible.bibleKoName;
             select.appendChild(option);
         });
     }
@@ -127,9 +125,9 @@
         const songType = document.getElementById('song-type').value;
         const songTempo = document.getElementById('song-tempo').value;
         const seasonId = document.getElementById('season-id').value;
-        const bibleBook = document.getElementById('bible-book').value;
-        const bibleChapter = document.getElementById('bible-chapter').value;
-        const bibleVerse = document.getElementById('bible-verse').value;
+        const bibleId = document.getElementById('bible-id').value;
+        const bibleChapterId = document.getElementById('bible-chapter').value;
+        const bibleVerseId = document.getElementById('bible-verse').value;
 
         const themeIds = Array.from(document.querySelectorAll('input[name="themeIds"]:checked'))
             .map(cb => cb.value)
@@ -141,9 +139,9 @@
             songType,
             tempo:songTempo,
             seasonId,
-            bibleBook,
-            bibleChapter,
-            bibleVerse,
+            bibleId,
+            bibleChapterId,
+            bibleVerseId,
             themeIds
         });
 

@@ -51,11 +51,11 @@ public class CreateSongDto {
 
     private String seasonId;
 
-    private String bibleBook;
+    private String bibleId;
 
-    private Integer bibleChapter;
+    private String bibleChapterId;
 
-    private Integer bibleVerse;
+    private String bibleVerseId;
 
 //
 //    @Override

@@ -4,6 +4,9 @@ import lombok.*;
 import my.everyconti.every_conti.common.utils.HashIdUtil;
 import my.everyconti.every_conti.constant.song.SongTempo;
 import my.everyconti.every_conti.constant.song.SongType;
+import my.everyconti.every_conti.modules.bible.dto.response.BibleChapterDto;
+import my.everyconti.every_conti.modules.bible.dto.response.BibleDto;
+import my.everyconti.every_conti.modules.bible.dto.response.BibleVerseDto;
 import my.everyconti.every_conti.modules.member.dto.MemberNicknameDto;
 import my.everyconti.every_conti.modules.song.domain.*;
 
@@ -40,11 +43,11 @@ public class SongDto {
 
     private SeasonDto season;
 
-    private String bibleBook;
+    private BibleDto bible;
 
-    private Integer bibleChapter;
+    private BibleChapterDto bibleChapter;
 
-    private Integer bibleVerse;
+    private BibleVerseDto bibleVerse;
 
 
 
@@ -61,9 +64,9 @@ public class SongDto {
                 .collect(Collectors.toList());
         tempo = song.getTempo();
         season = song.getSeason() == null ? null : new SeasonDto(song.getSeason(), hashIdUtil);
-        bibleBook = song.getBibleBook();
-        bibleChapter = song.getBibleChapter();
-        bibleVerse = song.getBibleVerse();
+        bible = song.getBible() == null ? null : new BibleDto(song.getBible(), hashIdUtil);
+        bibleChapter = song.getBibleChapter() == null ? null : new BibleChapterDto(song.getBibleChapter(), hashIdUtil);
+        bibleVerse = song.getBibleVerse() == null ? null : new BibleVerseDto(song.getBibleVerse(), hashIdUtil);
     }
 
     @Override
@@ -76,11 +79,12 @@ public class SongDto {
                 ", songType=" + songType +
                 ", creator='" + creatorNickname + '\'' +
                 ", praiseTeam='" + praiseTeam.toString() + '\'' +
-                ", songThemes=" + songThemes.toString() +
-                ", tempo=" + tempo +
-                ", bibleBook='" + bibleBook + '\'' +
-                ", bibleChapter=" + bibleChapter +
-                ", bibleVerse=" + bibleVerse + ", season='";
+                ", songThemes=" + songThemes.toString() + '\'' +
+                ", tempo=" + tempo  + '\'' +
+                ", season='" + (season != null ? season.toString() : "null") + '\'' +
+                ", bible='" + (bible == null ? "null" : bible.toString()) + '\'' +
+                ", bibleChapter=" + (bibleChapter == null ? "null" : bibleChapter.toString()) +
+                ", bibleVerse=" + (bibleVerse == null ? "null" : bibleVerse.toString()) + '\'';
         if (season == null){
             string += "null";
         } else {

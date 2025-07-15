@@ -29,7 +29,6 @@ public class SongController {
     // 찬양 검색
     @GetMapping("/search")
     public ResponseEntity<List<SongDto>> searchSong(@Valid @ModelAttribute SearchSongDto searchSongDto) {
-        System.out.println("컨트롤러 도달");
         return ResponseEntity.ok(songService.searchSong(searchSongDto));
     }
 

@@ -18,9 +18,9 @@ public class SearchSongDto {
     private List<String> themeIds;;
     private SongTempo tempo;
     private String seasonId;
-    private String bibleBook;
-    private Integer bibleChapter;
-    private Integer bibleVerse;
+    private String bibleId;
+    private String bibleChapterId;
+    private String bibleVerseId;
 
     private Integer offset;
 }

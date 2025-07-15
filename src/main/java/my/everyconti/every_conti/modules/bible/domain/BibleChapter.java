@@ -15,7 +15,7 @@ import java.util.List;
 public class BibleChapter {
     @JsonIgnore
     @Id
-    @Column(name = "chapter_id")
+    @Column(name = "bible_chapter_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 

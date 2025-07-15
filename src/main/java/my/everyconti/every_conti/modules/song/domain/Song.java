@@ -6,6 +6,9 @@ import lombok.*;
 import my.everyconti.every_conti.common.entity.NowTimeForJpa;
 import my.everyconti.every_conti.constant.song.SongTempo;
 import my.everyconti.every_conti.constant.song.SongType;
+import my.everyconti.every_conti.modules.bible.domain.Bible;
+import my.everyconti.every_conti.modules.bible.domain.BibleChapter;
+import my.everyconti.every_conti.modules.bible.domain.BibleVerse;
 import my.everyconti.every_conti.modules.member.domain.Member;
 import org.springframework.data.annotation.CreatedDate;
 
@@ -69,12 +72,15 @@ public class Song extends NowTimeForJpa {
     @JoinColumn(name = "season_id")
     private Season season;
 
-    @Column(name = "bible_book")
-    private String bibleBook;
+    @ManyToOne
+    @JoinColumn(name = "bible_id")
+    private Bible bible;
 
-    @Column(name = "bible_chapter")
-    private Integer bibleChapter;
+    @ManyToOne
+    @JoinColumn(name = "bible_chapter_id")
+    private BibleChapter bibleChapter;
 
-    @Column(name = "bible_verse")
-    private Integer bibleVerse;
+    @ManyToOne
+    @JoinColumn(name = "bible_verse_id")
+    private BibleVerse bibleVerse;
 }
