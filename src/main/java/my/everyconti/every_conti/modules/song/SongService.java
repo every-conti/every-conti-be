@@ -180,6 +180,8 @@ public class SongService {
                 .praiseTeams(getPraiseTeamLists())
                 .seasons(getSeasonLists())
                 .songThemes(getSongThemeLists())
+                .songTypes(List.of(SongType.values()))
+                .songTempos(List.of(SongTempo.values()))
                 .bibles(bibleService.getBibles())
                 .build();
     }

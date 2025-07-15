@@ -29,7 +29,6 @@ public class BibleService {
     public List<BibleDto> getBibles(){
         QBible bible = QBible.bible;
 
-        BooleanBuilder builder = new BooleanBuilder();
         List<Bible> bibles = queryFactory
                 .selectFrom(bible)
                 .leftJoin(bible.chapters).fetchJoin()

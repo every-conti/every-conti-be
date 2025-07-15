@@ -30,7 +30,11 @@
 <select id="song-tempo">
     <option value="">전체</option>
 </select><br />
-<input type="text" id="bible-book" placeholder="성경 책" /><br />
+<label>성경:</label>
+<select id="bible-book">
+    <option value="">전체</option>
+</select><br />
+<!--<input type="text" id="bible-book" placeholder="성경 책" /><br />-->
 <input type="text" id="bible-chapter" placeholder="성경 장" /><br />
 <input type="text" id="bible-verse" placeholder="성경 절" /><br />
 
@@ -47,6 +51,7 @@
                 populateThemes(data.songThemes);
                 populateTempos(data.songTempos);
                 populateTypes(data.songTypes);
+                populateBibles(data.bibles);
             })
             .catch(error => {
                 console.error('데이터 로딩 오류:', error);
@@ -102,6 +107,16 @@
             const option = document.createElement('option');
             option.value = tempo;
             option.textContent = tempo;
+            select.appendChild(option);
+        });
+    }
+    function populateBibles(bibles) {
+        const select = document.getElementById('bible-book');
+        console.log("bibles:", bibles)
+        bibles.forEach(bible => {
+            const option = document.createElement('option');
+            option.value = bible.id;
+            option.textContent = bible.bibleEnName;
             select.appendChild(option);
         });
     }

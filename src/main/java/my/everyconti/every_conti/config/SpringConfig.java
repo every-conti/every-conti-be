@@ -78,6 +78,9 @@ public class SpringConfig {
                             .requestMatchers("/api/member/").permitAll()
                             // song
                             .requestMatchers("/api/song/lists", "/api/song/search", "api/song/searchProperties").permitAll()
+                            // bible
+                            .requestMatchers("/api/bible/").hasAuthority(RoleType.ROLE_ADMIN.toString())
+
 
                             // dev(html)
                              .requestMatchers("**").permitAll()
