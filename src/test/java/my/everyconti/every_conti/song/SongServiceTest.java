@@ -1,11 +1,12 @@
 package my.everyconti.every_conti.song;
 
 import jakarta.transaction.Transactional;
-//import my.everyconti.every_conti.modules.song.SongService;
+import my.everyconti.every_conti.common.utils.HashIdUtil;
 import my.everyconti.every_conti.constant.song.SongTempo;
 import my.everyconti.every_conti.constant.song.SongType;
 import my.everyconti.every_conti.modules.song.SongService;
 import my.everyconti.every_conti.modules.song.dto.request.CreateSongDto;
+import my.everyconti.every_conti.modules.song.dto.response.SongDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,25 +21,32 @@ public class SongServiceTest {
 
     @Autowired
     SongService songService;
+    @Autowired
+    private HashIdUtil hashIdUtil;
 //
 
     @Test
     @Commit
     public void createSong(){
         List<String> themeIds = new ArrayList<>();
-        themeIds.add("MvbmOeYA");
+        themeIds.add(hashIdUtil.encode(5L));
         CreateSongDto dto = CreateSongDto.builder()
-                .songName("test song")
-                .lyrics("lalalalala lololololo lalalalalalal")
-                .reference("https://www.youtube.com/watch?v=4buUHFAzH_Y")
+                .songName("태초에 하나님이")
+                .lyrics("태초에 하나님이 세상 모든 만물을\n" +
+                        "말씀으로 만드시고 그 만물 보고 기뻐하네\n" +
+                        "이 모든 만물은 하나님 위하여\n" +
+                        "찬양하게 만드셨네\n" +
+                        "목소리 높여서 하나님 찬양해\n" +
+                        "모든 만물이 주 찬양해")
+                .reference("https://www.youtube.com/watch?v=SB1QslVtedo&list=RDSB1QslVtedo&start_radio=1")
                 .songType(SongType.CCM)
-                .tempo(SongTempo.MEDIUM)
+                .tempo(SongTempo.FAST)
                 .themeIds(themeIds)
-                .creatorId("MvbmOeYA")
-                .praiseTeamId("olejRejN")
-                .bibleId("pnel5aKB")
-                .bibleChapterId(8)
-
+                .creatorId(hashIdUtil.encode(4L))
+                .praiseTeamId(hashIdUtil.encode(1L))
+                .bibleId(hashIdUtil.encode(3L))
+                .bibleChapterId(hashIdUtil.encode(201L))
+                .bibleVerseId(hashIdUtil.encode(1L))
                 .build();
 
         SongDto result = songService.createSong(dto);

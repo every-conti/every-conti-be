@@ -107,6 +107,7 @@ public class BibleService {
             for (int j = 0; j < createBibleDto.getVerseList().get(i); j++){
                 BibleVerse verse = BibleVerse.builder()
                         .bibleChapter(chapter)
+                        .verseNum(j+1)
                         .content("")
                         .build();
                 verses.add(verse);
@@ -129,7 +130,6 @@ public class BibleService {
                 .bibleEnName(bible.getBibleEnName())
                 .bibleKoName(bible.getBibleKoName())
                 .chaptersCount(bible.getChaptersCount())
-                .chapters(chapterDtos)
                 .build();
     }
 

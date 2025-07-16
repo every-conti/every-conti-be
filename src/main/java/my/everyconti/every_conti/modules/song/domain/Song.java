@@ -9,6 +9,7 @@ import my.everyconti.every_conti.constant.song.SongType;
 import my.everyconti.every_conti.modules.bible.domain.Bible;
 import my.everyconti.every_conti.modules.bible.domain.BibleChapter;
 import my.everyconti.every_conti.modules.bible.domain.BibleVerse;
+import my.everyconti.every_conti.modules.conti.domain.ContiSong;
 import my.everyconti.every_conti.modules.member.domain.Member;
 import org.springframework.data.annotation.CreatedDate;
 
@@ -83,4 +84,7 @@ public class Song extends NowTimeForJpa {
     @ManyToOne
     @JoinColumn(name = "bible_verse_id")
     private BibleVerse bibleVerse;
+
+    @OneToMany(mappedBy = "song", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ContiSong> contis;
 }

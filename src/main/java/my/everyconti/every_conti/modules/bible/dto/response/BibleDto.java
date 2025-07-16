@@ -18,7 +18,6 @@ public class BibleDto {
     private String bibleEnName;
     private String bibleKoName;
     private Integer chaptersCount;
-    private List<BibleChapterDto> chapters;
 
     @Override
     public String toString() {
@@ -27,7 +26,6 @@ public class BibleDto {
                 ", bibleEnName='" + bibleEnName + '\'' +
                 ", bibleKoName='" + bibleKoName + '\'' +
                 ", chaptersCount=" + chaptersCount +
-                ", chapters=" + chapters +
                 '}';
     }
 
@@ -36,8 +34,5 @@ public class BibleDto {
         this.bibleEnName = bible.getBibleEnName();
         this.bibleKoName = bible.getBibleKoName();
         this.chaptersCount = bible.getChaptersCount();
-        this.chapters = bible.getChapters().stream()
-                .map(ch -> new BibleChapterDto(ch, hashIdUtil))
-                .collect(Collectors.toList());
     }
 }

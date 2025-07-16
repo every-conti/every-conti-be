@@ -1,5 +1,7 @@
 package my.everyconti.every_conti.common.utils;
 
+import my.everyconti.every_conti.common.exception.types.AccessDeniedException;
+import my.everyconti.every_conti.modules.member.domain.Member;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -34,5 +36,21 @@ public class SecurityUtil {
         }
 
         return Optional.ofNullable(username);
+    }
+
+    public static Boolean checkCreatorOrAdmin() {
+        String userName = getCurrentUsername().get();
+
+        // 관리자라면 무조건 통과
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
+            return true;
+        }
+
+        if (!authentication.getName().equals(userName)) {
+            throw new AccessDeniedException("리소스 소유자가 아닙니다.");
+        }
+        return true;
     }
 }

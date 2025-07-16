@@ -77,7 +77,9 @@ public class SpringConfig {
                             // member
                             .requestMatchers("/api/member/").permitAll()
                             // song
-                            .requestMatchers("/api/song/lists", "/api/song/search", "api/song/searchProperties").permitAll()
+                            .requestMatchers("/api/song/lists", "/api/song/search", "api/song/search-properties").permitAll()
+                            // conti
+                            .requestMatchers("/api/conti/{contiId}").permitAll()
                             // bible
                             .requestMatchers("/api/bible/").hasAuthority(RoleType.ROLE_ADMIN.toString())
 
@@ -85,7 +87,7 @@ public class SpringConfig {
                             // dev(html)
                              .requestMatchers("**").permitAll()
                             // etc
-                            .anyRequest().hasAuthority(RoleType.ROLE_USER.toString())
+                            .anyRequest().hasAnyAuthority(RoleType.ROLE_ADMIN.toString(), RoleType.ROLE_USER.toString())
                 )
 
                 // JWT 필터 등록

@@ -11,6 +11,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PraiseTeam {
+    @JsonIgnore
     @Id
     @Column(name = "praise_team_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,4 +19,7 @@ public class PraiseTeam {
 
     @Column(name = "praise_team_name", nullable = false)
     private String praiseTeamName;
+
+    @Column(name = "is_famous")
+    private Boolean isFamous;
 }

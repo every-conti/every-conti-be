@@ -3,6 +3,8 @@ package my.everyconti.every_conti.modules.song;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import my.everyconti.every_conti.common.dto.response.CommonResponseDto;
 import my.everyconti.every_conti.common.utils.HashIdUtil;
@@ -14,6 +16,9 @@ import my.everyconti.every_conti.modules.bible.domain.Bible;
 import my.everyconti.every_conti.modules.bible.domain.BibleChapter;
 import my.everyconti.every_conti.modules.bible.domain.BibleVerse;
 import my.everyconti.every_conti.modules.bible.dto.request.FindBilbeDto;
+import my.everyconti.every_conti.modules.bible.repository.BibleChapterRepository;
+import my.everyconti.every_conti.modules.bible.repository.BibleRepository;
+import my.everyconti.every_conti.modules.bible.repository.BibleVerseRepository;
 import my.everyconti.every_conti.modules.member.domain.Member;
 import my.everyconti.every_conti.modules.member.repository.MemberRepository;
 import my.everyconti.every_conti.modules.song.domain.*;
@@ -22,7 +27,7 @@ import my.everyconti.every_conti.modules.song.dto.request.SearchSongDto;
 import my.everyconti.every_conti.modules.song.dto.response.*;
 import my.everyconti.every_conti.modules.song.repository.PraiseTeamRepository;
 import my.everyconti.every_conti.modules.song.repository.SeasonRepository;
-import my.everyconti.every_conti.modules.song.repository.SongRepository;
+import my.everyconti.every_conti.modules.song.repository.song.SongRepository;
 import my.everyconti.every_conti.modules.song.repository.SongThemeRepository;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +48,11 @@ public class SongService {
     private final HashIdUtil hashIdUtil;
     private final JPAQueryFactory queryFactory;
     private final BibleService bibleService;
+    private final BibleChapterRepository bibleChapterRepository;
+    private final BibleRepository bibleRepository;
+    private final BibleVerseRepository bibleVerseRepository;
 
+    @Transactional
     public SongDto createSong(CreateSongDto createSongDto){
         Member creator = memberRepository.findById(hashIdUtil.decode(createSongDto.getCreatorId()))
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다"));
@@ -51,15 +60,20 @@ public class SongService {
         PraiseTeam team = praiseTeamRepository.findById(hashIdUtil.decode(createSongDto.getPraiseTeamId()))
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 찬양팀입니다"));
 
-        Bible bible = bibleService.findBible(FindBilbeDto.builder().bibleId(createSongDto.getBibleId()).build());
-        BibleChapter bibleChapter = bible.getChapters().stream().filter(ch ->
-                ch.getId() == hashIdUtil.decode(createSongDto.getBibleChapterId())
-        ).toList().getFirst();
-        BibleVerse bibleVerse = bibleChapter.getVerses().stream().filter(v ->
-                v.getId() == hashIdUtil.decode(createSongDto.getBibleVerseId())
-        ).toList().getFirst();
+        List<SongTheme> themes = songThemeRepository.findAllById(createSongDto.getThemeIds().stream().map(hashIdUtil::decode).toList());
 
-        List<SongTheme> themes = songThemeRepository.findAllById(createSongDto.getThemeIds().stream().map(Long::valueOf).toList());
+        Bible bible = null;
+        BibleChapter bibleChapter = null;
+        BibleVerse bibleVerse = null;
+        String bibleId = createSongDto.getBibleId();
+        String bibleChapterId = createSongDto.getBibleChapterId();
+        String bibleVerseId = createSongDto.getBibleVerseId();
+
+        if (bibleId != null && !bibleId.isBlank()) {
+            bible = bibleRepository.findById(hashIdUtil.decode(bibleId)).orElseThrow();
+        }
+        if (bibleChapterId != null && !bibleChapterId.isBlank()) bibleChapter = bibleChapterRepository.findById(hashIdUtil.decode(bibleChapterId)).orElseThrow();
+        if (bibleVerseId != null && !bibleVerseId.isBlank()) bibleVerse = bibleVerseRepository.findById(hashIdUtil.decode(bibleVerseId)).orElseThrow();
 
         Season season = null;
         if (createSongDto.getSeasonId() != null) {
@@ -180,6 +194,7 @@ public class SongService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public CommonResponseDto<String> deleteSong(Long innerSongId) {
         songRepository.deleteById(innerSongId);
         return new CommonResponseDto<>(true, ResponseMessage.DELETED);
@@ -205,6 +220,8 @@ public class SongService {
     public List<SongThemeDto> getSongThemeLists(){
         return songThemeRepository.findAll().stream().map(th -> new SongThemeDto(th, hashIdUtil)).toList();
     }
+
+
 
 //    public CommonResponseDto<String> reportSong(String songId){
 //        Long innerSongId = hashIdUtil.decode(songId);
