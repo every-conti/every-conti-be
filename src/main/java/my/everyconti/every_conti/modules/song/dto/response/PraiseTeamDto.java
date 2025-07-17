@@ -14,16 +14,20 @@ public class PraiseTeamDto {
 
     private String praiseTeamName;
 
+    private String previewImg;
+
     public PraiseTeamDto(PraiseTeam praiseTeam, HashIdUtil hashIdUtil) {
         id = hashIdUtil.encode(praiseTeam.getId());
         praiseTeamName = praiseTeam.getPraiseTeamName();
+        previewImg = praiseTeam.getPreviewImg();
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return "PraiseTeamDto{" +
-                "id='" + getId() + '\'' +
-                "praiseTeamName='" + getPraiseTeamName() + '\'' +
+                "id='" + id + '\'' +
+                ", praiseTeamName='" + praiseTeamName + '\'' +
+                ", previewImg='" + previewImg + '\'' +
                 '}';
     }
 }

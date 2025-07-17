@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import my.everyconti.every_conti.common.utils.HashIdUtil;
 import my.everyconti.every_conti.modules.conti.domain.Conti;
-import my.everyconti.every_conti.modules.song.dto.response.SongDto;
+import my.everyconti.every_conti.modules.song.dto.response.PraiseTeamDto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,20 +17,22 @@ import java.util.stream.Collectors;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ContiDto {
+public class ContiSimpleDto {
     private String id;
     private String title;
     private LocalDate date;
-    private List<ContiSongDto> contiSongs;
+    private List<ContiSongSimpleDto> contiSongs;
+    private PraiseTeamDto praiseTeam;
     private String creatorId;
     private LocalDateTime createdAt;
 
-    public ContiDto(Conti conti, HashIdUtil hashIdUtil) {
+    public ContiSimpleDto(Conti conti, HashIdUtil hashIdUtil) {
         this.id = hashIdUtil.encode(conti.getId());
         this.title = conti.getTitle();
         this.date = conti.getDate();
-        this.contiSongs = conti.getContiSongs() == null ? null : conti.getContiSongs().stream().map(s -> new ContiSongDto(s, hashIdUtil)).collect(Collectors.toList());
+        this.contiSongs = conti.getContiSongs() == null ? null : conti.getContiSongs().stream().map(s -> new ContiSongSimpleDto(s, hashIdUtil)).collect(Collectors.toList());
         this.creatorId = hashIdUtil.encode(conti.getCreator().getId());
+        this.praiseTeam = conti.getPraiseTeam() == null ? null : new PraiseTeamDto(conti.getPraiseTeam(), hashIdUtil);
         this.createdAt = conti.getCreatedAt();
     }
 

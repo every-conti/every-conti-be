@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import my.everyconti.every_conti.common.entity.NowTimeForJpa;
 import my.everyconti.every_conti.modules.member.domain.Member;
+import my.everyconti.every_conti.modules.song.domain.PraiseTeam;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDate;
@@ -36,6 +37,10 @@ public class Conti extends NowTimeForJpa {
     @ManyToOne
     @JoinColumn(name = "creator", nullable = false)
     private Member creator;
+
+    @ManyToOne
+    @JoinColumn(name = "praise_team")
+    private PraiseTeam praiseTeam;
 
     @JsonIgnore
     @CreatedDate

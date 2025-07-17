@@ -3,7 +3,7 @@ package my.everyconti.every_conti.conti;
 import jakarta.transaction.Transactional;
 import my.everyconti.every_conti.common.utils.HashIdUtil;
 import my.everyconti.every_conti.modules.conti.ContiService;
-import my.everyconti.every_conti.modules.conti.dto.response.ContiDto;
+import my.everyconti.every_conti.modules.conti.dto.response.ContiSimpleDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,16 +36,28 @@ public class ContiServiceTest {
 //        System.out.println("result = " + result);
 //    }
 
-    @Test
-//    @Commit
-    public void addSongToContiTest(){
-        String contiId = hashIdUtil.encode(4L);
-        String songId = hashIdUtil.encode(23L);
-        System.out.println("contiId = " + contiId);
-        System.out.println("songId = " + songId);
+//    @Test
+////    @Commit
+//    public void addSongToContiTest(){
+//        String contiId = hashIdUtil.encode(4L);
+//        String songId = hashIdUtil.encode(23L);
+//        System.out.println("contiId = " + contiId);
+//        System.out.println("songId = " + songId);
+//
+//        ContiSimpleDto conti =  contiService.addSongToConti(contiId, songId);
+//        System.out.println("conti = " + conti);
+//    }
 
-        ContiDto conti =  contiService.addSongToConti(contiId, songId);
-        System.out.println("conti = " + conti);
+//    @Test
+//    public void getFamousPraiseTeamLists(){
+//        System.out.println(contiService.getFamousPraiseTeamLists());
+//    }
+
+    @Test
+    public void getPraiseTeamContiLists(){
+        System.out.println("3 = " + hashIdUtil.encode(3L));
+        System.out.println("4 = " + hashIdUtil.encode(4L));
+        System.out.println(contiService.getPraiseTeamContiLists("olejRejN"));
     }
 
 //    @Test

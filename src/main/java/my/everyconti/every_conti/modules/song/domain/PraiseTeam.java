@@ -22,4 +22,7 @@ public class PraiseTeam {
 
     @Column(name = "is_famous")
     private Boolean isFamous;
+
+    @Column(name = "preview-img")
+    private String previewImg;
 }

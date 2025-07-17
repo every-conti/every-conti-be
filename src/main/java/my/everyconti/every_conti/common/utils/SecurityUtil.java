@@ -38,8 +38,8 @@ public class SecurityUtil {
         return Optional.ofNullable(username);
     }
 
-    public static Boolean checkCreatorOrAdmin(Member creator) {
-        if (creator == null) return false;
+    public static Boolean userMatchOrAdmin(String email) {
+        if (email == null | email.isBlank()) return false;
 
         // 관리자라면 무조건 통과
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -48,8 +48,8 @@ public class SecurityUtil {
             return true;
         }
 
-        if (!authentication.getName().equals(creator.getEmail())) {
-            throw new AccessDeniedException("리소스 소유자가 아닙니다.");
+        if (!authentication.getName().equals(email)) {
+            throw new AccessDeniedException("요청자가 리소스 소유 권한이 없습니다.");
         }
         return true;
     }

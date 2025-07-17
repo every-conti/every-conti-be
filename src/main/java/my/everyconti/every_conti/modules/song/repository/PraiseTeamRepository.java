@@ -18,6 +18,8 @@ public interface PraiseTeamRepository extends JpaRepository<PraiseTeam, Long> {
     @Override
     List<PraiseTeam> findAll();
 
+    List<PraiseTeam> findPraiseTeamsByIsFamousTrue();
+
     //    @EntityGraph
 //    Optional<Member> findOneWithRolesByEmail(String email);
 }

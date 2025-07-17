@@ -4,7 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import my.everyconti.every_conti.modules.conti.dto.request.CreateContiDto;
 import my.everyconti.every_conti.modules.conti.dto.request.UpdateContiOrderDto;
-import my.everyconti.every_conti.modules.conti.dto.response.ContiDto;
+import my.everyconti.every_conti.modules.conti.dto.response.ContiSimpleDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -19,24 +19,24 @@ public class ContiController {
 
     @PostMapping("")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    public ResponseEntity<ContiDto> createConti(@Valid @RequestBody CreateContiDto createContiDto){
+    public ResponseEntity<ContiSimpleDto> createConti(@Valid @RequestBody CreateContiDto createContiDto){
          return ResponseEntity.ok(contiService.createConti(createContiDto));
     }
 
     @GetMapping("/{contiId}")
-    public ResponseEntity<ContiDto> getContiDetail(@PathVariable String contiId){
+    public ResponseEntity<ContiSimpleDto> getContiDetail(@PathVariable String contiId){
         return ResponseEntity.ok(contiService.getContiDetail(contiId));
     }
 
     @PostMapping("/{contiId}/{songId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    public ResponseEntity<ContiDto> addSongToConti(@PathVariable String contiId, @PathVariable String songId) {
+    public ResponseEntity<ContiSimpleDto> addSongToConti(@PathVariable String contiId, @PathVariable String songId) {
         return ResponseEntity.ok(contiService.addSongToConti(contiId, songId));
     }
 
     @PatchMapping("/{contiId}/songs/order")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    public ResponseEntity<ContiDto> updateContiOrder(@Valid @PathVariable String contiId, @RequestBody UpdateContiOrderDto updateContiOrderDto){
+    public ResponseEntity<ContiSimpleDto> updateContiOrder(@Valid @PathVariable String contiId, @RequestBody UpdateContiOrderDto updateContiOrderDto){
         return ResponseEntity.ok(contiService.updateContiOrder(contiId, updateContiOrderDto));
     }
 }

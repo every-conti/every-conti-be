@@ -10,14 +10,17 @@ import my.everyconti.every_conti.constant.ResponseMessage;
 import my.everyconti.every_conti.modules.conti.domain.*;
 import my.everyconti.every_conti.modules.conti.dto.request.CreateContiDto;
 import my.everyconti.every_conti.modules.conti.dto.request.UpdateContiOrderDto;
-import my.everyconti.every_conti.modules.conti.dto.response.ContiDto;
+import my.everyconti.every_conti.modules.conti.dto.response.ContiSimpleDto;
 import my.everyconti.every_conti.modules.conti.repository.conti.ContiRepository;
 import my.everyconti.every_conti.modules.conti.repository.ContiSongRepository;
 import my.everyconti.every_conti.modules.member.domain.Member;
 import my.everyconti.every_conti.modules.member.repository.MemberRepository;
+import my.everyconti.every_conti.modules.song.domain.PraiseTeam;
 import my.everyconti.every_conti.modules.song.domain.QSong;
 import my.everyconti.every_conti.modules.song.domain.QSongSongTheme;
 import my.everyconti.every_conti.modules.song.domain.Song;
+import my.everyconti.every_conti.modules.song.dto.response.PraiseTeamDto;
+import my.everyconti.every_conti.modules.song.repository.PraiseTeamRepository;
 import my.everyconti.every_conti.modules.song.repository.song.SongRepository;
 import org.springframework.stereotype.Service;
 
@@ -35,22 +38,27 @@ public class ContiService {
     private final JPAQueryFactory queryFactory;
     private final SongRepository songRepository;
     private final ContiSongRepository contiSongRepository;
+    private final PraiseTeamRepository praiseTeamRepository;
 
     @Transactional
-    public ContiDto createConti(CreateContiDto createContiDto){
+    public ContiSimpleDto createConti(CreateContiDto createContiDto){
         Member member = memberRepository.findById(hashIdUtil.decode(createContiDto.getMemberId())).orElseThrow();
+
+        // 자신의 이메일인지 확인
+        SecurityUtil.userMatchOrAdmin(member.getEmail());
 
         Conti conti = Conti.builder()
                 .title(createContiDto.getTitle())
                 .date(createContiDto.getDate())
+                .praiseTeam(member.getPraiseTeam())
                 .creator(member)
                 .build();
 
         Conti createdConti = contiRepository.save(conti);
-        return new ContiDto(createdConti, hashIdUtil);
+        return new ContiSimpleDto(createdConti, hashIdUtil);
     }
 
-    public ContiDto getContiDetail(String contiId){
+    public ContiSimpleDto getContiDetail(String contiId){
         QConti conti = QConti.conti;
         QContiSong  contiSong = QContiSong.contiSong;
         QSong song = QSong.song;
@@ -69,17 +77,17 @@ public class ContiService {
                 .fetch()
                 .getFirst();
 
-        return new ContiDto(searchedConti, hashIdUtil);
+        return new ContiSimpleDto(searchedConti, hashIdUtil);
     }
 
     @Transactional
-    public ContiDto addSongToConti(String contiId, String songId){
+    public ContiSimpleDto addSongToConti(String contiId, String songId){
         Long innerContiId = hashIdUtil.decode(contiId);
         Long innerSongId = hashIdUtil.decode(songId);
 
         Conti conti = contiRepository.getContiByIdWithJoin(innerContiId);
         // creator인지 확인
-        SecurityUtil.checkCreatorOrAdmin(conti.getCreator());
+        SecurityUtil.userMatchOrAdmin(conti.getCreator().getEmail());
 
         boolean alreadyExists = conti.getContiSongs().stream()
                 .anyMatch(cs -> cs.getSong().getId().equals(innerSongId));
@@ -103,15 +111,15 @@ public class ContiService {
         contiSongRepository.save(contiSong);
         contiRepository.save(conti);
 
-        return new ContiDto(conti, hashIdUtil);
+        return new ContiSimpleDto(conti, hashIdUtil);
     }
 
     @Transactional
-    public ContiDto updateContiOrder(String contiId, UpdateContiOrderDto updateContiOrderDto){
+    public ContiSimpleDto updateContiOrder(String contiId, UpdateContiOrderDto updateContiOrderDto){
         Conti conti = contiRepository.getContiAndContiSongByContiId(hashIdUtil.decode(contiId));
 
         // creator인지 확인
-        SecurityUtil.checkCreatorOrAdmin(conti.getCreator());
+        SecurityUtil.userMatchOrAdmin(conti.getCreator().getEmail());
 
         List<String> contiSongIds = updateContiOrderDto.getContiSongIds();
         List<Long> contiSongIdsLong =  contiSongIds.stream().map(id -> hashIdUtil.decode(id)).toList();
@@ -130,8 +138,20 @@ public class ContiService {
             cs.setOrderIndex(i+1);
         }
 
-        List<ContiSong> updatedContiSongs = contiSongRepository.saveAll(songMap.values());
+        contiSongRepository.saveAll(songMap.values());
 
-        return new ContiDto(conti, hashIdUtil);
+        return new ContiSimpleDto(conti, hashIdUtil);
+    }
+
+    public List<PraiseTeamDto> getFamousPraiseTeamLists(){
+        List<PraiseTeam> famousPraiseTeams = praiseTeamRepository.findPraiseTeamsByIsFamousTrue();
+
+        return famousPraiseTeams.stream().map(t -> new PraiseTeamDto(t, hashIdUtil)).collect(Collectors.toList());
+    }
+
+    public List<ContiSimpleDto> getPraiseTeamContiLists(String praiseTeamId){
+        List<Conti> praiseTeamContis = contiRepository.findContisByPraiseTeam_Id(hashIdUtil.decode(praiseTeamId));
+
+        return praiseTeamContis.stream().map(c -> new ContiSimpleDto(c, hashIdUtil)).collect(Collectors.toList());
     }
 }

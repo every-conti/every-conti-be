@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import my.everyconti.every_conti.common.entity.NowTimeForJpa;
 import my.everyconti.every_conti.modules.auth.domain.Role;
+import my.everyconti.every_conti.modules.song.domain.PraiseTeam;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
@@ -49,4 +50,8 @@ public class Member extends NowTimeForJpa {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<MemberRole> memberRoles;
+
+    @OneToOne
+    @JoinColumn(name = "praise_team")
+    private PraiseTeam praiseTeam;
 }
