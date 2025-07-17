@@ -37,6 +37,6 @@ public class ContiController {
     @PatchMapping("/{contiId}/songs/order")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<ContiDto> updateContiOrder(@Valid @PathVariable String contiId, @RequestBody UpdateContiOrderDto updateContiOrderDto){
-        return ResponseEntity.ok(contiService.updatecontiOrder(contiId, updateContiOrderDto));
+        return ResponseEntity.ok(contiService.updateContiOrder(contiId, updateContiOrderDto));
     }
 }

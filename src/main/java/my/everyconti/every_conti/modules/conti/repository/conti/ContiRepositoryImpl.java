@@ -38,6 +38,7 @@ public class ContiRepositoryImpl implements ContiRepositoryCustom {
 
         Conti existingConti = queryFactory.selectFrom(QConti.conti)
                 .leftJoin(conti.contiSongs, contiSong).fetchJoin()
+                .leftJoin(conti.creator).fetchJoin()
                 .where(conti.id.eq(innerContiSongId))
                 .fetchOne();
         if (existingConti == null) throw new EntityNotFoundException(ResponseMessage.notFoundMessage("콘티"));

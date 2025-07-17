@@ -38,17 +38,17 @@ public class SecurityUtil {
         return Optional.ofNullable(username);
     }
 
-    public static Boolean checkCreatorOrAdmin() {
-        String userName = getCurrentUsername().get();
+    public static Boolean checkCreatorOrAdmin(Member creator) {
+        if (creator == null) return false;
 
         // 관리자라면 무조건 통과
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getAuthorities().stream()
                 .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
             return true;
         }
 
-        if (!authentication.getName().equals(userName)) {
+        if (!authentication.getName().equals(creator.getEmail())) {
             throw new AccessDeniedException("리소스 소유자가 아닙니다.");
         }
         return true;

@@ -79,7 +79,7 @@ public class ContiService {
 
         Conti conti = contiRepository.getContiByIdWithJoin(innerContiId);
         // creator인지 확인
-        SecurityUtil.checkCreatorOrAdmin();
+        SecurityUtil.checkCreatorOrAdmin(conti.getCreator());
 
         boolean alreadyExists = conti.getContiSongs().stream()
                 .anyMatch(cs -> cs.getSong().getId().equals(innerSongId));
@@ -107,11 +107,11 @@ public class ContiService {
     }
 
     @Transactional
-    public ContiDto updatecontiOrder(String contiId, UpdateContiOrderDto updateContiOrderDto){
+    public ContiDto updateContiOrder(String contiId, UpdateContiOrderDto updateContiOrderDto){
         Conti conti = contiRepository.getContiAndContiSongByContiId(hashIdUtil.decode(contiId));
 
         // creator인지 확인
-        SecurityUtil.checkCreatorOrAdmin();
+        SecurityUtil.checkCreatorOrAdmin(conti.getCreator());
 
         List<String> contiSongIds = updateContiOrderDto.getContiSongIds();
         List<Long> contiSongIdsLong =  contiSongIds.stream().map(id -> hashIdUtil.decode(id)).toList();
