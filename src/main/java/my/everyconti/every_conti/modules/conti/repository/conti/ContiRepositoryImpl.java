@@ -9,6 +9,9 @@ import my.everyconti.every_conti.modules.conti.domain.QConti;
 import my.everyconti.every_conti.modules.conti.domain.QContiSong;
 import my.everyconti.every_conti.modules.song.domain.QSong;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @AllArgsConstructor
 public class ContiRepositoryImpl implements ContiRepositoryCustom {
 
@@ -25,6 +28,7 @@ public class ContiRepositoryImpl implements ContiRepositoryCustom {
                 .leftJoin(contiSong.song, song).fetchJoin()
                 .leftJoin(conti.creator).fetchJoin()
                 .where(QConti.conti.id.eq(innerContiId))
+                .distinct()
                 .fetchOne();
         if (existingConti == null) throw new EntityNotFoundException(ResponseMessage.notFoundMessage("콘티"));
 
@@ -40,9 +44,21 @@ public class ContiRepositoryImpl implements ContiRepositoryCustom {
                 .leftJoin(conti.contiSongs, contiSong).fetchJoin()
                 .leftJoin(conti.creator).fetchJoin()
                 .where(conti.id.eq(innerContiSongId))
+                .distinct()
                 .fetchOne();
         if (existingConti == null) throw new EntityNotFoundException(ResponseMessage.notFoundMessage("콘티"));
 
         return existingConti;
+    }
+
+    @Override
+    public List<Conti> findContisWithJoin(){
+        QConti conti = QConti.conti;
+        QContiSong contiSong = QContiSong.contiSong;
+
+        return queryFactory.selectFrom(QConti.conti)
+                .leftJoin(conti.contiSongs, contiSong).fetchJoin()
+                .distinct()
+                .fetch();
     }
 }

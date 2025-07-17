@@ -23,7 +23,7 @@ public class MemberController {
     }
 
     @GetMapping("/{email}")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<MemberDto> getMyUserInfo(@PathVariable String email) {
         return ResponseEntity.ok(memberService.getMyUserWithRoles(email));
     }

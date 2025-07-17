@@ -3,6 +3,7 @@ package my.everyconti.every_conti.modules.member;
 import lombok.RequiredArgsConstructor;
 import my.everyconti.every_conti.common.exception.types.*;
 import my.everyconti.every_conti.common.exception.types.custom.EmailNotVerifiedException;
+import my.everyconti.every_conti.common.utils.SecurityUtil;
 import my.everyconti.every_conti.constant.ResponseMessage;
 import my.everyconti.every_conti.constant.redis.EmailVerified;
 import my.everyconti.every_conti.constant.role.RoleType;
@@ -59,6 +60,9 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public MemberDto getMyUserWithRoles(String email) {
+        // 본인/admin인지 확인
+        SecurityUtil.userMatchOrAdmin(email);
+
         Optional<Member> member = memberRepository.findOneWithRolesByEmail(email);
         if (member.isEmpty()) throw new NotFoundException(ResponseMessage.NOT_FOUND);
 

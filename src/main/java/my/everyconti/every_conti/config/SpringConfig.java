@@ -8,6 +8,7 @@ import my.everyconti.every_conti.common.exception.JwtAuthenticationEntryPoint;
 import my.everyconti.every_conti.common.filter.JwtFilter;
 import my.everyconti.every_conti.config.properties.JwtProperties;
 import my.everyconti.every_conti.constant.role.RoleType;
+import my.everyconti.every_conti.modules.recommendation.schedular.RecommendationBatchSchedular;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,12 +37,11 @@ public class SpringConfig {
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
+    @Bean
+    public HashIdUtil hashIdUtil() { return new HashIdUtil(); }
 
     @Bean
     public LoggingAop loggingAspect() { return new LoggingAop(); }
-
-    @Bean
-    public HashIdUtil hashIdUtil() { return new HashIdUtil(); }
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
