@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+@Table(name = "song_song_theme",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"song", "theme"}))
 @Entity
 @Getter
 @Setter

@@ -2,6 +2,7 @@ package my.everyconti.every_conti.common.dto.error;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@Getter
 @RequiredArgsConstructor
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)

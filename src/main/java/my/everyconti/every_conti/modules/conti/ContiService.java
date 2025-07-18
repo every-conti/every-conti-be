@@ -3,6 +3,7 @@ package my.everyconti.every_conti.modules.conti;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import my.everyconti.every_conti.common.dto.response.CommonResponseDto;
 import my.everyconti.every_conti.common.exception.types.AlreadyExistElementException;
 import my.everyconti.every_conti.common.utils.HashIdUtil;
 import my.everyconti.every_conti.common.utils.SecurityUtil;
@@ -16,8 +17,6 @@ import my.everyconti.every_conti.modules.conti.repository.ContiSongRepository;
 import my.everyconti.every_conti.modules.member.domain.Member;
 import my.everyconti.every_conti.modules.member.repository.MemberRepository;
 import my.everyconti.every_conti.modules.song.domain.PraiseTeam;
-import my.everyconti.every_conti.modules.song.domain.QSong;
-import my.everyconti.every_conti.modules.song.domain.QSongSongTheme;
 import my.everyconti.every_conti.modules.song.domain.Song;
 import my.everyconti.every_conti.modules.song.dto.response.PraiseTeamDto;
 import my.everyconti.every_conti.modules.song.repository.PraiseTeamRepository;
@@ -26,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -50,7 +50,6 @@ public class ContiService {
         Conti conti = Conti.builder()
                 .title(createContiDto.getTitle())
                 .date(createContiDto.getDate())
-                .praiseTeam(member.getPraiseTeam())
                 .creator(member)
                 .build();
 
@@ -59,25 +58,7 @@ public class ContiService {
     }
 
     public ContiSimpleDto getContiDetail(String contiId){
-        QConti conti = QConti.conti;
-        QContiSong  contiSong = QContiSong.contiSong;
-        QSong song = QSong.song;
-        QSongSongTheme songSongTheme = QSongSongTheme.songSongTheme;
-
-        Conti searchedConti = queryFactory
-                .selectFrom(conti)
-                .leftJoin(conti.contiSongs, contiSong).fetchJoin()
-                .leftJoin(contiSong.song, song).fetchJoin()
-                .leftJoin(song.praiseTeam).fetchJoin()
-                .leftJoin(song.songThemes, songSongTheme).fetchJoin()
-                .leftJoin(songSongTheme.songTheme).fetchJoin()
-                .leftJoin(conti.creator).fetchJoin()
-                .where(conti.id.eq(hashIdUtil.decode(contiId)))
-                .distinct()
-                .fetch()
-                .getFirst();
-
-        return new ContiSimpleDto(searchedConti, hashIdUtil);
+        return new ContiSimpleDto(contiRepository.getContiDetail(hashIdUtil.decode(contiId)), hashIdUtil);
     }
 
     @Transactional
@@ -143,13 +124,23 @@ public class ContiService {
         return new ContiSimpleDto(conti, hashIdUtil);
     }
 
+    public CommonResponseDto<String> deleteConti(String contiId){
+        Conti conti = contiRepository.findContiById(hashIdUtil.decode(contiId));
+
+        // 소유자 or admin확인
+        SecurityUtil.userMatchOrAdmin(conti.getCreator().getEmail());
+
+        contiRepository.delete(conti);
+        return new CommonResponseDto<>(true, ResponseMessage.DELETED);
+    }
+
     public List<PraiseTeamDto> getFamousPraiseTeamLists(){
         List<PraiseTeam> famousPraiseTeams = praiseTeamRepository.findPraiseTeamsByIsFamousTrue();
 
         return famousPraiseTeams.stream().map(t -> new PraiseTeamDto(t, hashIdUtil)).collect(Collectors.toList());
     }
 
-    public List<ContiSimpleDto> getPraiseTeamContiLists(String praiseTeamId){
+    public List<ContiSimpleDto> getContiListsByPraiseTeam(String praiseTeamId){
         List<Conti> praiseTeamContis = contiRepository.findContisByPraiseTeam_Id(hashIdUtil.decode(praiseTeamId));
 
         return praiseTeamContis.stream().map(c -> new ContiSimpleDto(c, hashIdUtil)).collect(Collectors.toList());

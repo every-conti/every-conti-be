@@ -2,11 +2,9 @@ package my.everyconti.every_conti.modules.recommendation.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
-import my.everyconti.every_conti.common.utils.HashIdUtil;
 
 @Entity
 @Table(name = "co_used_song_stat",
-        indexes = {@Index(name = "index_song_id_a", columnList = "song_id_a", unique = true), @Index(name = "index_song_id_b", columnList = "song_id_b", unique = true)},
         uniqueConstraints = @UniqueConstraint(columnNames = {"song_id_a", "song_id_b"}))
 @Getter
 @Setter
@@ -24,7 +22,7 @@ public class CoUsedSongStat {
     private Long songIdB;
 
     @Column(name = "usage_count")
-    private Long usageCount = 0L;
+    private Long usageCount;
 
     public CoUsedSongStat(Long id, Long songId1, Long songId2, Long usageCount) {
         this.id = id;

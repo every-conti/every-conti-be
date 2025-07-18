@@ -38,20 +38,17 @@ public class RecommendationBatchSchedular {
 
     private void coUsedSongStatBatch(){
         log.info("CO_USED_SONG_STAT : 1. 새 배치 로그 생성");
-        System.out.println("CO_USED_SONG_STAT : 1. 새 배치 로그 생성");
         BatchLog batchLog = new BatchLog(BatchJobType.CO_USED_SONG_STAT, LocalDateTime.now(), null, BatchStatus.RUNNING);
         batchLogRepository.save(batchLog);
 
         // 2. 전체 삭제
         log.info("CO_USED_SONG_STAT : 2. co_sued_song_stat 전체 삭제");
-        System.out.println("CO_USED_SONG_STAT : 2. co_sued_song_stat 전체 삭제");
         coUsedSongStatRepository.deleteAll();
         coUsedSongStatRepository.flush();
 
         try {
             // 3. 모든 콘티 조회, 콘티 곡으로 조합 만들어 통계 데이터 생성
             log.info("CO_USED_SONG_STAT : 3. 콘티 전체 조회, 통계 데이터 생성");
-            System.out.println("CO_USED_SONG_STAT : 3. 콘티 전체 조회, 통계 데이터 생성");
             List<Conti> contis = contiRepository.findContisWithJoin();
             Map<Pair<Long, Long>, Long> statMap = new HashMap<>();
 
@@ -67,18 +64,15 @@ public class RecommendationBatchSchedular {
                     }
                 }
             }
-            System.out.println("statMap = " + statMap);
 
             // 4. 전체 stat 저장
             log.info("CO_USED_SONG_STAT : 전체 stat 저장");
-            System.out.println("CO_USED_SONG_STAT : 전체 stat 저장");
             List<CoUsedSongStat> stats = statMap.entrySet().stream()
                     .map(entry -> new CoUsedSongStat(null, entry.getKey().getFirst(), entry.getKey().getSecond(), entry.getValue())).toList();
 
             coUsedSongStatRepository.saveAll(stats);
 
             // 5. 성공 처리
-            System.out.println("CO_USED_SONG_STAT : 5. 배치 성공 처리");
             log.info("CO_USED_SONG_STAT : 5. 배치 성공 처리");
             batchLog.setEndTime(LocalDateTime.now());
             batchLog.setStatus(BatchStatus.SUCCESS);

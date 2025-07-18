@@ -12,6 +12,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+@Table(name = "conti",
+        indexes = {
+                @Index(name = "index_praise_team", columnList = "praise_team"),
+        })
 @Entity
 @Getter
 @Setter
@@ -37,10 +41,6 @@ public class Conti extends NowTimeForJpa {
     @ManyToOne
     @JoinColumn(name = "creator", nullable = false)
     private Member creator;
-
-    @ManyToOne
-    @JoinColumn(name = "praise_team")
-    private PraiseTeam praiseTeam;
 
     @JsonIgnore
     @CreatedDate

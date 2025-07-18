@@ -32,7 +32,6 @@ public class ContiSimpleDto {
         this.date = conti.getDate();
         this.contiSongs = conti.getContiSongs() == null ? null : conti.getContiSongs().stream().map(s -> new ContiSongSimpleDto(s, hashIdUtil)).collect(Collectors.toList());
         this.creatorId = hashIdUtil.encode(conti.getCreator().getId());
-        this.praiseTeam = conti.getPraiseTeam() == null ? null : new PraiseTeamDto(conti.getPraiseTeam(), hashIdUtil);
         this.createdAt = conti.getCreatedAt();
     }
 

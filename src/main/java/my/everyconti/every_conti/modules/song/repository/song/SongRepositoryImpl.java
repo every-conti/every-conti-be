@@ -25,7 +25,7 @@ public class SongRepositoryImpl implements SongRepositoryCustom {
                 .where(song.id.eq(innerSongId))
                 .fetchOne();
 
-        if (existingSong == null) throw new EntityNotFoundException(ResponseMessage.notFoundMessage("콘티"));
+        if (existingSong == null) throw new EntityNotFoundException(ResponseMessage.notFoundMessage("찬양"));
 
         return existingSong;
     }

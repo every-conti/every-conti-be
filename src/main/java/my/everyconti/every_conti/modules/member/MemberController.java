@@ -4,11 +4,13 @@ package my.everyconti.every_conti.modules.member;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import my.everyconti.every_conti.modules.member.dto.MemberDto;
+import my.everyconti.every_conti.modules.member.dto.MemberFollowDto;
 import my.everyconti.every_conti.modules.member.dto.SignUpDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/member")
@@ -24,7 +26,19 @@ public class MemberController {
 
     @GetMapping("/{email}")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<MemberDto> getMyUserInfo(@PathVariable String email) {
-        return ResponseEntity.ok(memberService.getMyUserWithRoles(email));
+    public ResponseEntity<MemberDto> getMemberWithRoles(@PathVariable String email) {
+        return ResponseEntity.ok(memberService.getMemberWithRoles(email));
+    }
+
+    @PostMapping("/{memberId}/follow")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public ResponseEntity<MemberFollowDto> followMember(@PathVariable String memberId){
+        return ResponseEntity.ok(memberService.followMember(memberId));
+    }
+
+    @GetMapping("/{memberId}/following")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public ResponseEntity<List<MemberFollowDto>> followMember(){
+        return ResponseEntity.ok(memberService.getFollowingMembers());
     }
 }

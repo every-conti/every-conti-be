@@ -23,6 +23,6 @@ public class PraiseTeam {
     @Column(name = "is_famous")
     private Boolean isFamous;
 
-    @Column(name = "preview-img")
+    @Column(name = "preview_img")
     private String previewImg;
 }

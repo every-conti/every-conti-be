@@ -4,13 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import my.everyconti.every_conti.common.entity.NowTimeForJpa;
-import my.everyconti.every_conti.modules.auth.domain.Role;
 import my.everyconti.every_conti.modules.song.domain.PraiseTeam;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -54,4 +51,8 @@ public class Member extends NowTimeForJpa {
     @OneToOne
     @JoinColumn(name = "praise_team")
     private PraiseTeam praiseTeam;
+
+    @OneToMany(mappedBy = "following", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<MemberFollow> following;
+
 }
