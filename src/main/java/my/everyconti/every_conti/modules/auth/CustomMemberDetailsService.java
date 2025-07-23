@@ -2,7 +2,7 @@ package my.everyconti.every_conti.modules.auth;
 
 import lombok.RequiredArgsConstructor;
 import my.everyconti.every_conti.modules.member.domain.Member;
-import my.everyconti.every_conti.modules.member.repository.MemberRepository;
+import my.everyconti.every_conti.modules.member.repository.member.MemberRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

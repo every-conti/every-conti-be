@@ -16,7 +16,7 @@ import my.everyconti.every_conti.modules.member.dto.MemberDto;
 import my.everyconti.every_conti.modules.member.dto.MemberFollowDto;
 import my.everyconti.every_conti.modules.member.dto.SignUpDto;
 import my.everyconti.every_conti.modules.member.repository.MemberFollowRepository;
-import my.everyconti.every_conti.modules.member.repository.MemberRepository;
+import my.everyconti.every_conti.modules.member.repository.member.MemberRepository;
 import my.everyconti.every_conti.modules.redis.RedisService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

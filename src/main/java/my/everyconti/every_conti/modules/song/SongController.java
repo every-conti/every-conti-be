@@ -6,6 +6,7 @@ import my.everyconti.every_conti.common.dto.response.CommonResponseDto;
 import my.everyconti.every_conti.modules.song.dto.request.CreateSongDto;
 import my.everyconti.every_conti.modules.song.dto.request.SearchSongDto;
 import my.everyconti.every_conti.modules.song.dto.response.*;
+import my.everyconti.every_conti.modules.song.dto.response.song.SongWithPraiseTeamDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -42,6 +43,11 @@ public class SongController {
     @GetMapping("/search-properties")
     public ResponseEntity<SearchPropertiesDto> getSearchProperties(){
         return ResponseEntity.ok(songService.getSearchProperties());
+    }
+
+    @GetMapping("/lasts")
+    public ResponseEntity<List<SongWithPraiseTeamDto>> getLastFourSongs(){
+        return ResponseEntity.ok(songService.getLastFourSongs());
     }
 //    @GetMapping("/praiseTeams")
 //    public ResponseEntity<List<PraiseTeamDto>> getPraiseTeamLists(){

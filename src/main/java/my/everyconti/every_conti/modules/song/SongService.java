@@ -18,11 +18,12 @@ import my.everyconti.every_conti.modules.bible.repository.BibleChapterRepository
 import my.everyconti.every_conti.modules.bible.repository.BibleRepository;
 import my.everyconti.every_conti.modules.bible.repository.BibleVerseRepository;
 import my.everyconti.every_conti.modules.member.domain.Member;
-import my.everyconti.every_conti.modules.member.repository.MemberRepository;
+import my.everyconti.every_conti.modules.member.repository.member.MemberRepository;
 import my.everyconti.every_conti.modules.song.domain.*;
 import my.everyconti.every_conti.modules.song.dto.request.CreateSongDto;
 import my.everyconti.every_conti.modules.song.dto.request.SearchSongDto;
 import my.everyconti.every_conti.modules.song.dto.response.*;
+import my.everyconti.every_conti.modules.song.dto.response.song.SongWithPraiseTeamDto;
 import my.everyconti.every_conti.modules.song.repository.PraiseTeamRepository;
 import my.everyconti.every_conti.modules.song.repository.SeasonRepository;
 import my.everyconti.every_conti.modules.song.repository.song.SongRepository;
@@ -196,6 +197,11 @@ public class SongService {
     public CommonResponseDto<String> deleteSong(Long innerSongId) {
         songRepository.deleteById(innerSongId);
         return new CommonResponseDto<>(true, ResponseMessage.DELETED);
+    }
+
+    public List<SongWithPraiseTeamDto> getLastFourSongs(){
+        List<Song> lastSongs = songRepository.findLastSongsWithPraiseTeam(4);
+        return lastSongs.stream().map(s -> new SongWithPraiseTeamDto(s, hashIdUtil)).toList();
     }
 
     public SearchPropertiesDto getSearchProperties(){

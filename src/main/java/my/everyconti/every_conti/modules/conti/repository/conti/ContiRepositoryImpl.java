@@ -113,23 +113,26 @@ public class ContiRepositoryImpl implements ContiRepositoryCustom {
         QMember member = QMember.member;
         QPraiseTeam praiseTeam = QPraiseTeam.praiseTeam;
 
-        List<Conti> contis = queryFactory.selectFrom(conti)
+        List<Long> lastContiIds = queryFactory
+                .select(conti.id)
+                .from(conti)
+                .join(conti.creator, member)
+                .join(member.praiseTeam, praiseTeam)
+                .where(praiseTeam.isFamous.isTrue())
+                .groupBy(praiseTeam.id)
+                .select(conti.id.max()) // 또는 order by + limit if dialect supports
+                .fetch();
+
+        if (lastContiIds.isEmpty()) throw new NotFoundException(ResponseMessage.notFoundMessage("콘티"));
+
+        // 본 쿼리에서는 해당 ID들만 가져오고 필요한 데이터 fetchJoin
+        return queryFactory
+                .selectFrom(conti)
                 .leftJoin(conti.contiSongs, contiSong).fetchJoin()
                 .leftJoin(contiSong.song).fetchJoin()
                 .leftJoin(conti.creator, member).fetchJoin()
                 .leftJoin(member.praiseTeam, praiseTeam).fetchJoin()
-                .where(
-                        praiseTeam.isFamous.eq(true)
-                                .and(conti.date.eq(
-                                        JPAExpressions
-                                                .select(contiSub.date.max())
-                                                .from(contiSub)
-                                                .where(contiSub.creator.praiseTeam.id.eq(praiseTeam.id)) // 중요
-                                ))
-                )
-                .distinct()
+                .where(conti.id.in(lastContiIds))
                 .fetch();
-        if (contis.isEmpty()) throw new NotFoundException(ResponseMessage.notFoundMessage("콘티"));
-        return contis;
     }
 }

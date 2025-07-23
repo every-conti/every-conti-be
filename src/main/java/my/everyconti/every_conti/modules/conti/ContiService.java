@@ -17,7 +17,7 @@ import my.everyconti.every_conti.modules.conti.dto.response.PraiseTeamContiDto;
 import my.everyconti.every_conti.modules.conti.repository.conti.ContiRepository;
 import my.everyconti.every_conti.modules.conti.repository.ContiSongRepository;
 import my.everyconti.every_conti.modules.member.domain.Member;
-import my.everyconti.every_conti.modules.member.repository.MemberRepository;
+import my.everyconti.every_conti.modules.member.repository.member.MemberRepository;
 import my.everyconti.every_conti.modules.song.domain.PraiseTeam;
 import my.everyconti.every_conti.modules.song.domain.Song;
 import my.everyconti.every_conti.modules.song.dto.response.PraiseTeamDto;

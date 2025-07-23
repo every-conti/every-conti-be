@@ -9,7 +9,7 @@ import my.everyconti.every_conti.modules.auth.dto.AccessTokenDto;
 import my.everyconti.every_conti.modules.auth.dto.LoginDto;
 import my.everyconti.every_conti.modules.auth.dto.LoginTokenDto;
 import my.everyconti.every_conti.modules.member.domain.Member;
-import my.everyconti.every_conti.modules.member.repository.MemberRepository;
+import my.everyconti.every_conti.modules.member.repository.member.MemberRepository;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
