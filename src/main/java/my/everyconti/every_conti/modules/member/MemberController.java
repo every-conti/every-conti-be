@@ -19,15 +19,14 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @PostMapping("/")
+    @PostMapping("")
     public ResponseEntity<MemberDto> signUp(@Valid @RequestBody SignUpDto signUpDto){
         return ResponseEntity.ok(memberService.signUp(signUpDto));
     }
 
-    @GetMapping("/{email}")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<MemberDto> getMemberWithRoles(@PathVariable String email) {
-        return ResponseEntity.ok(memberService.getMemberWithRoles(email));
+    @GetMapping("/me")
+    public ResponseEntity<MemberDto> getMemberWithRoles() {
+        return ResponseEntity.ok(memberService.getMemberWithRoles());
     }
 
     @PostMapping("/{memberId}/follow")

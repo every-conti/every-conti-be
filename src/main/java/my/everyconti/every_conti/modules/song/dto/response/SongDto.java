@@ -2,6 +2,7 @@ package my.everyconti.every_conti.modules.song.dto.response;
 
 import lombok.*;
 import my.everyconti.every_conti.common.utils.HashIdUtil;
+import my.everyconti.every_conti.constant.song.SongKey;
 import my.everyconti.every_conti.constant.song.SongTempo;
 import my.everyconti.every_conti.constant.song.SongType;
 import my.everyconti.every_conti.modules.bible.dto.response.BibleChapterDto;
@@ -43,6 +44,10 @@ public class SongDto {
 
     private SeasonDto season;
 
+    private SongKey key;
+
+    private Integer duration;
+
     private BibleDto bible;
 
     private BibleChapterDto bibleChapter;
@@ -64,6 +69,8 @@ public class SongDto {
                 .collect(Collectors.toList());
         tempo = song.getTempo();
         season = song.getSeason() == null ? null : new SeasonDto(song.getSeason(), hashIdUtil);
+        key = song.getKey();
+        duration = song.getDuration();
         bible = song.getBible() == null ? null : new BibleDto(song.getBible(), hashIdUtil);
         bibleChapter = song.getBibleChapter() == null ? null : new BibleChapterDto(song.getBibleChapter(), hashIdUtil);
         bibleVerse = song.getBibleVerse() == null ? null : new BibleVerseDto(song.getBibleVerse(), hashIdUtil);

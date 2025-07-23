@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -63,11 +64,13 @@ public class MemberService {
         return new MemberDto(newMember, hashIdUtil);
     }
 
-    public MemberDto getMemberWithRoles(String email) {
-        // 본인/admin인지 확인
-        SecurityUtil.userMatchOrAdmin(email);
+    public MemberDto getMemberWithRoles() {
+        Optional<String> email = SecurityUtil.getCurrentUsername();
+        if (email.isEmpty() || email.get().equals("anonymousUser")) {
+            return null;
+        }
 
-        Member member = memberRepository.findOneWithRolesByEmail(email).orElseThrow();
+        Member member = memberRepository.findOneWithRolesByEmail(email.get()).orElseThrow();
 
         return new MemberDto(member, hashIdUtil);
     }
@@ -85,8 +88,7 @@ public class MemberService {
                 .followed(followedMember)
                 .build();
 
-        MemberFollowDto result = new MemberFollowDto(memberFollowRepository.save(followRelationship), hashIdUtil);
-        return result;
+        return new MemberFollowDto(memberFollowRepository.save(followRelationship), hashIdUtil);
     }
 
     public List<MemberFollowDto> getFollowingMembers(){

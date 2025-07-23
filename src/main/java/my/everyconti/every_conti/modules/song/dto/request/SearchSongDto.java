@@ -1,6 +1,7 @@
 package my.everyconti.every_conti.modules.song.dto.request;
 
 import lombok.*;
+import my.everyconti.every_conti.constant.song.SongKey;
 import my.everyconti.every_conti.constant.song.SongTempo;
 import my.everyconti.every_conti.constant.song.SongType;
 
@@ -18,6 +19,8 @@ public class SearchSongDto {
     private List<String> themeIds;;
     private SongTempo tempo;
     private String seasonId;
+    private SongKey key;
+    private Integer duration;
     private String bibleId;
     private String bibleChapterId;
     private String bibleVerseId;

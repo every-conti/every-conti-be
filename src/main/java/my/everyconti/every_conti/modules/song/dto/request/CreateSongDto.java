@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import my.everyconti.every_conti.constant.song.SongKey;
 import my.everyconti.every_conti.constant.song.SongTempo;
 import my.everyconti.every_conti.constant.song.SongType;
 
@@ -50,6 +51,10 @@ public class CreateSongDto {
     private SongTempo tempo;
 
     private String seasonId;
+
+    private SongKey key;
+
+    private Integer duration;
 
     private String bibleId;
 

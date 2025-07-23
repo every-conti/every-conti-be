@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import my.everyconti.every_conti.common.entity.NowTimeForJpa;
+import my.everyconti.every_conti.constant.song.SongKey;
 import my.everyconti.every_conti.constant.song.SongTempo;
 import my.everyconti.every_conti.constant.song.SongType;
 import my.everyconti.every_conti.modules.bible.domain.Bible;
@@ -72,6 +73,12 @@ public class Song extends NowTimeForJpa {
     @ManyToOne
     @JoinColumn(name = "season_id")
     private Season season;
+
+    @Column(name = "key")
+    private SongKey key;
+
+    @Column(name = "duration")
+    private Integer duration;
 
     @ManyToOne
     @JoinColumn(name = "bible_id")

@@ -4,5 +4,5 @@ public enum SongType {
     CCM,
     HYMN,
     HYMN_REMAKE,
-    GOSPEL;
+    CHILDREN;
 }
