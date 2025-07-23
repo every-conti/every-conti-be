@@ -46,7 +46,7 @@ public class Song extends NowTimeForJpa {
     @Enumerated(EnumType.STRING)
     private SongType songType;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "praise_team_id")
     private PraiseTeam praiseTeam;
 
@@ -55,7 +55,7 @@ public class Song extends NowTimeForJpa {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator")
     private Member creator;
 
@@ -70,7 +70,7 @@ public class Song extends NowTimeForJpa {
     @Enumerated(EnumType.STRING)
     private SongTempo tempo;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "season_id")
     private Season season;
 
@@ -80,18 +80,18 @@ public class Song extends NowTimeForJpa {
     @Column(name = "duration")
     private Integer duration;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bible_id")
     private Bible bible;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bible_chapter_id")
     private BibleChapter bibleChapter;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bible_verse_id")
     private BibleVerse bibleVerse;
 
-    @OneToMany(mappedBy = "song", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "song", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<ContiSong> contis;
 }

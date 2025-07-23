@@ -1,11 +1,14 @@
 package my.everyconti.every_conti.modules.song.dto.response.song;
 
+import lombok.Getter;
+import lombok.Setter;
 import my.everyconti.every_conti.common.utils.HashIdUtil;
 import my.everyconti.every_conti.constant.song.SongType;
 import my.everyconti.every_conti.modules.song.domain.Song;
 import my.everyconti.every_conti.modules.song.dto.response.PraiseTeamDto;
 
-
+@Getter
+@Setter
 public class SongWithPraiseTeamDto {
     private String id;
     private String songName;
