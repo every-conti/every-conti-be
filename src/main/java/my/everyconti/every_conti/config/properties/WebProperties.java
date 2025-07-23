@@ -9,7 +9,7 @@ import java.util.List;
 
 @Getter
 @Setter
-@ConfigurationProperties(prefix = "web.cors.origin")
+@ConfigurationProperties(prefix = "web.cors")
 public class WebProperties {
-    private List<String> corsOrigins;
+    private List<String> origins;
 }

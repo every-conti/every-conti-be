@@ -1,5 +1,6 @@
 package my.everyconti.every_conti.modules.conti.repository.conti;
 
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
@@ -98,6 +99,34 @@ public class ContiRepositoryImpl implements ContiRepositoryCustom {
                 .leftJoin(conti.creator, member).fetchJoin()
                 .leftJoin(member.praiseTeam, praiseTeam).fetchJoin()
                 .where(praiseTeam.id.eq(praiseTeamId))
+                .distinct()
+                .fetch();
+        if (contis.isEmpty()) throw new NotFoundException(ResponseMessage.notFoundMessage("콘티"));
+        return contis;
+    }
+
+    @Override
+    public List<Conti> findLastContiOfFamousPraiseTeams(){
+        QConti conti = QConti.conti;
+        QContiSong contiSong = QContiSong.contiSong;
+        QConti contiSub = new QConti("contiSub");
+        QMember member = QMember.member;
+        QPraiseTeam praiseTeam = QPraiseTeam.praiseTeam;
+
+        List<Conti> contis = queryFactory.selectFrom(conti)
+                .leftJoin(conti.contiSongs, contiSong).fetchJoin()
+                .leftJoin(contiSong.song).fetchJoin()
+                .leftJoin(conti.creator, member).fetchJoin()
+                .leftJoin(member.praiseTeam, praiseTeam).fetchJoin()
+                .where(
+                        praiseTeam.isFamous.eq(true)
+                                .and(conti.date.eq(
+                                        JPAExpressions
+                                                .select(contiSub.date.max())
+                                                .from(contiSub)
+                                                .where(contiSub.creator.praiseTeam.id.eq(praiseTeam.id)) // 중요
+                                ))
+                )
                 .distinct()
                 .fetch();
         if (contis.isEmpty()) throw new NotFoundException(ResponseMessage.notFoundMessage("콘티"));

@@ -1,10 +1,12 @@
 package my.everyconti.every_conti.modules.auth;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import my.everyconti.every_conti.common.exception.types.UnAuthorizationException;
-import my.everyconti.every_conti.constant.ResponseMessage;
+
+import my.everyconti.every_conti.common.dto.response.CommonResponseDto;
 import my.everyconti.every_conti.constant.jwt.JwtTimeout;
 import my.everyconti.every_conti.modules.auth.dto.AccessTokenDto;
+import my.everyconti.every_conti.modules.auth.dto.AccessTokenResponseDto;
 import my.everyconti.every_conti.modules.auth.dto.LoginDto;
 import my.everyconti.every_conti.modules.auth.dto.LoginTokenDto;
 import org.springframework.http.HttpHeaders;
@@ -36,10 +38,28 @@ public class AuthController {
     }
 
     @GetMapping("token")
-    public ResponseEntity<AccessTokenDto> getNewAccessToken(@CookieValue(value = "refreshToken") String token) {
+    public ResponseEntity<AccessTokenResponseDto> getNewAccessToken(@CookieValue(value = "refreshToken", required = false) String token) {
         if (token == null || token.isBlank()) {
-            throw new UnAuthorizationException(ResponseMessage.UN_AUTHORIZED);
+            return ResponseEntity.ok(new AccessTokenResponseDto(null, false));
         }
-        return ResponseEntity.ok(authService.parseTokenAndGetNewToken(token));
+        AccessTokenDto accessTokenDto = authService.parseTokenAndGetNewToken(token);
+
+        return ResponseEntity.ok(new AccessTokenResponseDto(accessTokenDto.getAccessToken(), true));
+    }
+
+    @PostMapping("logout")
+    public ResponseEntity<CommonResponseDto> logout(HttpServletResponse response) {
+        ResponseCookie deleteCookie = ResponseCookie.from("refreshToken", "")
+                .httpOnly(true)
+                .secure(true) // HTTPS 환경일 경우 true
+                .path("/")    // 쿠키의 경로 설정, 설정했던 경로와 일치해야 삭제됨
+                .maxAge(0)    // 즉시 만료
+                .sameSite("Strict") // 필요시 Lax, None 등으로 조정
+                .build();
+
+        // 응답 헤더에 Set-Cookie 추가
+        response.addHeader("Set-Cookie", deleteCookie.toString());
+
+        return ResponseEntity.ok(new CommonResponseDto(true, "로그아웃 완료"));
     }
 }

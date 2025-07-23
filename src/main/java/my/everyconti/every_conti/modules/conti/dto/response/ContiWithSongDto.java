@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import my.everyconti.every_conti.common.utils.HashIdUtil;
 import my.everyconti.every_conti.modules.conti.domain.Conti;
-import my.everyconti.every_conti.modules.song.dto.response.PraiseTeamDto;
+import my.everyconti.every_conti.modules.song.dto.response.SongSimpleDto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,19 +17,19 @@ import java.util.stream.Collectors;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ContiSimpleDto {
+public class ContiWithSongDto {
     private String id;
     private String title;
     private LocalDate date;
-    private List<ContiSongSimpleDto> contiSongs;
+    private List<SongSimpleDto> songs;
     private String creatorId;
     private LocalDateTime createdAt;
 
-    public ContiSimpleDto(Conti conti, HashIdUtil hashIdUtil) {
+    public ContiWithSongDto(Conti conti, HashIdUtil hashIdUtil) {
         this.id = hashIdUtil.encode(conti.getId());
         this.title = conti.getTitle();
         this.date = conti.getDate();
-        this.contiSongs = conti.getContiSongs() == null ? null : conti.getContiSongs().stream().map(s -> new ContiSongSimpleDto(s, hashIdUtil)).collect(Collectors.toList());
+        this.songs = conti.getContiSongs() == null ? null : conti.getContiSongs().stream().map(cs -> new SongSimpleDto(cs.getSong(), cs.getOrderIndex(), hashIdUtil)).collect(Collectors.toList());
         this.creatorId = hashIdUtil.encode(conti.getCreator().getId());
         this.createdAt = conti.getCreatedAt();
     }
@@ -40,7 +40,7 @@ public class ContiSimpleDto {
                 "id='" + id + '\'' +
                 ", title='" + title + '\'' +
                 ", date=" + date +
-                ", contiSongs=" + contiSongs +
+                ", songs=" + songs +
                 ", creatorId='" + creatorId + '\'' +
                 ", createdAt=" + createdAt +
                 '}';

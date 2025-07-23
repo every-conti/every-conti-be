@@ -3,6 +3,9 @@ package my.everyconti.every_conti.modules.song.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import my.everyconti.every_conti.modules.conti.domain.Conti;
+
+import java.util.Set;
 
 @Entity
 @Getter

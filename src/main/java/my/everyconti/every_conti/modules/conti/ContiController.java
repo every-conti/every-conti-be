@@ -6,6 +6,7 @@ import my.everyconti.every_conti.common.dto.response.CommonResponseDto;
 import my.everyconti.every_conti.modules.conti.dto.request.CreateContiDto;
 import my.everyconti.every_conti.modules.conti.dto.request.UpdateContiOrderDto;
 import my.everyconti.every_conti.modules.conti.dto.response.ContiSimpleDto;
+import my.everyconti.every_conti.modules.conti.dto.response.PraiseTeamContiDto;
 import my.everyconti.every_conti.modules.song.dto.response.PraiseTeamDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -49,13 +50,18 @@ public class ContiController {
         return ResponseEntity.ok(contiService.updateContiOrder(contiId, updateContiOrderDto));
     }
 
-    @GetMapping("/praise-teams/famous")
-    public ResponseEntity<List<PraiseTeamDto>> getFamousPraiseTeamLists(){
-        return ResponseEntity.ok(contiService.getFamousPraiseTeamLists());
+    @GetMapping("/praise-teams/famous/last-conti")
+    public ResponseEntity<List<PraiseTeamContiDto>> getFamousPraiseTeamsLastConti(){
+        return ResponseEntity.ok(contiService.getFamousPraiseTeamsLastConti());
     }
 
-    @GetMapping("/praise-teams/{praiseTeamId}/contis")
-    public ResponseEntity<List<ContiSimpleDto>> getContiListsByPraiseTeam(@PathVariable String praiseTeamId){
-        return ResponseEntity.ok(contiService.getContiListsByPraiseTeam(praiseTeamId));
-    }
+//    @GetMapping("/praise-teams/famous")
+//    public ResponseEntity<List<PraiseTeamDto>> getFamousPraiseTeamLists(){
+//        return ResponseEntity.ok(contiService.getFamousPraiseTeamLists());
+//    }
+//
+//    @GetMapping("/praise-teams/{praiseTeamId}/contis")
+//    public ResponseEntity<List<ContiSimpleDto>> getContiListsByPraiseTeam(@PathVariable String praiseTeamId){
+//        return ResponseEntity.ok(contiService.getContiListsByPraiseTeam(praiseTeamId));
+//    }
 }

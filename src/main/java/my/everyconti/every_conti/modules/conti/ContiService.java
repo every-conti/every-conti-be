@@ -12,6 +12,8 @@ import my.everyconti.every_conti.modules.conti.domain.*;
 import my.everyconti.every_conti.modules.conti.dto.request.CreateContiDto;
 import my.everyconti.every_conti.modules.conti.dto.request.UpdateContiOrderDto;
 import my.everyconti.every_conti.modules.conti.dto.response.ContiSimpleDto;
+import my.everyconti.every_conti.modules.conti.dto.response.ContiWithSongDto;
+import my.everyconti.every_conti.modules.conti.dto.response.PraiseTeamContiDto;
 import my.everyconti.every_conti.modules.conti.repository.conti.ContiRepository;
 import my.everyconti.every_conti.modules.conti.repository.ContiSongRepository;
 import my.everyconti.every_conti.modules.member.domain.Member;
@@ -25,7 +27,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -132,6 +133,18 @@ public class ContiService {
 
         contiRepository.delete(conti);
         return new CommonResponseDto<>(true, ResponseMessage.DELETED);
+    }
+
+    public List<PraiseTeamContiDto> getFamousPraiseTeamsLastConti(){
+        List<Conti> lastContiOfFamousPraiseTeams = contiRepository.findLastContiOfFamousPraiseTeams();
+        List<PraiseTeamContiDto> contis =  lastContiOfFamousPraiseTeams.stream().map(c ->
+                PraiseTeamContiDto.builder()
+                    .praiseTeam(new PraiseTeamDto(c.getCreator().getPraiseTeam(), hashIdUtil))
+                    .conti(new ContiWithSongDto(c, hashIdUtil))
+                    .build())
+                .toList();
+
+        return contis;
     }
 
     public List<PraiseTeamDto> getFamousPraiseTeamLists(){

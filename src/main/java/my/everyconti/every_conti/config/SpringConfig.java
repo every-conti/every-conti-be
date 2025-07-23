@@ -12,6 +12,7 @@ import my.everyconti.every_conti.constant.role.RoleType;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -53,8 +54,8 @@ public class SpringConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(webProperties.getCorsOrigins());
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH"));
+        configuration.setAllowedOrigins(webProperties.getOrigins());
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
 
@@ -100,13 +101,16 @@ public class SpringConfig {
                             // song
                             .requestMatchers("/api/song/lists", "/api/song/search", "api/song/search-properties").permitAll()
                             // conti
-                            .requestMatchers("/api/conti/{contiId}").permitAll()
+                            .requestMatchers("/api/conti/{contiId}", "/api/praise-teams/last-conti").permitAll()
                             // bible
                             .requestMatchers("/api/bible/").hasAuthority(RoleType.ROLE_ADMIN.toString())
 
 
                             // dev(html)
                              .requestMatchers("**").permitAll()
+
+                            // preflight 허용
+                            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                             // etc
                             .anyRequest().hasAnyAuthority(RoleType.ROLE_ADMIN.toString(), RoleType.ROLE_USER.toString())
                 )
