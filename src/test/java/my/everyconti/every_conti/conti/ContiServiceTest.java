@@ -53,12 +53,12 @@ public class ContiServiceTest {
 //        System.out.println(contiService.getFamousPraiseTeamLists());
 //    }
 
-    @Test
-    public void getPraiseTeamContiLists(){
-        System.out.println("3 = " + hashIdUtil.encode(3L));
-        System.out.println("4 = " + hashIdUtil.encode(4L));
-        System.out.println(contiService.getPraiseTeamContiLists("olejRejN"));
-    }
+//    @Test
+//    public void getPraiseTeamContiLists(){
+//        System.out.println("3 = " + hashIdUtil.encode(3L));
+//        System.out.println("4 = " + hashIdUtil.encode(4L));
+//        System.out.println(contiService.getPraiseTeamContiLists("olejRejN"));
+//    }
 
 //    @Test
 //    public void getContiDetail(){

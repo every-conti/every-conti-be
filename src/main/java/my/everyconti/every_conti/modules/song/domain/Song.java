@@ -50,17 +50,12 @@ public class Song extends NowTimeForJpa {
     @JoinColumn(name = "praise_team_id")
     private PraiseTeam praiseTeam;
 
-    @JsonIgnore
-    @CreatedDate
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator")
     private Member creator;
 
-    @OneToMany(mappedBy = "song", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<SongSongTheme> songThemes;
+    @Column(name = "thumbnail")
+    private String thumbnail;
 
     /*
     --------Sub columns--------
@@ -74,11 +69,6 @@ public class Song extends NowTimeForJpa {
     @JoinColumn(name = "season_id")
     private Season season;
 
-    @Column(name = "key")
-    private SongKey key;
-
-    @Column(name = "duration")
-    private Integer duration;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bible_id")
@@ -94,4 +84,25 @@ public class Song extends NowTimeForJpa {
 
     @OneToMany(mappedBy = "song", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<ContiSong> contis;
+
+    /*
+    --------auto columns--------
+     */
+
+    @JsonIgnore
+    @CreatedDate
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+    // youtube api
+    @Column(name = "duration")
+    private String duration;
+
+    // api
+    @Column(name = "key")
+    private SongKey key;
+
+    // llm api?
+    @OneToMany(mappedBy = "song", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<SongSongTheme> songThemes;
 }

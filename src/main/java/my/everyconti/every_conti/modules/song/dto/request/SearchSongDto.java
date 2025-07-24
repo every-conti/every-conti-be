@@ -19,7 +19,7 @@ public class SearchSongDto {
     private List<String> themeIds;;
     private SongTempo tempo;
     private String seasonId;
-    private SongKey key;
+    private SongKey songKey;
     private Integer duration;
     private String bibleId;
     private String bibleChapterId;

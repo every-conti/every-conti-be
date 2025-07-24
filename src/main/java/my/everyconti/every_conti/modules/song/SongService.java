@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import my.everyconti.every_conti.common.dto.response.CommonResponseDto;
 import my.everyconti.every_conti.common.utils.HashIdUtil;
 import my.everyconti.every_conti.constant.ResponseMessage;
+import my.everyconti.every_conti.constant.song.SongKey;
 import my.everyconti.every_conti.constant.song.SongTempo;
 import my.everyconti.every_conti.constant.song.SongType;
 import my.everyconti.every_conti.modules.bible.BibleService;
@@ -59,8 +60,7 @@ public class SongService {
         PraiseTeam team = praiseTeamRepository.findById(hashIdUtil.decode(createSongDto.getPraiseTeamId()))
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 찬양팀입니다"));
 
-        List<SongTheme> themes = songThemeRepository.findAllById(createSongDto.getThemeIds().stream().map(hashIdUtil::decode).toList());
-
+        List<SongTheme> themes = null;
         Bible bible = null;
         BibleChapter bibleChapter = null;
         BibleVerse bibleVerse = null;
@@ -79,6 +79,9 @@ public class SongService {
             season = seasonRepository.findById(hashIdUtil.decode(createSongDto.getSeasonId()))
                     .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 절기입니다"));
         }
+        if (createSongDto.getThemeIds() != null){
+            themes = songThemeRepository.findAllById(createSongDto.getThemeIds().stream().map(hashIdUtil::decode).toList());
+        }
 
         Song song = Song.builder()
                 .songName(createSongDto.getSongName())
@@ -92,102 +95,26 @@ public class SongService {
                 .bible(bible)
                 .bibleChapter(bibleChapter)
                 .bibleVerse(bibleVerse)
+                .thumbnail(createSongDto.getThumbnail())
                 .build();
 
         // 중간 테이블 매핑
-        Set<SongSongTheme> songThemes = themes.stream()
-                .map(theme -> SongSongTheme.builder().song(song).songTheme(theme).build())
-                .collect(Collectors.toSet());
+        if (themes.size() > 0){
+            Set<SongSongTheme> songThemes = themes.stream()
+                    .map(theme -> SongSongTheme.builder().song(song).songTheme(theme).build())
+                    .collect(Collectors.toSet());
 
-        song.setSongThemes(songThemes);
+            song.setSongThemes(songThemes);
+        }
+
 
         Song result = songRepository.save(song);
         return new SongDto(result, hashIdUtil);
     }
 
     public List<SongDto> searchSong(SearchSongDto searchSongDto) {
-        String text = searchSongDto.getText();
+        List<Song> resultList = songRepository.findSongsWithSearchParams(searchSongDto, hashIdUtil);
 
-        SongType songType = searchSongDto.getSongType();
-        String praiseTeamId = searchSongDto.getPraiseTeamId();
-        List<String> themeIds = searchSongDto.getThemeIds();
-        String seasonId = searchSongDto.getSeasonId();
-        SongTempo tempo = searchSongDto.getTempo();
-        String bibleId = searchSongDto.getBibleId();
-        String bibleChapterId = searchSongDto.getBibleChapterId();
-        String bibleVerseId = searchSongDto.getBibleVerseId();
-        Integer offset = searchSongDto.getOffset() != null ? searchSongDto.getOffset() : 0;
-
-        QSong song = QSong.song;
-        BooleanBuilder builder = new BooleanBuilder();
-
-        if (text != null && !text.isBlank()) {
-            builder.and(song.songName.containsIgnoreCase(text)
-                    .or(song.lyrics.containsIgnoreCase(text)));
-        }
-
-        if (songType != null) {
-            builder.and(song.songType.eq(songType));
-        }
-
-        if (praiseTeamId != null && !praiseTeamId.isBlank()) {
-            builder.and(song.praiseTeam.id.eq(hashIdUtil.decode(praiseTeamId)));
-        }
-
-        if (seasonId != null && !seasonId.isBlank()) {
-            builder.and(song.season.id.eq(hashIdUtil.decode(seasonId)));
-        }
-
-        if (tempo != null) {
-            builder.and(song.tempo.eq(tempo));
-        }
-
-        if (bibleId != null && !bibleId.isBlank()) {
-            System.out.println("bibleId 있음 처리");
-            builder.and(song.bible.id.eq(hashIdUtil.decode(bibleId)));
-        }
-
-        if (bibleChapterId != null && !bibleChapterId.isBlank()) {
-            builder.and(song.bibleChapter.id.eq(hashIdUtil.decode(bibleChapterId)));
-        }
-
-        if (bibleVerseId != null && !bibleVerseId.isBlank()) {
-            builder.and(song.bibleVerse.id.eq(hashIdUtil.decode(bibleVerseId)));
-        }
-
-        JPAQuery<Song> query = queryFactory
-                .selectFrom(song)
-                .leftJoin(song.creator).fetchJoin()
-                .leftJoin(song.praiseTeam).fetchJoin()
-                .leftJoin(song.season).fetchJoin()
-                .leftJoin(song.songThemes, QSongSongTheme.songSongTheme).fetchJoin()
-                .leftJoin(QSongSongTheme.songSongTheme.songTheme).fetchJoin()
-                .distinct();
-
-        if (themeIds != null && !themeIds.isEmpty()) {
-            Set<Long> themeIdLongs = new HashSet<>(themeIds.stream().map(hashIdUtil::decode).toList());
-
-            QSongSongTheme songSongTheme = QSongSongTheme.songSongTheme;
-            QSongTheme songTheme = QSongTheme.songTheme;
-
-            List<Long> matchedSongIds = queryFactory
-                    .select(song.id)
-                    .from(song)
-                    .leftJoin(song.songThemes, songSongTheme)
-                    .leftJoin(songSongTheme.songTheme, songTheme)
-                    .where(songTheme.id.in(themeIdLongs))
-                    .groupBy(song.id)
-                    .having(songTheme.id.countDistinct().eq((long) themeIdLongs.size()))
-                    .fetch();
-
-            query.where(song.id.in(matchedSongIds));
-        }
-
-        List<Song> resultList = query
-                .where(builder)
-                .offset(offset != null ? offset : 0)
-                .limit(20)
-                .fetch();
         return resultList.stream()
                 .map(s -> new SongDto(s, hashIdUtil))
                 .collect(Collectors.toList());
@@ -212,6 +139,7 @@ public class SongService {
                 .songThemes(getSongThemeLists())
                 .songTypes(List.of(SongType.values()))
                 .songTempos(List.of(SongTempo.values()))
+                .songKeys(List.of(SongKey.values()))
                 .bibles(bibleService.getBibleLists())
                 .build();
     }

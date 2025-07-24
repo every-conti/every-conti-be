@@ -12,9 +12,10 @@ import my.everyconti.every_conti.modules.song.dto.response.PraiseTeamDto;
 public class SongWithPraiseTeamDto {
     private String id;
     private String songName;
-    private Integer duration;
+    private String duration;
     private SongType songType;
     private PraiseTeamDto praiseTeam;
+    private String thumbnail;
 
     public SongWithPraiseTeamDto(Song song, HashIdUtil hashIdUtil) {
         id = hashIdUtil.encode(song.getId());
@@ -22,5 +23,6 @@ public class SongWithPraiseTeamDto {
         duration = song.getDuration();
         songType = song.getSongType();
         praiseTeam = song.getPraiseTeam() == null ? null : new PraiseTeamDto(song.getPraiseTeam(), hashIdUtil);
+        thumbnail = song.getThumbnail();
     }
 }

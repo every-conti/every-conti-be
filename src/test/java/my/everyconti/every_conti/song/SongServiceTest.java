@@ -39,6 +39,7 @@ public class SongServiceTest {
                         "목소리 높여서 하나님 찬양해\n" +
                         "모든 만물이 주 찬양해")
                 .reference("https://www.youtube.com/watch?v=SB1QslVtedo&list=RDSB1QslVtedo&start_radio=1")
+                .thumbnail("https://img.youtube.com/vi/SB1QslVtedo/0.jpg")
                 .songType(SongType.CCM)
                 .tempo(SongTempo.FAST)
                 .themeIds(themeIds)
@@ -46,7 +47,7 @@ public class SongServiceTest {
                 .praiseTeamId(hashIdUtil.encode(1L))
                 .bibleId(hashIdUtil.encode(3L))
                 .bibleChapterId(hashIdUtil.encode(201L))
-                .bibleVerseId(hashIdUtil.encode(1L))
+//                .bibleVerseId(hashIdUtil.encode(1L))
                 .build();
 
         SongDto result = songService.createSong(dto);

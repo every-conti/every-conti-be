@@ -1,6 +1,7 @@
 package my.everyconti.every_conti.modules.song.dto.response;
 
 import lombok.*;
+import my.everyconti.every_conti.constant.song.SongKey;
 import my.everyconti.every_conti.constant.song.SongTempo;
 import my.everyconti.every_conti.constant.song.SongType;
 import my.everyconti.every_conti.modules.bible.dto.response.BibleDto;
@@ -19,4 +20,5 @@ public class SearchPropertiesDto {
     private List<SongType> songTypes;
     private List<SongTempo> songTempos;
     private List<BibleDto> bibles;
+    private List<SongKey> songKeys;
 }

@@ -42,12 +42,14 @@ public class CreateSongDto {
     @NotNull(message = "찬양팀 아이디는 필수입니다.")
     private String praiseTeamId;
 
-    @NotEmpty(message = "themeIds는 비어 있을 수 없습니다.")
-    private List<String> themeIds;;
+    @NotNull(message = "썸네일은 필수입니다.")
+    private String thumbnail;
 
     /*
     --------Sub columns--------
      */
+    private List<String> themeIds;;
+
     private SongTempo tempo;
 
     private String seasonId;
@@ -61,7 +63,6 @@ public class CreateSongDto {
     private String bibleChapterId;
 
     private String bibleVerseId;
-
 //
 //    @Override
 //    public String toString() {

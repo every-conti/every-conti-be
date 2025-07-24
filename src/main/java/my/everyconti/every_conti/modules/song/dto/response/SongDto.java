@@ -40,13 +40,15 @@ public class SongDto {
     /*
     --------Sub columns--------
      */
+    private String thumbnail;
+
     private SongTempo tempo;
 
     private SeasonDto season;
 
-    private SongKey key;
+    private SongKey songKey;
 
-    private Integer duration;
+    private String duration;
 
     private BibleDto bible;
 
@@ -69,7 +71,8 @@ public class SongDto {
                 .collect(Collectors.toList());
         tempo = song.getTempo();
         season = song.getSeason() == null ? null : new SeasonDto(song.getSeason(), hashIdUtil);
-        key = song.getKey();
+        songKey = song.getKey();
+        thumbnail = song.getThumbnail();
         duration = song.getDuration();
         bible = song.getBible() == null ? null : new BibleDto(song.getBible(), hashIdUtil);
         bibleChapter = song.getBibleChapter() == null ? null : new BibleChapterDto(song.getBibleChapter(), hashIdUtil);
@@ -83,15 +86,16 @@ public class SongDto {
                 "songName='" + songName + '\'' +
                 ", lyrics='" + lyrics + '\'' +
                 ", reference='" + reference + '\'' +
-                ", songType=" + songType +
+                ", songType=" + songType + '\'' +
+                ", thumbnail=" + thumbnail + '\'' +
                 ", creator='" + creatorNickname + '\'' +
                 ", praiseTeam='" + praiseTeam.toString() + '\'' +
                 ", songThemes=" + songThemes.toString() + '\'' +
                 ", tempo=" + tempo  + '\'' +
                 ", season='" + (season != null ? season.toString() : "null") + '\'' +
                 ", bible='" + (bible == null ? "null" : bible.toString()) + '\'' +
-                ", bibleChapter=" + (bibleChapter == null ? "null" : bibleChapter.toString()) +
-                ", bibleVerse=" + (bibleVerse == null ? "null" : bibleVerse.toString()) + '\'';
+                ", bibleChapter=" + (bibleChapter == null ? "null" : bibleChapter.toString()) + '\'' +
+                ", bibleVerse=" + (bibleVerse == null ? "null" : bibleVerse.toString());
         if (season == null){
             string += "null";
         } else {

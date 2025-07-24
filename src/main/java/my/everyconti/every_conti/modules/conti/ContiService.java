@@ -76,7 +76,7 @@ public class ContiService {
         if (alreadyExists) {
             throw new AlreadyExistElementException(ResponseMessage.CONFLICT);
         }
-        Song song = songRepository.getSongByIdWithJoin(innerSongId);
+        Song song = songRepository.findSongByIdWithJoin(innerSongId);
 
         Integer nextOrder = conti.getContiSongs().stream()
                 .mapToInt(ContiSong::getOrderIndex)
