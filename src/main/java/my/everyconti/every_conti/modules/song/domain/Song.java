@@ -96,7 +96,7 @@ public class Song extends NowTimeForJpa {
 
     // youtube api
     @Column(name = "duration")
-    private String duration;
+    private Integer duration;
 
     // api
     @Column(name = "key")

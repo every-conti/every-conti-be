@@ -49,9 +49,8 @@ public class BibleService {
 
         List<BibleChapter> chapters = queryFactory
                 .selectFrom(bibleChapter)
-                .leftJoin(QBible.bible.chapters).fetchJoin()
                 .where(bibleChapter.bible.id.eq(hashIdUtil.decode(bibleId)))
-                .distinct()
+                .orderBy(bibleChapter.chapterNum.asc())
                 .fetch();
 
         return chapters.stream().map(ch ->
@@ -67,9 +66,8 @@ public class BibleService {
 
         List<BibleVerse> verses = queryFactory
                 .selectFrom(bibleVerse)
-                .leftJoin(QBible.bible.chapters).fetchJoin()
                 .where(bibleVerse.bibleChapter.id.eq(hashIdUtil.decode(chapterId)))
-                .distinct()
+                .orderBy(bibleVerse.verseNum.asc())
                 .fetch();
 
         return verses.stream().map(v ->

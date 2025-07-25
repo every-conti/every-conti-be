@@ -12,7 +12,7 @@ import my.everyconti.every_conti.modules.song.dto.response.PraiseTeamDto;
 public class SongWithPraiseTeamDto {
     private String id;
     private String songName;
-    private String duration;
+    private Integer duration;
     private SongType songType;
     private PraiseTeamDto praiseTeam;
     private String thumbnail;

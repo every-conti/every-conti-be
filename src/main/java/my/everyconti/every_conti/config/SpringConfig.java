@@ -103,7 +103,7 @@ public class SpringConfig {
                             // conti
                             .requestMatchers("/api/conti/{contiId}", "/api/praise-teams/last-conti").permitAll()
                             // bible
-                            .requestMatchers("/api/bible/").hasAuthority(RoleType.ROLE_ADMIN.toString())
+                            .requestMatchers("/api/bible/**").permitAll()
 
 
                             // dev(html)

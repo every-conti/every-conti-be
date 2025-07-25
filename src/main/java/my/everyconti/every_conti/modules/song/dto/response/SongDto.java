@@ -35,7 +35,7 @@ public class SongDto {
 
     private MemberNicknameDto creatorNickname;
 
-    private List<SongSongThemeDto> songThemes;
+    private List<SongThemeDto> songThemes;
 
     /*
     --------Sub columns--------
@@ -48,7 +48,7 @@ public class SongDto {
 
     private SongKey songKey;
 
-    private String duration;
+    private Integer duration;
 
     private BibleDto bible;
 
@@ -67,7 +67,7 @@ public class SongDto {
         praiseTeam = new PraiseTeamDto(song.getPraiseTeam(), hashIdUtil);
         creatorNickname = new MemberNicknameDto(song.getCreator());
         songThemes = song.getSongThemes().stream()
-                .map(s -> new SongSongThemeDto(s, hashIdUtil))
+                .map(s -> new SongThemeDto(s.getSongTheme(), hashIdUtil))
                 .collect(Collectors.toList());
         tempo = song.getTempo();
         season = song.getSeason() == null ? null : new SeasonDto(song.getSeason(), hashIdUtil);
