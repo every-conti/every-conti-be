@@ -5,6 +5,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import my.everyconti.every_conti.common.dto.response.CommonPaginationDto;
 import my.everyconti.every_conti.common.dto.response.CommonResponseDto;
 import my.everyconti.every_conti.common.utils.HashIdUtil;
 import my.everyconti.every_conti.constant.ResponseMessage;
@@ -112,12 +113,18 @@ public class SongService {
         return new SongDto(result, hashIdUtil);
     }
 
-    public List<SongDto> searchSong(SearchSongDto searchSongDto) {
+    public CommonPaginationDto searchSong(SearchSongDto searchSongDto) {
         List<Song> resultList = songRepository.findSongsWithSearchParams(searchSongDto, hashIdUtil);
 
-        return resultList.stream()
+        Long nextOffset = searchSongDto.getOffset();
+        if (resultList.size() == 21) nextOffset += 20;
+        else nextOffset = null;
+
+        List<SongDto> data = resultList.stream()
                 .map(s -> new SongDto(s, hashIdUtil))
                 .collect(Collectors.toList());
+
+        return new CommonPaginationDto<SongDto>(data, nextOffset);
     }
 
     @Transactional

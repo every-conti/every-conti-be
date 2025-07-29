@@ -65,7 +65,7 @@ public class SongRepositoryImpl implements SongRepositoryCustom {
         String bibleId = searchSongDto.getBibleId();
         String bibleChapterId = searchSongDto.getBibleChapterId();
         String bibleVerseId = searchSongDto.getBibleVerseId();
-        Integer offset = searchSongDto.getOffset() != null ? searchSongDto.getOffset() : 0;
+        Long offset = searchSongDto.getOffset() != null ? searchSongDto.getOffset() : 0;
 
         QSong song = QSong.song;
         BooleanBuilder builder = new BooleanBuilder();
@@ -109,8 +109,9 @@ public class SongRepositoryImpl implements SongRepositoryCustom {
                 .leftJoin(song.creator).fetchJoin()
                 .leftJoin(song.praiseTeam).fetchJoin()
                 .leftJoin(song.season).fetchJoin()
-                .leftJoin(song.songThemes, QSongSongTheme.songSongTheme).fetchJoin()
-                .leftJoin(QSongSongTheme.songSongTheme.songTheme).fetchJoin()
+                .leftJoin(song.bible).fetchJoin()
+                .leftJoin(song.bibleChapter).fetchJoin()
+                .leftJoin(song.bibleVerse).fetchJoin()
                 .distinct();
 
         if (themeIds != null && !themeIds.isEmpty()) {
@@ -135,7 +136,7 @@ public class SongRepositoryImpl implements SongRepositoryCustom {
         return query
                 .where(builder)
                 .offset(offset != null ? offset : 0)
-                .limit(20)
+                .limit(21)
                 .fetch();
     }
 }

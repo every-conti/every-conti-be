@@ -1,6 +1,5 @@
 package my.everyconti.every_conti.modules.song.repository;
 
-import my.everyconti.every_conti.modules.song.domain.Season;
 import my.everyconti.every_conti.modules.song.domain.SongTheme;
 import org.springframework.data.jpa.repository.JpaRepository;
 

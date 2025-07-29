@@ -1,8 +1,8 @@
 package my.everyconti.every_conti.modules.song.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 
 import java.util.Set;
 
@@ -12,6 +12,7 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@BatchSize(size = 50)
 public class SongTheme {
     @Id
     @Column(name = "theme_id")

@@ -25,5 +25,5 @@ public class SearchSongDto {
     private String bibleChapterId;
     private String bibleVerseId;
 
-    private Integer offset;
+    private Long offset;
 }

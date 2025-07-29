@@ -12,9 +12,11 @@ import my.everyconti.every_conti.modules.bible.domain.BibleChapter;
 import my.everyconti.every_conti.modules.bible.domain.BibleVerse;
 import my.everyconti.every_conti.modules.conti.domain.ContiSong;
 import my.everyconti.every_conti.modules.member.domain.Member;
+import org.hibernate.annotations.BatchSize;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -69,7 +71,6 @@ public class Song extends NowTimeForJpa {
     @JoinColumn(name = "season_id")
     private Season season;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bible_id")
     private Bible bible;
@@ -104,5 +105,6 @@ public class Song extends NowTimeForJpa {
 
     // llm api?
     @OneToMany(mappedBy = "song", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<SongSongTheme> songThemes;
+    @BatchSize(size= 20)
+    private Set<SongSongTheme> songThemes  = new HashSet<>();
 }

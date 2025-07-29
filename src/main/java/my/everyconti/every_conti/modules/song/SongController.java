@@ -2,6 +2,7 @@ package my.everyconti.every_conti.modules.song;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import my.everyconti.every_conti.common.dto.response.CommonPaginationDto;
 import my.everyconti.every_conti.common.dto.response.CommonResponseDto;
 import my.everyconti.every_conti.modules.song.dto.request.CreateSongDto;
 import my.everyconti.every_conti.modules.song.dto.request.SearchSongDto;
@@ -29,7 +30,7 @@ public class SongController {
 
     // 찬양 검색
     @GetMapping("/search")
-    public ResponseEntity<List<SongDto>> searchSong(@Valid @ModelAttribute SearchSongDto searchSongDto) {
+    public ResponseEntity<CommonPaginationDto> searchSong(@Valid @ModelAttribute SearchSongDto searchSongDto) {
         return ResponseEntity.ok(songService.searchSong(searchSongDto));
     }
 
