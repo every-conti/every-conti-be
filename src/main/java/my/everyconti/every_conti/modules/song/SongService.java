@@ -1,8 +1,5 @@
 package my.everyconti.every_conti.modules.song;
 
-import com.querydsl.core.BooleanBuilder;
-import com.querydsl.jpa.impl.JPAQuery;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import my.everyconti.every_conti.common.dto.response.CommonPaginationDto;
@@ -22,12 +19,14 @@ import my.everyconti.every_conti.modules.bible.repository.BibleVerseRepository;
 import my.everyconti.every_conti.modules.member.domain.Member;
 import my.everyconti.every_conti.modules.member.repository.member.MemberRepository;
 import my.everyconti.every_conti.modules.song.domain.*;
+import my.everyconti.every_conti.modules.song.domain.es.SongDocument;
 import my.everyconti.every_conti.modules.song.dto.request.CreateSongDto;
 import my.everyconti.every_conti.modules.song.dto.request.SearchSongDto;
 import my.everyconti.every_conti.modules.song.dto.response.*;
 import my.everyconti.every_conti.modules.song.dto.response.song.SongWithPraiseTeamDto;
 import my.everyconti.every_conti.modules.song.repository.PraiseTeamRepository;
 import my.everyconti.every_conti.modules.song.repository.SeasonRepository;
+import my.everyconti.every_conti.modules.song.repository.es.SongSearchRepository;
 import my.everyconti.every_conti.modules.song.repository.song.SongRepository;
 import my.everyconti.every_conti.modules.song.repository.SongThemeRepository;
 import org.springframework.stereotype.Service;
@@ -47,11 +46,11 @@ public class SongService {
     private final SongThemeRepository songThemeRepository;
     private final SeasonRepository seasonRepository;
     private final HashIdUtil hashIdUtil;
-    private final JPAQueryFactory queryFactory;
     private final BibleService bibleService;
     private final BibleChapterRepository bibleChapterRepository;
     private final BibleRepository bibleRepository;
     private final BibleVerseRepository bibleVerseRepository;
+    private final SongSearchRepository songSearchRepository;
 
     @Transactional
     public SongDto createSong(CreateSongDto createSongDto){
@@ -110,6 +109,13 @@ public class SongService {
 
 
         Song result = songRepository.save(song);
+
+        songSearchRepository.save(SongDocument.builder()
+                .id(song.getId())
+                .songName(song.getSongName())
+                .lyrics(song.getLyrics())
+                .build());
+
         return new SongDto(result, hashIdUtil);
     }
 

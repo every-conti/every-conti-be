@@ -13,7 +13,9 @@ import my.everyconti.every_conti.modules.song.domain.QSong;
 import my.everyconti.every_conti.modules.song.domain.QSongSongTheme;
 import my.everyconti.every_conti.modules.song.domain.QSongTheme;
 import my.everyconti.every_conti.modules.song.domain.Song;
+import my.everyconti.every_conti.modules.song.domain.es.SongDocument;
 import my.everyconti.every_conti.modules.song.dto.request.SearchSongDto;
+import my.everyconti.every_conti.modules.song.repository.es.SongSearchRepository;
 
 import java.util.HashSet;
 import java.util.List;
@@ -23,6 +25,7 @@ import java.util.Set;
 public class SongRepositoryImpl implements SongRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
+    private final SongSearchRepository songSearchRepository;
 
     @Override
     public Song findSongByIdWithJoin(Long innerSongId){
@@ -71,8 +74,16 @@ public class SongRepositoryImpl implements SongRepositoryCustom {
         BooleanBuilder builder = new BooleanBuilder();
 
         if (text != null && !text.isBlank()) {
-            builder.and(song.songName.containsIgnoreCase(text)
-                    .or(song.lyrics.containsIgnoreCase(text)));
+            List<SongDocument> docs = songSearchRepository.fullTextSearch(text);
+            System.out.println("docs = " + docs);
+            List<Long> ids = docs.stream().map(SongDocument::getId).toList();
+
+            System.out.println("ids = " + ids);
+            if (ids.isEmpty()) {
+                return List.of(); // 검색결과 없으면 조기 종료
+            }
+
+            builder.and(song.id.in(ids));
         }
 
         if (songType != null) {
@@ -92,7 +103,6 @@ public class SongRepositoryImpl implements SongRepositoryCustom {
         }
 
         if (bibleId != null && !bibleId.isBlank()) {
-            System.out.println("bibleId 있음 처리");
             builder.and(song.bible.id.eq(hashIdUtil.decode(bibleId)));
         }
 
