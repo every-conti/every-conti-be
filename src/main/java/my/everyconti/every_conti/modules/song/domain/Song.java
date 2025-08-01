@@ -41,8 +41,8 @@ public class Song extends NowTimeForJpa {
     @Column(name = "lyrics", length = 5000)
     private String lyrics;
 
-    @Column(name = "reference", nullable = false, length = 150)
-    private String reference;
+    @Column(name = "youtbe_v_id", nullable = false, length = 150, unique = true)
+    private String youtubeVId;
 
     @Column(name = "song_type")
     @Enumerated(EnumType.STRING)

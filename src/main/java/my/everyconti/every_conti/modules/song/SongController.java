@@ -28,6 +28,17 @@ public class SongController {
         return ResponseEntity.ok(songService.createSong(createSongDto));
     }
 
+    // 찬양 생성／검색을 위한 조건
+    @GetMapping("/properties")
+    public ResponseEntity<SongPropertiesDto> getSongProperties(){
+        return ResponseEntity.ok(songService.getSongProperties());
+    }
+
+    @GetMapping("/youtube-v-id/check/{youtubeVId}")
+    public ResponseEntity<CommonResponseDto> checkYoutubeVId(@PathVariable String youtubeVId){
+        return ResponseEntity.ok(songService.checkYoutubeVId(youtubeVId));
+    }
+
     // 찬양 검색
     @GetMapping("/search")
     public ResponseEntity<CommonPaginationDto> searchSong(@Valid @ModelAttribute SearchSongDto searchSongDto) {
@@ -39,11 +50,6 @@ public class SongController {
     @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<CommonResponseDto<String>> createSong(@PathVariable Long innerSongId) {
         return ResponseEntity.ok(songService.deleteSong(innerSongId));
-    }
-
-    @GetMapping("/search/properties")
-    public ResponseEntity<SearchPropertiesDto> getSearchProperties(){
-        return ResponseEntity.ok(songService.getSearchProperties());
     }
 
     @GetMapping("/lasts")

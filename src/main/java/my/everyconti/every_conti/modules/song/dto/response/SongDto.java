@@ -27,7 +27,7 @@ public class SongDto {
 
     private String lyrics;
 
-    private String reference;
+    private String youtubeVId;
 
     private SongType songType;
 
@@ -62,7 +62,7 @@ public class SongDto {
         id= hashIdUtil.encode(song.getId());
         songName = song.getSongName();
         lyrics = song.getLyrics();
-        reference = song.getReference();
+        youtubeVId = song.getYoutubeVId();
         songType = song.getSongType();
         praiseTeam = new PraiseTeamDto(song.getPraiseTeam(), hashIdUtil);
         creatorNickname = new MemberNicknameDto(song.getCreator());
@@ -85,7 +85,7 @@ public class SongDto {
                 "id='" + id + '\'' +
                 "songName='" + songName + '\'' +
                 ", lyrics='" + lyrics + '\'' +
-                ", reference='" + reference + '\'' +
+                ", youtubeVId='" + youtubeVId + '\'' +
                 ", songType=" + songType + '\'' +
                 ", thumbnail=" + thumbnail + '\'' +
                 ", creator='" + creatorNickname + '\'' +

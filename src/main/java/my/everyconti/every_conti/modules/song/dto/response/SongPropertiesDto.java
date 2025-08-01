@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SearchPropertiesDto {
+public class SongPropertiesDto {
     private List<PraiseTeamDto> praiseTeams;
     private List<SeasonDto> seasons;
     private List<SongThemeDto> songThemes;

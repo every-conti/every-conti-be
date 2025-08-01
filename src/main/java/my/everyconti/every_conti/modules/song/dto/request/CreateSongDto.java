@@ -31,7 +31,7 @@ public class CreateSongDto {
 
     @NotBlank
     @Size(max = 150, message = "유튜브 링크는 150글자 이하로 입력 해야 합니다.")
-    private String reference;
+    private String youtubeVId;
 
     @NotNull(message = "곡 종류는 필수입니다.")
     private SongType songType;

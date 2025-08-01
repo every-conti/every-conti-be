@@ -86,7 +86,7 @@ public class SongService {
         Song song = Song.builder()
                 .songName(createSongDto.getSongName())
                 .lyrics(createSongDto.getLyrics())
-                .reference(createSongDto.getReference())
+                .youtubeVId(createSongDto.getYoutubeVId())
                 .songType(createSongDto.getSongType())
                 .tempo(createSongDto.getTempo())
                 .creator(creator)
@@ -145,8 +145,8 @@ public class SongService {
         return lastSongs.stream().map(s -> new SongWithPraiseTeamDto(s, hashIdUtil)).toList();
     }
 
-    public SearchPropertiesDto getSearchProperties(){
-        return SearchPropertiesDto
+    public SongPropertiesDto getSongProperties(){
+        return SongPropertiesDto
                 .builder()
                 .praiseTeams(getPraiseTeamLists())
                 .seasons(getSeasonLists())
@@ -167,6 +167,13 @@ public class SongService {
         return songThemeRepository.findAll().stream().map(th -> new SongThemeDto(th, hashIdUtil)).toList();
     }
 
+    public CommonResponseDto checkYoutubeVId(String youtubeVId){
+        Song existingSong = songRepository.findByYoutubeVId(youtubeVId);
+        if  (existingSong != null) {
+            return new CommonResponseDto(true, true);
+        }
+        return new CommonResponseDto(true, false);
+    }
 
 
 //    public CommonResponseDto<String> reportSong(String songId){

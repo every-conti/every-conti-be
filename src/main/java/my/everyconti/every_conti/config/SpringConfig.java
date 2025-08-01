@@ -99,7 +99,7 @@ public class SpringConfig {
                             // member
                             .requestMatchers("/api/member/**").permitAll()
                             // song
-                            .requestMatchers("/api/song/lists", "/api/song/search/**").permitAll()
+                            .requestMatchers("/api/song/lists", "api/song/properties", "/api/song/search/**").permitAll()
                             // conti
                             .requestMatchers("/api/conti/{contiId}", "/api/praise-teams/last-conti").permitAll()
                             // bible

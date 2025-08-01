@@ -13,6 +13,8 @@ public interface SongRepository extends JpaRepository<Song, Long>, SongRepositor
     @Override
     Optional<Song> findById(Long id);
 
+    Song findByYoutubeVId(String youtubeVId);
+
 //    @EntityGraph
 //    Optional<Member> findOneWithRolesByEmail(String email);
 }
