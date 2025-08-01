@@ -136,6 +136,7 @@ public class SongService {
     @Transactional
     public CommonResponseDto<String> deleteSong(Long innerSongId) {
         songRepository.deleteById(innerSongId);
+        songSearchRepository.deleteById(innerSongId);
         return new CommonResponseDto<>(true, ResponseMessage.DELETED);
     }
 

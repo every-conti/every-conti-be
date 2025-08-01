@@ -75,10 +75,7 @@ public class SongRepositoryImpl implements SongRepositoryCustom {
 
         if (text != null && !text.isBlank()) {
             List<SongDocument> docs = songSearchRepository.fullTextSearch(text);
-            System.out.println("docs = " + docs);
             List<Long> ids = docs.stream().map(SongDocument::getId).toList();
-
-            System.out.println("ids = " + ids);
             if (ids.isEmpty()) {
                 return List.of(); // 검색결과 없으면 조기 종료
             }

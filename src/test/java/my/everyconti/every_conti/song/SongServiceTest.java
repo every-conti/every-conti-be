@@ -25,34 +25,40 @@ public class SongServiceTest {
     private HashIdUtil hashIdUtil;
 //
 
-    @Test
-    @Commit
-    public void createSong(){
-        List<String> themeIds = new ArrayList<>();
-        themeIds.add(hashIdUtil.encode(5L));
-        CreateSongDto dto = CreateSongDto.builder()
-                .songName("태초에 하나님이")
-                .lyrics("태초에 하나님이 세상 모든 만물을\n" +
-                        "말씀으로 만드시고 그 만물 보고 기뻐하네\n" +
-                        "이 모든 만물은 하나님 위하여\n" +
-                        "찬양하게 만드셨네\n" +
-                        "목소리 높여서 하나님 찬양해\n" +
-                        "모든 만물이 주 찬양해")
-                .reference("https://www.youtube.com/watch?v=SB1QslVtedo&list=RDSB1QslVtedo&start_radio=1")
-                .thumbnail("https://img.youtube.com/vi/SB1QslVtedo/0.jpg")
-                .songType(SongType.CCM)
-                .tempo(SongTempo.FAST)
-                .themeIds(themeIds)
-                .creatorId(hashIdUtil.encode(4L))
-                .praiseTeamId(hashIdUtil.encode(1L))
-                .bibleId(hashIdUtil.encode(3L))
-                .bibleChapterId(hashIdUtil.encode(201L))
-//                .bibleVerseId(hashIdUtil.encode(1L))
-                .build();
+//    @Test
+//    @Commit
+//    public void deleteSong(){
+//        songService.deleteSong(31L);
+//    }
 
-        SongDto result = songService.createSong(dto);
-        System.out.println("result = " + result);
-    }
+//    @Test
+//    @Commit
+//    public void createSong(){
+//        List<String> themeIds = new ArrayList<>();
+//        themeIds.add(hashIdUtil.encode(5L));
+//        CreateSongDto dto = CreateSongDto.builder()
+//                .songName("태초에 하나님이")
+//                .lyrics("태초에 하나님이 세상 모든 만물을\n" +
+//                        "말씀으로 만드시고 그 만물 보고 기뻐하네\n" +
+//                        "이 모든 만물은 하나님 위하여\n" +
+//                        "찬양하게 만드셨네\n" +
+//                        "목소리 높여서 하나님 찬양해\n" +
+//                        "모든 만물이 주 찬양해")
+//                .reference("https://www.youtube.com/watch?v=SB1QslVtedo&list=RDSB1QslVtedo&start_radio=1")
+//                .thumbnail("https://img.youtube.com/vi/SB1QslVtedo/0.jpg")
+//                .songType(SongType.CCM)
+//                .tempo(SongTempo.FAST)
+//                .themeIds(themeIds)
+//                .creatorId(hashIdUtil.encode(4L))
+//                .praiseTeamId(hashIdUtil.encode(1L))
+//                .bibleId(hashIdUtil.encode(3L))
+//                .bibleChapterId(hashIdUtil.encode(201L))
+////                .bibleVerseId(hashIdUtil.encode(1L))
+//                .build();
+//
+//        SongDto result = songService.createSong(dto);
+//        System.out.println("result = " + result);
+//    }
 
 //    @Test
 //    public void searchSong(){
