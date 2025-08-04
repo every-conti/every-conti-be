@@ -16,12 +16,11 @@ public class MailController {
 
     @PostMapping("/code")
     public ResponseEntity<CommonResponseDto> sendVerificationMail(@Valid @RequestBody EmailDto emailDto) {
-        return mailService.sendVerificationMail(emailDto);
+        return ResponseEntity.ok(mailService.sendVerificationMail(emailDto));
     }
     // 인증번호 일치여부 확인
     @GetMapping("/code/verify")
     public ResponseEntity<CommonResponseDto> verifyCode(@Valid @ModelAttribute EmailVerifyDto emailVerifyDto) {
-        System.out.println("emailVerifyDto = " + emailVerifyDto.toString());
-        return mailService.verifyCode(emailVerifyDto);
+        return ResponseEntity.ok(mailService.verifyCode(emailVerifyDto));
     }
 }

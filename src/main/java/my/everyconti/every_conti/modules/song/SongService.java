@@ -29,6 +29,7 @@ import my.everyconti.every_conti.modules.song.repository.SeasonRepository;
 import my.everyconti.every_conti.modules.song.repository.es.SongSearchRepository;
 import my.everyconti.every_conti.modules.song.repository.song.SongRepository;
 import my.everyconti.every_conti.modules.song.repository.SongThemeRepository;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -164,7 +165,7 @@ public class SongService {
         return seasonRepository.findAll().stream().map(s -> new SeasonDto(s, hashIdUtil)).toList();
     }
     public List<SongThemeDto> getSongThemeLists(){
-        return songThemeRepository.findAll().stream().map(th -> new SongThemeDto(th, hashIdUtil)).toList();
+        return songThemeRepository.findAll(Sort.by("orderIndex").ascending()).stream().map(th -> new SongThemeDto(th, hashIdUtil)).toList();
     }
 
     public CommonResponseDto checkYoutubeVId(String youtubeVId){

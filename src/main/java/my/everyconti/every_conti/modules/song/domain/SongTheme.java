@@ -22,6 +22,9 @@ public class SongTheme {
     @Column(name = "theme_name", nullable = false)
     private String themeName;
 
+    @Column(name = "order_index", unique = true)
+    private Integer orderIndex;
+
     @OneToMany(mappedBy = "songTheme", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<SongSongTheme> songs;
 }

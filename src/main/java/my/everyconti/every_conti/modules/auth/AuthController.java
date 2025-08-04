@@ -21,7 +21,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("login")
-    public ResponseEntity<AccessTokenDto> login(@RequestBody LoginDto loginDto){
+    public ResponseEntity<CommonResponseDto> login(@RequestBody LoginDto loginDto){
         LoginTokenDto loginTokenDto = authService.login(loginDto);
 
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", loginTokenDto.getRefreshToken())
@@ -34,7 +34,7 @@ public class AuthController {
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
-                .body(new AccessTokenDto(loginTokenDto.getAccessToken()));
+                .body(new CommonResponseDto(true, loginTokenDto.getAccessToken()));
     }
 
     @GetMapping("token")

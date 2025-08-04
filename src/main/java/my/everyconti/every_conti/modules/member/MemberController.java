@@ -3,6 +3,7 @@ package my.everyconti.every_conti.modules.member;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import my.everyconti.every_conti.common.dto.response.CommonResponseDto;
 import my.everyconti.every_conti.modules.member.dto.MemberDto;
 import my.everyconti.every_conti.modules.member.dto.MemberFollowDto;
 import my.everyconti.every_conti.modules.member.dto.SignUpDto;
@@ -20,8 +21,8 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("")
-    public ResponseEntity<MemberDto> signUp(@Valid @RequestBody SignUpDto signUpDto){
-        return ResponseEntity.ok(memberService.signUp(signUpDto));
+    public ResponseEntity<CommonResponseDto<MemberDto>> signUp(@Valid @RequestBody SignUpDto signUpDto){
+        return ResponseEntity.ok(new CommonResponseDto(true, memberService.signUp(signUpDto)));
     }
 
     @GetMapping("/me")

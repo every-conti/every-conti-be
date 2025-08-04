@@ -4,6 +4,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import my.everyconti.every_conti.common.dto.error.ErrorResponseDto;
 import my.everyconti.every_conti.common.exception.types.*;
+import my.everyconti.every_conti.common.exception.types.custom.CustomAuthException;
 import my.everyconti.every_conti.common.utils.ExceptionUtil;
 import my.everyconti.every_conti.constant.ResponseMessage;
 import org.springframework.beans.factory.annotation.Value;
@@ -65,6 +66,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleUnauthorizedException(UnAuthorizationException exception, WebRequest request) {
         log.error(ResponseMessage.UN_AUTHORIZED, exception);
         return buildErrorResponse(exception, ResponseMessage.UN_AUTHORIZED, HttpStatus.UNAUTHORIZED, request);
+    }
+
+    @ExceptionHandler(CustomAuthException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResponseEntity<Object> handleAuthException(CustomAuthException exception, WebRequest request) {
+        log.error(ResponseMessage.UN_AUTHORIZED, exception);
+        return buildErrorResponse(exception, exception.getMessage(), HttpStatus.UNAUTHORIZED, request);
     }
 
     // 403 Access Denied Exception
