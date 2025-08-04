@@ -7,6 +7,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import my.everyconti.every_conti.common.utils.HashIdUtil;
 import my.everyconti.every_conti.constant.ResponseMessage;
+import my.everyconti.every_conti.constant.song.SongKey;
 import my.everyconti.every_conti.constant.song.SongTempo;
 import my.everyconti.every_conti.constant.song.SongType;
 import my.everyconti.every_conti.modules.song.domain.QSong;
@@ -68,6 +69,7 @@ public class SongRepositoryImpl implements SongRepositoryCustom {
         String bibleId = searchSongDto.getBibleId();
         String bibleChapterId = searchSongDto.getBibleChapterId();
         String bibleVerseId = searchSongDto.getBibleVerseId();
+        SongKey songKey =  searchSongDto.getSongKey();
         Long offset = searchSongDto.getOffset() != null ? searchSongDto.getOffset() : 0;
 
         QSong song = QSong.song;
@@ -97,6 +99,10 @@ public class SongRepositoryImpl implements SongRepositoryCustom {
 
         if (tempo != null) {
             builder.and(song.tempo.eq(tempo));
+        }
+
+        if (songKey != null){
+            builder.and(song.key.eq(songKey));
         }
 
         if (bibleId != null && !bibleId.isBlank()) {

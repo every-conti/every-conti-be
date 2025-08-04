@@ -120,7 +120,7 @@ public class SongService {
         return new SongDto(result, hashIdUtil);
     }
 
-    public CommonPaginationDto searchSong(SearchSongDto searchSongDto) {
+    public CommonPaginationDto<SongDto> searchSong(SearchSongDto searchSongDto) {
         List<Song> resultList = songRepository.findSongsWithSearchParams(searchSongDto, hashIdUtil);
 
         Long nextOffset = searchSongDto.getOffset();
@@ -131,7 +131,7 @@ public class SongService {
                 .map(s -> new SongDto(s, hashIdUtil))
                 .collect(Collectors.toList());
 
-        return new CommonPaginationDto<SongDto>(data, nextOffset);
+        return new CommonPaginationDto<>(data, nextOffset);
     }
 
     @Transactional
@@ -168,12 +168,13 @@ public class SongService {
         return songThemeRepository.findAll(Sort.by("orderIndex").ascending()).stream().map(th -> new SongThemeDto(th, hashIdUtil)).toList();
     }
 
-    public CommonResponseDto checkYoutubeVId(String youtubeVId){
+    public CommonResponseDto<Boolean> checkYoutubeVId(String youtubeVId){
         Song existingSong = songRepository.findByYoutubeVId(youtubeVId);
-        if  (existingSong != null) {
-            return new CommonResponseDto(true, true);
+        System.out.println("existingSong = " + existingSong);
+        if (existingSong != null) {
+            return new CommonResponseDto<>(true, true);
         }
-        return new CommonResponseDto(true, false);
+        return new CommonResponseDto<>(true, false);
     }
 
 

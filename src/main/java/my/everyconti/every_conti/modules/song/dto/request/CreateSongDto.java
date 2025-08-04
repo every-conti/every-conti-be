@@ -23,7 +23,7 @@ public class CreateSongDto {
     --------Main columns--------
      */
     @NotBlank
-    @Size(min = 5, max = 150, message = "곡 이름은 5글자 이상, 150글자 이하로 입력 해야 합니다.")
+    @Size(min = 2, max = 150, message = "곡 이름은 2글자 이상, 150글자 이하로 입력 해야 합니다.")
     private String songName;
 
     @Size(max = 5000, message = "가사는 5000글자 이하로 입력 해야 합니다.")
