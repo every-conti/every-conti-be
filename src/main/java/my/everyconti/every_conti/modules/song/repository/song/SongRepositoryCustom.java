@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface SongRepositoryCustom {
     Song findSongByIdWithJoin(Long innerSongId);
+    Song findSongByIdWithJoinAll(Long innerSongId);
     List<Song> findLastSongsWithPraiseTeam(Integer count);
     List<Song> findSongsWithSearchParams(SearchSongDto searchSongDto, HashIdUtil hashIdUtil);
 }

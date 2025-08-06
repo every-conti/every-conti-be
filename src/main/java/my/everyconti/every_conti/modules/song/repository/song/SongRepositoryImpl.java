@@ -35,7 +35,28 @@ public class SongRepositoryImpl implements SongRepositoryCustom {
 
         Song existingSong = queryFactory.selectFrom(song)
                 .leftJoin(song.songThemes, songSongTheme).fetchJoin()
-                .leftJoin(songSongTheme.songTheme).fetchJoin()
+//                .leftJoin(songSongTheme.songTheme).fetchJoin()
+                .leftJoin(song.creator).fetchJoin()
+                .leftJoin(song.praiseTeam).fetchJoin()
+                .leftJoin(song.bible).fetchJoin()
+                .leftJoin(song.bibleChapter).fetchJoin()
+                .leftJoin(song.bibleVerse).fetchJoin()
+                .where(song.id.eq(innerSongId))
+                .fetchOne();
+
+        if (existingSong == null) throw new EntityNotFoundException(ResponseMessage.notFoundMessage("찬양"));
+
+        return existingSong;
+    }
+
+    @Override
+    public Song findSongByIdWithJoinAll(Long innerSongId){
+        QSong song = QSong.song;
+        QSongSongTheme songSongTheme = QSongSongTheme.songSongTheme;
+
+        Song existingSong = queryFactory.selectFrom(song)
+                .leftJoin(song.songThemes, songSongTheme).fetchJoin()
+//                .leftJoin(songSongTheme.songTheme).fetchJoin()
                 .leftJoin(song.creator).fetchJoin()
                 .leftJoin(song.praiseTeam).fetchJoin()
                 .where(song.id.eq(innerSongId))
@@ -45,6 +66,7 @@ public class SongRepositoryImpl implements SongRepositoryCustom {
 
         return existingSong;
     }
+
 
     @Override
     public List<Song> findLastSongsWithPraiseTeam(Integer count){
@@ -148,8 +170,9 @@ public class SongRepositoryImpl implements SongRepositoryCustom {
 
         return query
                 .where(builder)
-                .offset(offset != null ? offset : 0)
+                .offset(offset)
                 .limit(21)
+                .orderBy(song.id.desc())
                 .fetch();
     }
 }

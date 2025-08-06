@@ -7,9 +7,13 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
 public class CommonPaginationDto<T> {
     private List<T> items;
     private Long nextOffset;
+
+    public CommonPaginationDto(List<T> items, Long nextOffset) {
+        this.items = items;
+        this.nextOffset = nextOffset;
+    }
 }

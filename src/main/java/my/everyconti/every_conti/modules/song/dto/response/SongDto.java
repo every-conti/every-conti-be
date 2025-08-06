@@ -11,6 +11,7 @@ import my.everyconti.every_conti.modules.bible.dto.response.BibleVerseDto;
 import my.everyconti.every_conti.modules.member.dto.MemberNicknameDto;
 import my.everyconti.every_conti.modules.song.domain.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -56,6 +57,7 @@ public class SongDto {
 
     private BibleVerseDto bibleVerse;
 
+    private LocalDateTime createdAt;
 
 
     public SongDto(Song song, HashIdUtil hashIdUtil) {
@@ -77,6 +79,7 @@ public class SongDto {
         bible = song.getBible() == null ? null : new BibleDto(song.getBible(), hashIdUtil);
         bibleChapter = song.getBibleChapter() == null ? null : new BibleChapterDto(song.getBibleChapter(), hashIdUtil);
         bibleVerse = song.getBibleVerse() == null ? null : new BibleVerseDto(song.getBibleVerse(), hashIdUtil);
+        createdAt = song.getCreatedAt();
     }
 
     @Override
@@ -95,7 +98,9 @@ public class SongDto {
                 ", season='" + (season != null ? season.toString() : "null") + '\'' +
                 ", bible='" + (bible == null ? "null" : bible.toString()) + '\'' +
                 ", bibleChapter=" + (bibleChapter == null ? "null" : bibleChapter.toString()) + '\'' +
-                ", bibleVerse=" + (bibleVerse == null ? "null" : bibleVerse.toString());
+                ", bibleVerse=" + (bibleVerse == null ? "null" : bibleVerse.toString()  + '\'' +
+                ", createdAt=" + createdAt
+        );
         if (season == null){
             string += "null";
         } else {

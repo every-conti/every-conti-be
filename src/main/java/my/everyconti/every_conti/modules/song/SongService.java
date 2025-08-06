@@ -92,6 +92,7 @@ public class SongService {
                 .tempo(createSongDto.getTempo())
                 .creator(creator)
                 .praiseTeam(team)
+                .duration(createSongDto.getDuration())
                 .season(season)
                 .bible(bible)
                 .bibleChapter(bibleChapter)
@@ -124,7 +125,7 @@ public class SongService {
         List<Song> resultList = songRepository.findSongsWithSearchParams(searchSongDto, hashIdUtil);
 
         Long nextOffset = searchSongDto.getOffset();
-        if (resultList.size() == 21) nextOffset += 20;
+        if (nextOffset != null && resultList.size() == 21) nextOffset += 21;
         else nextOffset = null;
 
         List<SongDto> data = resultList.stream()
@@ -170,13 +171,18 @@ public class SongService {
 
     public CommonResponseDto<Boolean> checkYoutubeVId(String youtubeVId){
         Song existingSong = songRepository.findByYoutubeVId(youtubeVId);
-        System.out.println("existingSong = " + existingSong);
         if (existingSong != null) {
             return new CommonResponseDto<>(true, true);
         }
         return new CommonResponseDto<>(true, false);
     }
 
+    public SongDto getSongDetailInfo(String songId){
+        Long innerSongId = hashIdUtil.decode(songId);
+        Song song = songRepository.findSongByIdWithJoinAll(innerSongId);
+
+        return new SongDto(song, hashIdUtil);
+    }
 
 //    public CommonResponseDto<String> reportSong(String songId){
 //        Long innerSongId = hashIdUtil.decode(songId);

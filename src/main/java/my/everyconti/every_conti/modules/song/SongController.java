@@ -28,6 +28,11 @@ public class SongController {
         return ResponseEntity.ok(songService.createSong(createSongDto));
     }
 
+    @GetMapping("/detail/{songId}")
+    public ResponseEntity<SongDto> getSongDetailInfo(@PathVariable("songId") String songId){
+        return ResponseEntity.ok(songService.getSongDetailInfo(songId));
+    }
+
     // 찬양 생성／검색을 위한 조건
     @GetMapping("/properties")
     public ResponseEntity<SongPropertiesDto> getSongProperties(){
@@ -35,13 +40,13 @@ public class SongController {
     }
 
     @GetMapping("/youtube-v-id/check/{youtubeVId}")
-    public ResponseEntity<CommonResponseDto> checkYoutubeVId(@PathVariable String youtubeVId){
+    public ResponseEntity<CommonResponseDto<Boolean>> checkYoutubeVId(@PathVariable String youtubeVId){
         return ResponseEntity.ok(songService.checkYoutubeVId(youtubeVId));
     }
 
     // 찬양 검색
     @GetMapping("/search")
-    public ResponseEntity<CommonPaginationDto> searchSong(@Valid @ModelAttribute SearchSongDto searchSongDto) {
+    public ResponseEntity<CommonPaginationDto<SongDto>> searchSong(@Valid @ModelAttribute SearchSongDto searchSongDto) {
         return ResponseEntity.ok(songService.searchSong(searchSongDto));
     }
 
