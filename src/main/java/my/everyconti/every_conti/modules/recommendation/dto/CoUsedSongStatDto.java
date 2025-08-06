@@ -14,14 +14,14 @@ import my.everyconti.every_conti.modules.recommendation.domain.CoUsedSongStat;
 public class CoUsedSongStatDto {
 
     private String id;
-    private Long songIdA;
-    private Long songIdB;
+    private String songIdA;
+    private String songIdB;
     private Long usageCount = 0L;
 
     public CoUsedSongStatDto(CoUsedSongStat coUsedSongStat, HashIdUtil hashId) {
         this.id = hashId.encode(coUsedSongStat.getId());
-        this.songIdA = coUsedSongStat.getSongIdA();
-        this.songIdB = coUsedSongStat.getSongIdB();
+        this.songIdA = hashId.encode(coUsedSongStat.getSongIdA());
+        this.songIdB = hashId.encode(coUsedSongStat.getSongIdB());
         this.usageCount = coUsedSongStat.getUsageCount();
     }
 
