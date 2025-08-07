@@ -1,4 +1,4 @@
-package my.everyconti.every_conti.modules.song.dto.response;
+package my.everyconti.every_conti.modules.song.dto.response.song;
 
 import lombok.*;
 import my.everyconti.every_conti.common.utils.HashIdUtil;

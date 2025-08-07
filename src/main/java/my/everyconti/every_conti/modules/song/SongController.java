@@ -7,7 +7,7 @@ import my.everyconti.every_conti.common.dto.response.CommonResponseDto;
 import my.everyconti.every_conti.modules.song.dto.request.CreateSongDto;
 import my.everyconti.every_conti.modules.song.dto.request.SearchSongDto;
 import my.everyconti.every_conti.modules.song.dto.response.*;
-import my.everyconti.every_conti.modules.song.dto.response.song.SongWithPraiseTeamDto;
+import my.everyconti.every_conti.modules.song.dto.response.song.MinimumSongToPlayDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -58,7 +58,7 @@ public class SongController {
     }
 
     @GetMapping("/lasts")
-    public ResponseEntity<List<SongWithPraiseTeamDto>> getLastFourSongs(){
+    public ResponseEntity<List<MinimumSongToPlayDto>> getLastFourSongs(){
         return ResponseEntity.ok(songService.getLastFourSongs());
     }
 //    @GetMapping("/praiseTeams")

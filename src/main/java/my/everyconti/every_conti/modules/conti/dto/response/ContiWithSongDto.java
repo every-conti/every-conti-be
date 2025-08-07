@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import my.everyconti.every_conti.common.utils.HashIdUtil;
 import my.everyconti.every_conti.modules.conti.domain.Conti;
-import my.everyconti.every_conti.modules.song.dto.response.SongSimpleDto;
+import my.everyconti.every_conti.modules.song.dto.response.song.SongSimpleDto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

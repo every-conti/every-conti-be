@@ -23,7 +23,7 @@ import my.everyconti.every_conti.modules.song.domain.es.SongDocument;
 import my.everyconti.every_conti.modules.song.dto.request.CreateSongDto;
 import my.everyconti.every_conti.modules.song.dto.request.SearchSongDto;
 import my.everyconti.every_conti.modules.song.dto.response.*;
-import my.everyconti.every_conti.modules.song.dto.response.song.SongWithPraiseTeamDto;
+import my.everyconti.every_conti.modules.song.dto.response.song.MinimumSongToPlayDto;
 import my.everyconti.every_conti.modules.song.repository.PraiseTeamRepository;
 import my.everyconti.every_conti.modules.song.repository.SeasonRepository;
 import my.everyconti.every_conti.modules.song.repository.es.SongSearchRepository;
@@ -32,7 +32,6 @@ import my.everyconti.every_conti.modules.song.repository.SongThemeRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -142,9 +141,9 @@ public class SongService {
         return new CommonResponseDto<>(true, ResponseMessage.DELETED);
     }
 
-    public List<SongWithPraiseTeamDto> getLastFourSongs(){
+    public List<MinimumSongToPlayDto> getLastFourSongs(){
         List<Song> lastSongs = songRepository.findLastSongsWithPraiseTeam(4);
-        return lastSongs.stream().map(s -> new SongWithPraiseTeamDto(s, hashIdUtil)).toList();
+        return lastSongs.stream().map(s -> new MinimumSongToPlayDto(s, hashIdUtil)).toList();
     }
 
     public SongPropertiesDto getSongProperties(){
