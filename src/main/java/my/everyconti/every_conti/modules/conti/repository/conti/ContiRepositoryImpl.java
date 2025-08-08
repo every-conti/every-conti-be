@@ -9,6 +9,7 @@ import my.everyconti.every_conti.constant.ResponseMessage;
 import my.everyconti.every_conti.modules.conti.domain.Conti;
 import my.everyconti.every_conti.modules.conti.domain.QConti;
 import my.everyconti.every_conti.modules.conti.domain.QContiSong;
+import my.everyconti.every_conti.modules.conti.dto.request.SearchContiDto;
 import my.everyconti.every_conti.modules.member.domain.QMember;
 import my.everyconti.every_conti.modules.song.domain.QPraiseTeam;
 import my.everyconti.every_conti.modules.song.domain.QSong;
@@ -109,7 +110,7 @@ public class ContiRepositoryImpl implements ContiRepositoryCustom {
     public List<Conti> findLastContiOfFamousPraiseTeams(){
         QConti conti = QConti.conti;
         QContiSong contiSong = QContiSong.contiSong;
-        QConti contiSub = new QConti("contiSub");
+//        QConti contiSub = new QConti("contiSub");
         QMember member = QMember.member;
         QPraiseTeam praiseTeam = QPraiseTeam.praiseTeam;
 
@@ -135,4 +136,41 @@ public class ContiRepositoryImpl implements ContiRepositoryCustom {
                 .where(conti.id.in(lastContiIds))
                 .fetch();
     }
+
+    @Override
+    public List<Conti> findSongsWithSearchParams(SearchContiDto searchContiDto){
+        QConti conti = QConti.conti;
+        QContiSong contiSong = QContiSong.contiSong;
+//        QConti contiSub = new QConti("contiSub");
+        QMember member = QMember.member;
+        QPraiseTeam praiseTeam = QPraiseTeam.praiseTeam;
+
+        List<Long> lastContiIds = queryFactory
+                .select(conti.id)
+                .from(conti)
+                .join(conti.creator, member)
+                .join(member.praiseTeam, praiseTeam)
+                .where(praiseTeam.isFamous.isTrue())
+                .groupBy(praiseTeam.id)
+                .select(conti.id.max()) // 또는 order by + limit if dialect supports
+                .fetch();
+
+        if (lastContiIds.isEmpty()) throw new NotFoundException(ResponseMessage.notFoundMessage("콘티"));
+
+        Long offset = searchContiDto.getOffset() != null ? searchContiDto.getOffset() : 0;
+
+        // 본 쿼리에서는 해당 ID들만 가져오고 필요한 데이터 fetchJoin
+        return queryFactory
+                .selectFrom(conti)
+                .leftJoin(conti.contiSongs, contiSong).fetchJoin()
+                .leftJoin(contiSong.song).fetchJoin()
+                .leftJoin(conti.creator, member).fetchJoin()
+                .leftJoin(member.praiseTeam, praiseTeam).fetchJoin()
+                .where(conti.id.in(lastContiIds))
+                .offset(offset)
+                .limit(21)
+                .orderBy(conti.date.desc())
+                .fetch();
+    }
+
 }

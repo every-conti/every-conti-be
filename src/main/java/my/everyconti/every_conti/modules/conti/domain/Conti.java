@@ -32,10 +32,14 @@ public class Conti extends NowTimeForJpa {
     @Column(name = "title", nullable = false, length = 100)
     private String title;
 
+    @Column(name = "description", length= 300)
+    private String description;
+
     @Column(name = "date")
     private LocalDate date;
 
     @OneToMany(mappedBy = "conti", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("orderIndex ASC")
     private Set<ContiSong> contiSongs;
 
     @ManyToOne

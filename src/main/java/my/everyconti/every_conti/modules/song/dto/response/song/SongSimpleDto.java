@@ -15,12 +15,16 @@ public class SongSimpleDto {
     private String id;
     private String songName;
     private SongKey songKey;
+    private Integer duration;
     private Integer idx;
+    private String thumbnail;
 
     public SongSimpleDto(Song song, Integer idx, HashIdUtil hashIdUtil) {
         id= hashIdUtil.encode(song.getId());
         songName = song.getSongName();
         songKey = song.getKey();
+        duration = song.getDuration();
+        thumbnail = song.getThumbnail();
         this.idx = idx;
     }
 

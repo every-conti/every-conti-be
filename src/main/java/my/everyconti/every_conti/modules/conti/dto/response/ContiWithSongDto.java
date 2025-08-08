@@ -23,15 +23,17 @@ public class ContiWithSongDto {
     private LocalDate date;
     private List<SongSimpleDto> songs;
     private String creatorId;
+    private String description;
     private LocalDateTime createdAt;
 
     public ContiWithSongDto(Conti conti, HashIdUtil hashIdUtil) {
-        this.id = hashIdUtil.encode(conti.getId());
-        this.title = conti.getTitle();
-        this.date = conti.getDate();
-        this.songs = conti.getContiSongs() == null ? null : conti.getContiSongs().stream().map(cs -> new SongSimpleDto(cs.getSong(), cs.getOrderIndex(), hashIdUtil)).collect(Collectors.toList());
-        this.creatorId = hashIdUtil.encode(conti.getCreator().getId());
-        this.createdAt = conti.getCreatedAt();
+        id = hashIdUtil.encode(conti.getId());
+        title = conti.getTitle();
+        date = conti.getDate();
+        songs = conti.getContiSongs() == null ? null : conti.getContiSongs().stream().map(cs -> new SongSimpleDto(cs.getSong(), cs.getOrderIndex(), hashIdUtil)).collect(Collectors.toList());
+        creatorId = hashIdUtil.encode(conti.getCreator().getId());
+        createdAt = conti.getCreatedAt();
+        description = conti.getDescription();
     }
 
     @Override

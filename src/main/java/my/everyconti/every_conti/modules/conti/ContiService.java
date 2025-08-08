@@ -3,6 +3,7 @@ package my.everyconti.every_conti.modules.conti;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import my.everyconti.every_conti.common.dto.response.CommonPaginationDto;
 import my.everyconti.every_conti.common.dto.response.CommonResponseDto;
 import my.everyconti.every_conti.common.exception.types.AlreadyExistElementException;
 import my.everyconti.every_conti.common.utils.HashIdUtil;
@@ -10,6 +11,7 @@ import my.everyconti.every_conti.common.utils.SecurityUtil;
 import my.everyconti.every_conti.constant.ResponseMessage;
 import my.everyconti.every_conti.modules.conti.domain.*;
 import my.everyconti.every_conti.modules.conti.dto.request.CreateContiDto;
+import my.everyconti.every_conti.modules.conti.dto.request.SearchContiDto;
 import my.everyconti.every_conti.modules.conti.dto.request.UpdateContiOrderDto;
 import my.everyconti.every_conti.modules.conti.dto.response.ContiSimpleDto;
 import my.everyconti.every_conti.modules.conti.dto.response.ContiWithSongDto;
@@ -21,6 +23,7 @@ import my.everyconti.every_conti.modules.member.repository.member.MemberReposito
 import my.everyconti.every_conti.modules.song.domain.PraiseTeam;
 import my.everyconti.every_conti.modules.song.domain.Song;
 import my.everyconti.every_conti.modules.song.dto.response.PraiseTeamDto;
+import my.everyconti.every_conti.modules.song.dto.response.SongDto;
 import my.everyconti.every_conti.modules.song.repository.PraiseTeamRepository;
 import my.everyconti.every_conti.modules.song.repository.song.SongRepository;
 import org.springframework.stereotype.Service;
@@ -50,6 +53,7 @@ public class ContiService {
 
         Conti conti = Conti.builder()
                 .title(createContiDto.getTitle())
+                .description(createContiDto.getDescription())
                 .date(createContiDto.getDate())
                 .creator(member)
                 .build();
@@ -145,6 +149,22 @@ public class ContiService {
                 .toList();
 
         return contis;
+    }
+
+    public CommonPaginationDto<PraiseTeamContiDto> searchFamousPraiseTeamsContis(SearchContiDto searchContiDto){
+        List<Conti> resultList = contiRepository.findSongsWithSearchParams(searchContiDto);
+        List<PraiseTeamContiDto> data =  resultList.stream().map(c ->
+                PraiseTeamContiDto.builder()
+                        .praiseTeam(new PraiseTeamDto(c.getCreator().getPraiseTeam(), hashIdUtil))
+                        .conti(new ContiWithSongDto(c, hashIdUtil))
+                        .build())
+        .toList();
+
+        Long nextOffset = searchContiDto.getOffset();
+        if (nextOffset != null && resultList.size() == 21) nextOffset += 21;
+        else nextOffset = null;
+
+        return new CommonPaginationDto<>(data, nextOffset);
     }
 
     public List<PraiseTeamDto> getFamousPraiseTeamLists(){

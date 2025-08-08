@@ -14,6 +14,9 @@ public class CreateContiDto {
     @Size(max = 100)
     private String title;
 
+    @Size(max = 300)
+    private String description;
+
     private LocalDate date;
 
     private String memberId;

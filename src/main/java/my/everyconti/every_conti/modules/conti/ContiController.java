@@ -2,10 +2,13 @@ package my.everyconti.every_conti.modules.conti;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import my.everyconti.every_conti.common.dto.response.CommonPaginationDto;
 import my.everyconti.every_conti.common.dto.response.CommonResponseDto;
 import my.everyconti.every_conti.modules.conti.dto.request.CreateContiDto;
+import my.everyconti.every_conti.modules.conti.dto.request.SearchContiDto;
 import my.everyconti.every_conti.modules.conti.dto.request.UpdateContiOrderDto;
 import my.everyconti.every_conti.modules.conti.dto.response.ContiSimpleDto;
+import my.everyconti.every_conti.modules.conti.dto.response.ContiWithSongDto;
 import my.everyconti.every_conti.modules.conti.dto.response.PraiseTeamContiDto;
 import my.everyconti.every_conti.modules.song.dto.response.PraiseTeamDto;
 import org.springframework.http.ResponseEntity;
@@ -53,6 +56,11 @@ public class ContiController {
     @GetMapping("/praise-teams/famous/last-conti")
     public ResponseEntity<List<PraiseTeamContiDto>> getFamousPraiseTeamsLastConti(){
         return ResponseEntity.ok(contiService.getFamousPraiseTeamsLastConti());
+    }
+
+    @GetMapping("/search/famous")
+    public ResponseEntity<CommonPaginationDto<PraiseTeamContiDto>> searchFamousPraiseTeamsContis(@Valid @ModelAttribute SearchContiDto searchContiDto){
+        return ResponseEntity.ok(contiService.searchFamousPraiseTeamsContis(searchContiDto));
     }
 
 //    @GetMapping("/praise-teams/famous")
