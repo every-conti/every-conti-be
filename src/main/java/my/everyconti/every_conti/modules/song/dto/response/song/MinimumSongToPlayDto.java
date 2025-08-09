@@ -14,6 +14,7 @@ public class MinimumSongToPlayDto {
     private String id;
     private String songName;
     private String youtubeVId;
+    private String lyrics;
     private SongType songType;
     private PraiseTeamDto praiseTeam;
     private String thumbnail;
@@ -29,5 +30,6 @@ public class MinimumSongToPlayDto {
         praiseTeam = song.getPraiseTeam() == null ? null : new PraiseTeamDto(song.getPraiseTeam(), hashIdUtil);
         thumbnail = song.getThumbnail();
         songKey = song.getKey();
+        lyrics = song.getLyrics();
     }
 }
