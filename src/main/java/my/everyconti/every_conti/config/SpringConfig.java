@@ -2,6 +2,7 @@ package my.everyconti.every_conti.config;
 
 import lombok.RequiredArgsConstructor;
 import my.everyconti.every_conti.aop.logging.LoggingAop;
+import my.everyconti.every_conti.common.jwt.JwtTokenProvider;
 import my.everyconti.every_conti.common.utils.HashIdUtil;
 import my.everyconti.every_conti.common.exception.JwtAccessDeniedHandler;
 import my.everyconti.every_conti.common.exception.JwtAuthenticationEntryPoint;
@@ -35,7 +36,7 @@ import java.util.List;
 @EnableConfigurationProperties({JwtProperties.class, WebProperties.class})
 public class SpringConfig {
 
-    private final HashIdUtil.JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenProvider jwtTokenProvider;
     private final JwtProperties jwtProperties;
     private final WebProperties webProperties;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;

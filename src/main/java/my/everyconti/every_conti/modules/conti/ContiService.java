@@ -20,10 +20,8 @@ import my.everyconti.every_conti.modules.conti.repository.conti.ContiRepository;
 import my.everyconti.every_conti.modules.conti.repository.ContiSongRepository;
 import my.everyconti.every_conti.modules.member.domain.Member;
 import my.everyconti.every_conti.modules.member.repository.member.MemberRepository;
-import my.everyconti.every_conti.modules.song.domain.PraiseTeam;
 import my.everyconti.every_conti.modules.song.domain.Song;
 import my.everyconti.every_conti.modules.song.dto.response.PraiseTeamDto;
-import my.everyconti.every_conti.modules.song.dto.response.SongDto;
 import my.everyconti.every_conti.modules.song.repository.PraiseTeamRepository;
 import my.everyconti.every_conti.modules.song.repository.song.SongRepository;
 import org.springframework.stereotype.Service;
@@ -144,19 +142,19 @@ public class ContiService {
         List<PraiseTeamContiDto> contis =  lastContiOfFamousPraiseTeams.stream().map(c ->
                 PraiseTeamContiDto.builder()
                     .praiseTeam(new PraiseTeamDto(c.getCreator().getPraiseTeam(), hashIdUtil))
-                    .conti(new ContiWithSongDto(c, hashIdUtil))
+                    .conti(new ContiWithSongDto(c, c.getCreator().getPraiseTeam(), hashIdUtil))
                     .build())
                 .toList();
 
         return contis;
     }
 
-    public CommonPaginationDto<PraiseTeamContiDto> searchFamousPraiseTeamsContis(SearchContiDto searchContiDto){
-        List<Conti> resultList = contiRepository.findSongsWithSearchParams(searchContiDto);
+    public CommonPaginationDto<PraiseTeamContiDto> searchContis(SearchContiDto searchContiDto){
+        List<Conti> resultList = contiRepository.findContisWithSearchParams(searchContiDto);
         List<PraiseTeamContiDto> data =  resultList.stream().map(c ->
-                PraiseTeamContiDto.builder()
-                        .praiseTeam(new PraiseTeamDto(c.getCreator().getPraiseTeam(), hashIdUtil))
-                        .conti(new ContiWithSongDto(c, hashIdUtil))
+                        PraiseTeamContiDto.builder()
+                                .praiseTeam(new PraiseTeamDto(c.getCreator().getPraiseTeam(), hashIdUtil))
+                                .conti(new ContiWithSongDto(c, c.getCreator().getPraiseTeam(), hashIdUtil))
                         .build())
         .toList();
 
@@ -166,16 +164,15 @@ public class ContiService {
 
         return new CommonPaginationDto<>(data, nextOffset);
     }
-
-    public List<PraiseTeamDto> getFamousPraiseTeamLists(){
-        List<PraiseTeam> famousPraiseTeams = praiseTeamRepository.findPraiseTeamsByIsFamousTrue();
-
-        return famousPraiseTeams.stream().map(t -> new PraiseTeamDto(t, hashIdUtil)).collect(Collectors.toList());
-    }
-
-    public List<ContiSimpleDto> getContiListsByPraiseTeam(String praiseTeamId){
-        List<Conti> praiseTeamContis = contiRepository.findContisByPraiseTeam_Id(hashIdUtil.decode(praiseTeamId));
-
-        return praiseTeamContis.stream().map(c -> new ContiSimpleDto(c, hashIdUtil)).collect(Collectors.toList());
-    }
+//    public List<PraiseTeamDto> getFamousPraiseTeamLists(){
+//        List<PraiseTeam> famousPraiseTeams = praiseTeamRepository.findPraiseTeamsByIsFamousTrue();
+//
+//        return famousPraiseTeams.stream().map(t -> new PraiseTeamDto(t, hashIdUtil)).collect(Collectors.toList());
+//    }
+//
+//    public List<ContiSimpleDto> getContiListsByPraiseTeam(String praiseTeamId){
+//        List<Conti> praiseTeamContis = contiRepository.findContisByPraiseTeam_Id(hashIdUtil.decode(praiseTeamId));
+//
+//        return praiseTeamContis.stream().map(c -> new ContiSimpleDto(c, hashIdUtil)).collect(Collectors.toList());
+//    }
 }

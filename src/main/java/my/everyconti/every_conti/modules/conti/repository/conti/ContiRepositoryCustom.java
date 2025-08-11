@@ -10,7 +10,6 @@ public interface ContiRepositoryCustom {
     Conti getContiAndContiSongByContiId(Long innterContId);
     List<Conti> findContisWithJoin();
     Conti getContiDetail(Long innerContiId);
-    List<Conti> findContisByPraiseTeam_Id(Long praiseTeamId);
     List<Conti> findLastContiOfFamousPraiseTeams();
-    List<Conti> findSongsWithSearchParams(SearchContiDto searchContiDto);
+    List<Conti> findContisWithSearchParams(SearchContiDto searchContiDto);
 }

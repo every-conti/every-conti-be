@@ -1,26 +1,35 @@
 package my.everyconti.every_conti.modules.conti.repository.conti;
 
-import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import my.everyconti.every_conti.common.exception.types.NotFoundException;
+import my.everyconti.every_conti.common.utils.HashIdUtil;
 import my.everyconti.every_conti.constant.ResponseMessage;
+import my.everyconti.every_conti.constant.song.SongType;
 import my.everyconti.every_conti.modules.conti.domain.Conti;
 import my.everyconti.every_conti.modules.conti.domain.QConti;
 import my.everyconti.every_conti.modules.conti.domain.QContiSong;
+import my.everyconti.every_conti.modules.conti.domain.es.ContiDocument;
 import my.everyconti.every_conti.modules.conti.dto.request.SearchContiDto;
+import my.everyconti.every_conti.modules.conti.repository.es.ContiSearchRepository;
 import my.everyconti.every_conti.modules.member.domain.QMember;
 import my.everyconti.every_conti.modules.song.domain.QPraiseTeam;
 import my.everyconti.every_conti.modules.song.domain.QSong;
 import my.everyconti.every_conti.modules.song.domain.QSongSongTheme;
+import my.everyconti.every_conti.modules.song.domain.es.SongDocument;
 
 import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor
 public class ContiRepositoryImpl implements ContiRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
+    private final ContiSearchRepository contiSearchRepository;
+    private final HashIdUtil hashIdUtil;
 
     @Override
     public Conti getContiByIdWithJoin(Long innerContiId){
@@ -88,23 +97,23 @@ public class ContiRepositoryImpl implements ContiRepositoryCustom {
                 .getFirst();
     }
 
-    @Override
-    public List<Conti> findContisByPraiseTeam_Id(Long praiseTeamId){
-        QConti conti = QConti.conti;
-        QMember member = QMember.member;
-        QPraiseTeam praiseTeam = QPraiseTeam.praiseTeam;
-
-        List<Conti> contis = queryFactory
-                .selectFrom(conti)
-                .leftJoin(conti.contiSongs).fetchJoin()
-                .leftJoin(conti.creator, member).fetchJoin()
-                .leftJoin(member.praiseTeam, praiseTeam).fetchJoin()
-                .where(praiseTeam.id.eq(praiseTeamId))
-                .distinct()
-                .fetch();
-        if (contis.isEmpty()) throw new NotFoundException(ResponseMessage.notFoundMessage("콘티"));
-        return contis;
-    }
+//    @Override
+//    public List<Conti> findContisByPraiseTeam_Id(Long praiseTeamId){
+//        QConti conti = QConti.conti;
+//        QMember member = QMember.member;
+//        QPraiseTeam praiseTeam = QPraiseTeam.praiseTeam;
+//
+//        List<Conti> contis = queryFactory
+//                .selectFrom(conti)
+//                .leftJoin(conti.contiSongs).fetchJoin()
+//                .leftJoin(conti.creator, member).fetchJoin()
+//                .leftJoin(member.praiseTeam, praiseTeam).fetchJoin()
+//                .where(praiseTeam.id.eq(praiseTeamId))
+//                .distinct()
+//                .fetch();
+//        if (contis.isEmpty()) throw new NotFoundException(ResponseMessage.notFoundMessage("콘티"));
+//        return contis;
+//    }
 
     @Override
     public List<Conti> findLastContiOfFamousPraiseTeams(){
@@ -134,43 +143,87 @@ public class ContiRepositoryImpl implements ContiRepositoryCustom {
                 .leftJoin(conti.creator, member).fetchJoin()
                 .leftJoin(member.praiseTeam, praiseTeam).fetchJoin()
                 .where(conti.id.in(lastContiIds))
-                .fetch();
-    }
-
-    @Override
-    public List<Conti> findSongsWithSearchParams(SearchContiDto searchContiDto){
-        QConti conti = QConti.conti;
-        QContiSong contiSong = QContiSong.contiSong;
-//        QConti contiSub = new QConti("contiSub");
-        QMember member = QMember.member;
-        QPraiseTeam praiseTeam = QPraiseTeam.praiseTeam;
-
-        List<Long> lastContiIds = queryFactory
-                .select(conti.id)
-                .from(conti)
-                .join(conti.creator, member)
-                .join(member.praiseTeam, praiseTeam)
-                .where(praiseTeam.isFamous.isTrue())
-                .groupBy(praiseTeam.id)
-                .select(conti.id.max()) // 또는 order by + limit if dialect supports
-                .fetch();
-
-        if (lastContiIds.isEmpty()) throw new NotFoundException(ResponseMessage.notFoundMessage("콘티"));
-
-        Long offset = searchContiDto.getOffset() != null ? searchContiDto.getOffset() : 0;
-
-        // 본 쿼리에서는 해당 ID들만 가져오고 필요한 데이터 fetchJoin
-        return queryFactory
-                .selectFrom(conti)
-                .leftJoin(conti.contiSongs, contiSong).fetchJoin()
-                .leftJoin(contiSong.song).fetchJoin()
-                .leftJoin(conti.creator, member).fetchJoin()
-                .leftJoin(member.praiseTeam, praiseTeam).fetchJoin()
-                .where(conti.id.in(lastContiIds))
-                .offset(offset)
-                .limit(21)
                 .orderBy(conti.date.desc())
                 .fetch();
     }
 
+    @Override
+    public List<Conti> findContisWithSearchParams(SearchContiDto searchContiDto){
+        String text = searchContiDto.getText();
+        List<String> songIds = searchContiDto.getSongIds();
+        String praiseTeamId = searchContiDto.getPraiseTeamId();
+        Boolean isFamous = searchContiDto.getIsFamous();
+        SongType songType = searchContiDto.getSongType();
+        Integer minTotalDuration = searchContiDto.getMinTotalDuration();
+        Integer maxTotalDuration = searchContiDto.getMaxTotalDuration();
+        Long offset = searchContiDto.getOffset() != null ? searchContiDto.getOffset() : 0;
+
+
+        QConti conti = QConti.conti;
+        QContiSong contiSong = QContiSong.contiSong;
+        QSong  song = QSong.song;
+//        QConti contiSub = new QConti("contiSub");
+        QMember member = QMember.member;
+        QPraiseTeam praiseTeam = QPraiseTeam.praiseTeam;
+
+        BooleanBuilder builder = new BooleanBuilder();
+
+        if (text != null && !text.isBlank()) {
+            List<ContiDocument> docs = contiSearchRepository.fullTextSearch(text);
+            List<Long> ids = docs.stream().map(ContiDocument::getId).toList();
+            if (ids.isEmpty()) {
+                return List.of(); // 검색결과 없으면 조기 종료
+            }
+
+            builder.and(conti.id.in(ids));
+        }
+
+        if (songIds != null && !songIds.isEmpty()) {
+            List<Long> songIdsLong = songIds.stream().map(hashIdUtil::decode).toList();
+            builder.and(contiSong.song.id.in(songIdsLong));
+        }
+
+        if (isFamous != null) {
+            builder.and(praiseTeam.isFamous);
+        }
+
+        if (praiseTeamId != null) {
+            builder.and(praiseTeam.id.eq(hashIdUtil.decode(praiseTeamId)));
+        }
+
+        if (songType != null) {
+            builder.and(contiSong.song.songType.eq(songType));
+        }
+
+
+
+        // 본 쿼리에서는 해당 ID들만 가져오고 필요한 데이터 fetchJoin
+         JPAQuery<Long> query = queryFactory
+            .select(conti.id)
+            .from(conti)
+            .leftJoin(conti.contiSongs, contiSong)
+            .leftJoin(contiSong.song, song)
+            .where(builder);
+
+        if (minTotalDuration != null & maxTotalDuration != null) {
+            query
+                .groupBy(conti.id)
+                .having(song.duration.sum().between(minTotalDuration, maxTotalDuration));
+        }
+
+        List<Long> contiIds = query.orderBy(conti.date.desc())
+                .offset(offset)
+                .limit(21)
+                .fetch();
+
+        if (contiIds.isEmpty()) throw new NotFoundException(ResponseMessage.notFoundMessage("콘티"));
+
+        List<Conti> contis = queryFactory
+                .selectFrom(conti)
+                .leftJoin(conti.contiSongs, contiSong).fetchJoin()
+                .leftJoin(contiSong.song, song).fetchJoin()
+                .where(conti.id.in(contiIds))
+                .fetch();
+        return contis;
+    }
 }

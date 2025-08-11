@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import my.everyconti.every_conti.common.utils.HashIdUtil;
 import my.everyconti.every_conti.modules.conti.domain.Conti;
+import my.everyconti.every_conti.modules.song.domain.PraiseTeam;
 import my.everyconti.every_conti.modules.song.dto.response.song.SongSimpleDto;
 
 import java.time.LocalDate;
@@ -26,7 +27,7 @@ public class ContiWithSongDto {
     private String description;
     private LocalDateTime createdAt;
 
-    public ContiWithSongDto(Conti conti, HashIdUtil hashIdUtil) {
+    public ContiWithSongDto(Conti conti, PraiseTeam praiseTeam, HashIdUtil hashIdUtil) {
         id = hashIdUtil.encode(conti.getId());
         title = conti.getTitle();
         date = conti.getDate();

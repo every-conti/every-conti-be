@@ -3,6 +3,7 @@ package my.everyconti.every_conti.modules.auth;
 import lombok.RequiredArgsConstructor;
 import my.everyconti.every_conti.common.exception.types.NotFoundException;
 import my.everyconti.every_conti.common.exception.types.custom.CustomAuthException;
+import my.everyconti.every_conti.common.jwt.JwtTokenProvider;
 import my.everyconti.every_conti.common.utils.HashIdUtil;
 import my.everyconti.every_conti.constant.jwt.JwtMode;
 import my.everyconti.every_conti.constant.ResponseMessage;
@@ -30,7 +31,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final HashIdUtil.JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 

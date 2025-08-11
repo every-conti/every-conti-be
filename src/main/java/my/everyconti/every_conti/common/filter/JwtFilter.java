@@ -7,6 +7,7 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import my.everyconti.every_conti.common.jwt.JwtTokenProvider;
 import my.everyconti.every_conti.common.utils.HashIdUtil;
 import my.everyconti.every_conti.config.properties.JwtProperties;
 import my.everyconti.every_conti.constant.ResponseMessage;
@@ -27,7 +28,7 @@ public class JwtFilter extends GenericFilterBean {
     private static final Logger logger = LoggerFactory.getLogger(JwtFilter.class);
     public static final String AUTHORIZATION_HEADER = "Authorization";
 
-    private final HashIdUtil.JwtTokenProvider tokenProvider;
+    private final JwtTokenProvider tokenProvider;
     private final JwtProperties jwtProperties;
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
 

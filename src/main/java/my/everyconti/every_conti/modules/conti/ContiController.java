@@ -8,9 +8,7 @@ import my.everyconti.every_conti.modules.conti.dto.request.CreateContiDto;
 import my.everyconti.every_conti.modules.conti.dto.request.SearchContiDto;
 import my.everyconti.every_conti.modules.conti.dto.request.UpdateContiOrderDto;
 import my.everyconti.every_conti.modules.conti.dto.response.ContiSimpleDto;
-import my.everyconti.every_conti.modules.conti.dto.response.ContiWithSongDto;
 import my.everyconti.every_conti.modules.conti.dto.response.PraiseTeamContiDto;
-import my.everyconti.every_conti.modules.song.dto.response.PraiseTeamDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -58,9 +56,10 @@ public class ContiController {
         return ResponseEntity.ok(contiService.getFamousPraiseTeamsLastConti());
     }
 
-    @GetMapping("/search/famous")
-    public ResponseEntity<CommonPaginationDto<PraiseTeamContiDto>> searchFamousPraiseTeamsContis(@Valid @ModelAttribute SearchContiDto searchContiDto){
-        return ResponseEntity.ok(contiService.searchFamousPraiseTeamsContis(searchContiDto));
+    // 찬양 검색
+    @GetMapping("/search")
+    public ResponseEntity<CommonPaginationDto<PraiseTeamContiDto>> searchSong(@Valid @ModelAttribute SearchContiDto searchContiDto) {
+        return ResponseEntity.ok(contiService.searchContis(searchContiDto));
     }
 
 //    @GetMapping("/praise-teams/famous")
