@@ -21,6 +21,7 @@ import my.everyconti.every_conti.modules.song.domain.QSong;
 import my.everyconti.every_conti.modules.song.domain.QSongSongTheme;
 import my.everyconti.every_conti.modules.song.domain.es.SongDocument;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -216,7 +217,7 @@ public class ContiRepositoryImpl implements ContiRepositoryCustom {
                 .limit(21)
                 .fetch();
 
-        if (contiIds.isEmpty()) throw new NotFoundException(ResponseMessage.notFoundMessage("콘티"));
+        if (contiIds.isEmpty()) return Collections.emptyList();
 
         List<Conti> contis = queryFactory
                 .selectFrom(conti)
