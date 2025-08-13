@@ -221,6 +221,8 @@ public class ContiRepositoryImpl implements ContiRepositoryCustom {
 
         List<Conti> contis = queryFactory
                 .selectFrom(conti)
+                .leftJoin(conti.creator, member).fetchJoin()
+                .leftJoin(member.praiseTeam, praiseTeam).fetchJoin()
                 .leftJoin(conti.contiSongs, contiSong).fetchJoin()
                 .leftJoin(contiSong.song, song).fetchJoin()
                 .where(conti.id.in(contiIds))

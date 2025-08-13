@@ -93,6 +93,8 @@ public class SongRepositoryImpl implements SongRepositoryCustom {
         String bibleVerseId = searchSongDto.getBibleVerseId();
         SongKey songKey =  searchSongDto.getSongKey();
         Long offset = searchSongDto.getOffset() != null ? searchSongDto.getOffset() : 0;
+        Integer minDuration = searchSongDto.getMinDuration();
+        Integer maxDuration = searchSongDto.getMaxDuration();
 
         QSong song = QSong.song;
         BooleanBuilder builder = new BooleanBuilder();
@@ -137,6 +139,10 @@ public class SongRepositoryImpl implements SongRepositoryCustom {
 
         if (bibleVerseId != null && !bibleVerseId.isBlank()) {
             builder.and(song.bibleVerse.id.eq(hashIdUtil.decode(bibleVerseId)));
+        }
+
+        if (minDuration != null && maxDuration != null) {
+            builder.and(song.duration.between(minDuration, maxDuration));
         }
 
         JPAQuery<Song> query = queryFactory

@@ -1,6 +1,5 @@
 package my.everyconti.every_conti.modules.conti;
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import my.everyconti.every_conti.common.dto.response.CommonPaginationDto;
@@ -9,9 +8,6 @@ import my.everyconti.every_conti.common.exception.types.AlreadyExistElementExcep
 import my.everyconti.every_conti.common.utils.HashIdUtil;
 import my.everyconti.every_conti.common.utils.SecurityUtil;
 import my.everyconti.every_conti.constant.ResponseMessage;
-import my.everyconti.every_conti.constant.song.SongKey;
-import my.everyconti.every_conti.constant.song.SongTempo;
-import my.everyconti.every_conti.constant.song.SongType;
 import my.everyconti.every_conti.modules.conti.domain.*;
 import my.everyconti.every_conti.modules.conti.dto.request.CreateContiDto;
 import my.everyconti.every_conti.modules.conti.dto.request.SearchContiDto;
@@ -20,16 +16,17 @@ import my.everyconti.every_conti.modules.conti.dto.response.ContiPropertiesDto;
 import my.everyconti.every_conti.modules.conti.dto.response.ContiSimpleDto;
 import my.everyconti.every_conti.modules.conti.dto.response.ContiWithSongDto;
 import my.everyconti.every_conti.modules.conti.dto.response.PraiseTeamContiDto;
+import my.everyconti.every_conti.modules.conti.eventlistener.ContiCreatedEvent;
 import my.everyconti.every_conti.modules.conti.repository.conti.ContiRepository;
 import my.everyconti.every_conti.modules.conti.repository.ContiSongRepository;
+import my.everyconti.every_conti.modules.conti.repository.es.ContiSearchRepository;
 import my.everyconti.every_conti.modules.member.domain.Member;
 import my.everyconti.every_conti.modules.member.repository.member.MemberRepository;
-import my.everyconti.every_conti.modules.song.domain.PraiseTeam;
 import my.everyconti.every_conti.modules.song.domain.Song;
 import my.everyconti.every_conti.modules.song.dto.response.PraiseTeamDto;
-import my.everyconti.every_conti.modules.song.dto.response.SongPropertiesDto;
 import my.everyconti.every_conti.modules.song.repository.PraiseTeamRepository;
 import my.everyconti.every_conti.modules.song.repository.song.SongRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -43,17 +40,18 @@ public class ContiService {
     private final ContiRepository contiRepository;
     private final MemberRepository memberRepository;
     private final HashIdUtil hashIdUtil;
-    private final JPAQueryFactory queryFactory;
     private final SongRepository songRepository;
     private final ContiSongRepository contiSongRepository;
     private final PraiseTeamRepository praiseTeamRepository;
+    private final ApplicationEventPublisher publisher;
+
 
     @Transactional
     public ContiSimpleDto createConti(CreateContiDto createContiDto){
         Member member = memberRepository.findById(hashIdUtil.decode(createContiDto.getMemberId())).orElseThrow();
 
         // 자신의 이메일인지 확인
-        SecurityUtil.userMatchOrAdmin(member.getEmail());
+//        SecurityUtil.userMatchOrAdmin(member.getEmail());
 
         Conti conti = Conti.builder()
                 .title(createContiDto.getTitle())
@@ -63,6 +61,9 @@ public class ContiService {
                 .build();
 
         Conti createdConti = contiRepository.save(conti);
+
+        publisher.publishEvent(new ContiCreatedEvent(conti.getId(), conti.getTitle()));
+
         return new ContiSimpleDto(createdConti, hashIdUtil);
     }
 

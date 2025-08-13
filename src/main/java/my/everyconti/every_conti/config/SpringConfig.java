@@ -11,6 +11,7 @@ import my.everyconti.every_conti.config.properties.JwtProperties;
 import my.everyconti.every_conti.config.properties.WebProperties;
 import my.everyconti.every_conti.constant.role.RoleType;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;

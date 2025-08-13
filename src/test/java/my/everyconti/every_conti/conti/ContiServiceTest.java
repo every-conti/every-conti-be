@@ -3,14 +3,19 @@ package my.everyconti.every_conti.conti;
 import jakarta.transaction.Transactional;
 import my.everyconti.every_conti.common.utils.HashIdUtil;
 import my.everyconti.every_conti.modules.conti.ContiService;
+import my.everyconti.every_conti.modules.conti.dto.request.CreateContiDto;
 import my.everyconti.every_conti.modules.conti.dto.response.ContiSimpleDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Commit;
+
+import java.time.LocalDate;
 
 
 @SpringBootTest
 @Transactional
+@Commit
 public class ContiServiceTest {
 
     @Autowired
@@ -18,17 +23,17 @@ public class ContiServiceTest {
     @Autowired
     private HashIdUtil hashIdUtil;
 
-//    @Test
-//    public void contiSaveTest(){
-//        CreateContiDto dto = CreateContiDto.builder()
-//                .title("0717콘티")
-//                .memberId(hashIdUtil.encode(4L))
-//                .date(LocalDate.now())
-//                .build();
-//
-//        ContiDto result = contiService.createConti(dto);
-//        System.out.println("result = " + result);
-//    }
+    @Test
+    public void contiSaveTest(){
+        CreateContiDto dto = CreateContiDto.builder()
+                .title("0813콘티")
+                .memberId(hashIdUtil.encode(4L))
+                .date(LocalDate.now())
+                .build();
+
+        ContiSimpleDto result = contiService.createConti(dto);
+        System.out.println("result = " + result);
+    }
 
 //    @Test
 //    public void contiGetTest(){

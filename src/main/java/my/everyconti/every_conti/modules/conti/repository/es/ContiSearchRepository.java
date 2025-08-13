@@ -9,7 +9,7 @@ import java.util.List;
 public interface ContiSearchRepository extends ElasticsearchRepository<ContiDocument, Long> {
 
     @Query("{\"bool\": {\"should\": [" +
-            "{\"match\": {\"contiName\": \"?0\"}}," +
+            "{\"match\": {\"contiName\": \"?0\"}}" +
             "]}}")
     List<ContiDocument> fullTextSearch(String query);
 }

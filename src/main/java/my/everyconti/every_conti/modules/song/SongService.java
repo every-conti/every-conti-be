@@ -19,16 +19,17 @@ import my.everyconti.every_conti.modules.bible.repository.BibleVerseRepository;
 import my.everyconti.every_conti.modules.member.domain.Member;
 import my.everyconti.every_conti.modules.member.repository.member.MemberRepository;
 import my.everyconti.every_conti.modules.song.domain.*;
-import my.everyconti.every_conti.modules.song.domain.es.SongDocument;
 import my.everyconti.every_conti.modules.song.dto.request.CreateSongDto;
 import my.everyconti.every_conti.modules.song.dto.request.SearchSongDto;
 import my.everyconti.every_conti.modules.song.dto.response.*;
 import my.everyconti.every_conti.modules.song.dto.response.song.MinimumSongToPlayDto;
+import my.everyconti.every_conti.modules.song.eventlistener.SongCreatedEvent;
+import my.everyconti.every_conti.modules.song.eventlistener.SongDeletedEvent;
 import my.everyconti.every_conti.modules.song.repository.PraiseTeamRepository;
 import my.everyconti.every_conti.modules.song.repository.SeasonRepository;
-import my.everyconti.every_conti.modules.song.repository.es.SongSearchRepository;
 import my.everyconti.every_conti.modules.song.repository.song.SongRepository;
 import my.everyconti.every_conti.modules.song.repository.SongThemeRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -50,7 +51,7 @@ public class SongService {
     private final BibleChapterRepository bibleChapterRepository;
     private final BibleRepository bibleRepository;
     private final BibleVerseRepository bibleVerseRepository;
-    private final SongSearchRepository songSearchRepository;
+    private final ApplicationEventPublisher publisher;
 
     @Transactional
     public SongDto createSong(CreateSongDto createSongDto){
@@ -111,11 +112,7 @@ public class SongService {
 
         Song result = songRepository.save(song);
 
-        songSearchRepository.save(SongDocument.builder()
-                .id(song.getId())
-                .songName(song.getSongName())
-                .lyrics(song.getLyrics())
-                .build());
+        publisher.publishEvent(new SongCreatedEvent(result.getId(), result.getSongName(), result.getLyrics()));
 
         return new SongDto(result, hashIdUtil);
     }
@@ -137,7 +134,9 @@ public class SongService {
     @Transactional
     public CommonResponseDto<String> deleteSong(Long innerSongId) {
         songRepository.deleteById(innerSongId);
-        songSearchRepository.deleteById(innerSongId);
+
+        publisher.publishEvent(new SongDeletedEvent(innerSongId));
+
         return new CommonResponseDto<>(true, ResponseMessage.DELETED);
     }
 
