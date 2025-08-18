@@ -9,6 +9,7 @@ import my.everyconti.every_conti.modules.conti.dto.request.SearchContiDto;
 import my.everyconti.every_conti.modules.conti.dto.request.UpdateContiOrderDto;
 import my.everyconti.every_conti.modules.conti.dto.response.ContiPropertiesDto;
 import my.everyconti.every_conti.modules.conti.dto.response.ContiSimpleDto;
+import my.everyconti.every_conti.modules.conti.dto.response.ContiWithSongDto;
 import my.everyconti.every_conti.modules.conti.dto.response.PraiseTeamContiDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,7 +32,7 @@ public class ContiController {
     }
 
     @GetMapping("/{contiId}")
-    public ResponseEntity<ContiSimpleDto> getContiDetail(@PathVariable String contiId){
+    public ResponseEntity<ContiWithSongDto> getContiDetail(@PathVariable String contiId){
         return ResponseEntity.ok(contiService.getContiDetail(contiId));
     }
 

@@ -8,16 +8,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
-public class MemberDto {
-    private String id;
-    private String nickname;
+public class MemberDto extends MemberSimpleDto {
+    private List<MemberRoleDto> roles;
     private String email;
     private String church;
-    private List<MemberRoleDto> roles;
 
     public MemberDto(Member member, HashIdUtil hashIdUtil) {
-        id = hashIdUtil.encode(member.getId());
-        nickname = member.getNickname();
+        super(member, hashIdUtil);
         email = member.getEmail();
         church = member.getChurch();
         roles = member.getMemberRoles().stream()
@@ -28,9 +25,6 @@ public class MemberDto {
     @Override
     public String toString() {
         return "MemberDto{" +
-                "nickname='" + nickname + '\'' +
-                ", email='" + email + '\'' +
-                ", church='" + church + '\'' +
                 ", roles='" + roles.stream().map(MemberRoleDto::toString).collect(Collectors.joining(", ")) + '\'' +
                 '}';
     }

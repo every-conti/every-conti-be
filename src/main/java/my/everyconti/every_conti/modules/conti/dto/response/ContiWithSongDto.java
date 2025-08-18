@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import my.everyconti.every_conti.common.utils.HashIdUtil;
 import my.everyconti.every_conti.modules.conti.domain.Conti;
-import my.everyconti.every_conti.modules.song.domain.PraiseTeam;
+import my.everyconti.every_conti.modules.member.dto.MemberSimpleDto;
 import my.everyconti.every_conti.modules.song.dto.response.song.SongSimpleDto;
 
 import java.time.LocalDate;
@@ -23,16 +23,16 @@ public class ContiWithSongDto {
     private String title;
     private LocalDate date;
     private List<SongSimpleDto> songs;
-    private String creatorId;
+    private MemberSimpleDto creator;
     private String description;
     private LocalDateTime createdAt;
 
-    public ContiWithSongDto(Conti conti, PraiseTeam praiseTeam, HashIdUtil hashIdUtil) {
+    public ContiWithSongDto(Conti conti, HashIdUtil hashIdUtil) {
         id = hashIdUtil.encode(conti.getId());
         title = conti.getTitle();
         date = conti.getDate();
         songs = conti.getContiSongs() == null ? null : conti.getContiSongs().stream().map(cs -> new SongSimpleDto(cs.getSong(), cs.getOrderIndex(), hashIdUtil)).collect(Collectors.toList());
-        creatorId = hashIdUtil.encode(conti.getCreator().getId());
+        creator = new MemberSimpleDto(conti.getCreator(), hashIdUtil);
         createdAt = conti.getCreatedAt();
         description = conti.getDescription();
     }
@@ -44,7 +44,7 @@ public class ContiWithSongDto {
                 ", title='" + title + '\'' +
                 ", date=" + date +
                 ", songs=" + songs +
-                ", creatorId='" + creatorId + '\'' +
+                ", creator='" + creator.toString() + '\'' +
                 ", createdAt=" + createdAt +
                 '}';
     }

@@ -36,6 +36,9 @@ public class Member extends NowTimeForJpa {
     @Column(name = "password", nullable = false, length = 100)
     private String password;
 
+    @Column(name = "profile_image")
+    private String profileImage;
+
     @JsonIgnore
     @CreatedDate
     @Column(name = "created_at", updatable = false)

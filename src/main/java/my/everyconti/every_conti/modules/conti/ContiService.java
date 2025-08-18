@@ -67,8 +67,9 @@ public class ContiService {
         return new ContiSimpleDto(createdConti, hashIdUtil);
     }
 
-    public ContiSimpleDto getContiDetail(String contiId){
-        return new ContiSimpleDto(contiRepository.getContiDetail(hashIdUtil.decode(contiId)), hashIdUtil);
+    public ContiWithSongDto getContiDetail(String contiId){
+        Conti conti = contiRepository.getContiDetail(hashIdUtil.decode(contiId));
+        return new ContiWithSongDto(conti, hashIdUtil);
     }
 
     @Transactional
@@ -149,7 +150,7 @@ public class ContiService {
         List<PraiseTeamContiDto> contis =  lastContiOfFamousPraiseTeams.stream().map(c ->
                 PraiseTeamContiDto.builder()
                     .praiseTeam(new PraiseTeamDto(c.getCreator().getPraiseTeam(), hashIdUtil))
-                    .conti(new ContiWithSongDto(c, c.getCreator().getPraiseTeam(), hashIdUtil))
+                    .conti(new ContiWithSongDto(c, hashIdUtil))
                     .build())
                 .toList();
 
@@ -161,7 +162,7 @@ public class ContiService {
         List<PraiseTeamContiDto> data =  resultList.stream().map(c ->
                         PraiseTeamContiDto.builder()
                                 .praiseTeam(new PraiseTeamDto(c.getCreator().getPraiseTeam(), hashIdUtil))
-                                .conti(new ContiWithSongDto(c, c.getCreator().getPraiseTeam(), hashIdUtil))
+                                .conti(new ContiWithSongDto(c, hashIdUtil))
                         .build())
         .toList();
 
