@@ -18,6 +18,7 @@ public class SearchContiDto {
     private String praiseTeamId;
     private Boolean isFamous;
     private SongType songType;
+    private Boolean includePersonalConti;
     private Integer minTotalDuration;
     private Integer maxTotalDuration;
 }

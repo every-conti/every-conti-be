@@ -15,11 +15,9 @@ import my.everyconti.every_conti.modules.conti.dto.request.UpdateContiOrderDto;
 import my.everyconti.every_conti.modules.conti.dto.response.ContiPropertiesDto;
 import my.everyconti.every_conti.modules.conti.dto.response.ContiSimpleDto;
 import my.everyconti.every_conti.modules.conti.dto.response.ContiWithSongDto;
-import my.everyconti.every_conti.modules.conti.dto.response.PraiseTeamContiDto;
 import my.everyconti.every_conti.modules.conti.eventlistener.ContiCreatedEvent;
 import my.everyconti.every_conti.modules.conti.repository.conti.ContiRepository;
 import my.everyconti.every_conti.modules.conti.repository.ContiSongRepository;
-import my.everyconti.every_conti.modules.conti.repository.es.ContiSearchRepository;
 import my.everyconti.every_conti.modules.member.domain.Member;
 import my.everyconti.every_conti.modules.member.repository.member.MemberRepository;
 import my.everyconti.every_conti.modules.song.domain.Song;
@@ -145,26 +143,15 @@ public class ContiService {
         return new CommonResponseDto<>(true, ResponseMessage.DELETED);
     }
 
-    public List<PraiseTeamContiDto> getFamousPraiseTeamsLastConti(){
+    public List<ContiWithSongDto> getFamousPraiseTeamsLastConti(){
         List<Conti> lastContiOfFamousPraiseTeams = contiRepository.findLastContiOfFamousPraiseTeams();
-        List<PraiseTeamContiDto> contis =  lastContiOfFamousPraiseTeams.stream().map(c ->
-                PraiseTeamContiDto.builder()
-                    .praiseTeam(new PraiseTeamDto(c.getCreator().getPraiseTeam(), hashIdUtil))
-                    .conti(new ContiWithSongDto(c, hashIdUtil))
-                    .build())
-                .toList();
-
+        List<ContiWithSongDto> contis =  lastContiOfFamousPraiseTeams.stream().map(c -> new ContiWithSongDto(c, hashIdUtil)).toList();
         return contis;
     }
 
-    public CommonPaginationDto<PraiseTeamContiDto> searchContis(SearchContiDto searchContiDto){
+    public CommonPaginationDto<ContiWithSongDto> searchContis(SearchContiDto searchContiDto){
         List<Conti> resultList = contiRepository.findContisWithSearchParams(searchContiDto);
-        List<PraiseTeamContiDto> data =  resultList.stream().map(c ->
-                        PraiseTeamContiDto.builder()
-                                .praiseTeam(new PraiseTeamDto(c.getCreator().getPraiseTeam(), hashIdUtil))
-                                .conti(new ContiWithSongDto(c, hashIdUtil))
-                        .build())
-        .toList();
+        List<ContiWithSongDto> data = resultList.stream().map(c -> new ContiWithSongDto(c, hashIdUtil)).toList();
 
         Long nextOffset = searchContiDto.getOffset();
         if (nextOffset != null && resultList.size() == 21) nextOffset += 21;

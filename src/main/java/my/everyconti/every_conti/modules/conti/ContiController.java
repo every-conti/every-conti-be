@@ -10,7 +10,6 @@ import my.everyconti.every_conti.modules.conti.dto.request.UpdateContiOrderDto;
 import my.everyconti.every_conti.modules.conti.dto.response.ContiPropertiesDto;
 import my.everyconti.every_conti.modules.conti.dto.response.ContiSimpleDto;
 import my.everyconti.every_conti.modules.conti.dto.response.ContiWithSongDto;
-import my.everyconti.every_conti.modules.conti.dto.response.PraiseTeamContiDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -54,12 +53,12 @@ public class ContiController {
     }
 
     @GetMapping("/praise-teams/famous/last-conti")
-    public ResponseEntity<List<PraiseTeamContiDto>> getFamousPraiseTeamsLastConti(){
+    public ResponseEntity<List<ContiWithSongDto>> getFamousPraiseTeamsLastConti(){
         return ResponseEntity.ok(contiService.getFamousPraiseTeamsLastConti());
     }
 
     @GetMapping("/search")
-    public ResponseEntity<CommonPaginationDto<PraiseTeamContiDto>> searchSong(@Valid @ModelAttribute SearchContiDto searchContiDto) {
+    public ResponseEntity<CommonPaginationDto<ContiWithSongDto>> searchSong(@Valid @ModelAttribute SearchContiDto searchContiDto) {
         return ResponseEntity.ok(contiService.searchContis(searchContiDto));
     }
 

@@ -121,17 +121,17 @@ public class ContiRepositoryImpl implements ContiRepositoryCustom {
         QConti conti = QConti.conti;
         QContiSong contiSong = QContiSong.contiSong;
 //        QConti contiSub = new QConti("contiSub");
-        QMember member = QMember.member;
+        QMember creator = QMember.member;
         QPraiseTeam praiseTeam = QPraiseTeam.praiseTeam;
 
         List<Long> lastContiIds = queryFactory
                 .select(conti.id)
                 .from(conti)
-                .join(conti.creator, member)
-                .join(member.praiseTeam, praiseTeam)
+                .join(conti.creator, creator)
+                .join(creator.praiseTeam, praiseTeam)
                 .where(praiseTeam.isFamous.isTrue())
                 .groupBy(praiseTeam.id)
-                .select(conti.id.max()) // 또는 order by + limit if dialect supports
+                .select(conti.id.max())
                 .fetch();
 
         if (lastContiIds.isEmpty()) throw new NotFoundException(ResponseMessage.notFoundMessage("콘티"));
@@ -141,8 +141,8 @@ public class ContiRepositoryImpl implements ContiRepositoryCustom {
                 .selectFrom(conti)
                 .leftJoin(conti.contiSongs, contiSong).fetchJoin()
                 .leftJoin(contiSong.song).fetchJoin()
-                .leftJoin(conti.creator, member).fetchJoin()
-                .leftJoin(member.praiseTeam, praiseTeam).fetchJoin()
+                .leftJoin(conti.creator, creator).fetchJoin()
+                .leftJoin(creator.praiseTeam, praiseTeam).fetchJoin()
                 .where(conti.id.in(lastContiIds))
                 .orderBy(conti.date.desc())
                 .fetch();
@@ -155,6 +155,7 @@ public class ContiRepositoryImpl implements ContiRepositoryCustom {
         String praiseTeamId = searchContiDto.getPraiseTeamId();
         Boolean isFamous = searchContiDto.getIsFamous();
         SongType songType = searchContiDto.getSongType();
+        Boolean includePersonalConti = searchContiDto.getIncludePersonalConti();
         Integer minTotalDuration = searchContiDto.getMinTotalDuration();
         Integer maxTotalDuration = searchContiDto.getMaxTotalDuration();
         Long offset = searchContiDto.getOffset() != null ? searchContiDto.getOffset() : 0;
@@ -164,7 +165,7 @@ public class ContiRepositoryImpl implements ContiRepositoryCustom {
         QContiSong contiSong = QContiSong.contiSong;
         QSong  song = QSong.song;
 //        QConti contiSub = new QConti("contiSub");
-        QMember member = QMember.member;
+        QMember creator = QMember.member;
         QPraiseTeam praiseTeam = QPraiseTeam.praiseTeam;
 
         BooleanBuilder builder = new BooleanBuilder();
@@ -184,27 +185,27 @@ public class ContiRepositoryImpl implements ContiRepositoryCustom {
             builder.and(contiSong.song.id.in(songIdsLong));
         }
 
+        // 본 쿼리에서는 해당 ID들만 가져오고 필요한 데이터 fetchJoin
+        JPAQuery<Long> query = queryFactory
+                .select(conti.id)
+                .from(conti)
+                .leftJoin(conti.contiSongs, contiSong)
+                .leftJoin(contiSong.song, song)
+                .leftJoin(conti.creator, creator)
+                .leftJoin(creator.praiseTeam, praiseTeam);
+
         if (isFamous != null) {
-            builder.and(praiseTeam.isFamous);
+            builder.and(praiseTeam.isFamous.eq(isFamous));
         }
 
         if (praiseTeamId != null) {
-            builder.and(praiseTeam.id.eq(hashIdUtil.decode(praiseTeamId)));
+            System.out.println("praiseTeamId = " + praiseTeamId);
+            builder.and(creator.praiseTeam.id.eq(hashIdUtil.decode(praiseTeamId)));
         }
 
-        if (songType != null) {
-            builder.and(contiSong.song.songType.eq(songType));
+        if (Boolean.FALSE.equals(includePersonalConti)) {
+            builder.and(creator.praiseTeam.isNotNull());
         }
-
-
-
-        // 본 쿼리에서는 해당 ID들만 가져오고 필요한 데이터 fetchJoin
-         JPAQuery<Long> query = queryFactory
-            .select(conti.id)
-            .from(conti)
-            .leftJoin(conti.contiSongs, contiSong)
-            .leftJoin(contiSong.song, song)
-            .where(builder);
 
         if (minTotalDuration != null & maxTotalDuration != null) {
             query
@@ -212,7 +213,10 @@ public class ContiRepositoryImpl implements ContiRepositoryCustom {
                 .having(song.duration.sum().between(minTotalDuration, maxTotalDuration));
         }
 
-        List<Long> contiIds = query.orderBy(conti.date.desc())
+        List<Long> contiIds = query
+                .where(builder)
+                .groupBy(conti.id, conti.date)
+                .orderBy(conti.date.desc())
                 .offset(offset)
                 .limit(21)
                 .fetch();
@@ -221,8 +225,8 @@ public class ContiRepositoryImpl implements ContiRepositoryCustom {
 
         List<Conti> contis = queryFactory
                 .selectFrom(conti)
-                .leftJoin(conti.creator, member).fetchJoin()
-                .leftJoin(member.praiseTeam, praiseTeam).fetchJoin()
+                .leftJoin(conti.creator, creator).fetchJoin()
+                .leftJoin(creator.praiseTeam, praiseTeam).fetchJoin()
                 .leftJoin(conti.contiSongs, contiSong).fetchJoin()
                 .leftJoin(contiSong.song, song).fetchJoin()
                 .where(conti.id.in(contiIds))
