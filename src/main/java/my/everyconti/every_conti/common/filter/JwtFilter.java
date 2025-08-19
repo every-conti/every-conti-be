@@ -35,41 +35,41 @@ public class JwtFilter extends GenericFilterBean {
     // 실제 필터릴 로직
     // 토큰의 인증정보를 SecurityContext에 저장하는 역할 수행
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        HttpServletRequest request = (HttpServletRequest) servletRequest;
-        HttpServletResponse response = (HttpServletResponse) servletResponse;
+    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
+            throws IOException, ServletException {
+
+        HttpServletRequest request = (HttpServletRequest) req;
+        HttpServletResponse response = (HttpServletResponse) res;
 
         String uri = request.getRequestURI();
-        boolean shouldSkip = jwtProperties.getSkipUris().stream()
-                .anyMatch(skipUri -> pathMatcher.match(skipUri, uri));
-        if (shouldSkip) {
-            filterChain.doFilter(request, response);
-            return;
-        }
 
         String accessToken = resolveToken(request);
-        String requestURI = request.getRequestURI();
 
-        if (StringUtils.hasText(accessToken) && tokenProvider.validateToken(JwtMode.ACCESS, accessToken)) {
-            Authentication authentication = tokenProvider.getAuthentication(accessToken);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            logger.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), requestURI);
-        } else {
-            response.setCharacterEncoding("UTF-8");
-            response.setContentType("application/json; charset=UTF-8");
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            String json = """
-                {
-                  "success": false,
-                  "message": "%s"
-                }
-                """.formatted(ResponseMessage.INVALID_JWT);
-            response.getWriter().write(json);
-
+        if (!StringUtils.hasText(accessToken)) {
+            chain.doFilter(request, response);
             return;
         }
 
-        filterChain.doFilter(servletRequest, servletResponse);
+        if (tokenProvider.validateToken(JwtMode.ACCESS, accessToken)) {
+            Authentication authentication = tokenProvider.getAuthentication(accessToken);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            logger.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), uri);
+
+            chain.doFilter(request, response);
+            return;
+        }
+
+        SecurityContextHolder.clearContext();
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json; charset=UTF-8");
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        String json = """
+        {
+          "success": false,
+          "message": "%s"
+        }
+        """.formatted(ResponseMessage.INVALID_JWT);
+        response.getWriter().write(json);
     }
 
     public String resolveToken(HttpServletRequest request) {

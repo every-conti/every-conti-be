@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
 @RestController
 @RequestMapping("api/conti")
 @RequiredArgsConstructor
@@ -30,12 +29,19 @@ public class ContiController {
          return ResponseEntity.ok(contiService.createConti(createContiDto));
     }
 
+    @GetMapping("/{memberId}/mine")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    public ResponseEntity<List<ContiSimpleDto>> getMyContiList(@PathVariable String memberId){
+        return ResponseEntity.ok(contiService.getMyContiList(memberId));
+    }
+
     @GetMapping("/{contiId}")
     public ResponseEntity<ContiWithSongDto> getContiDetail(@PathVariable String contiId){
         return ResponseEntity.ok(contiService.getContiDetail(contiId));
     }
 
     @DeleteMapping("/{contiId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<CommonResponseDto<String>> deleteConti(@PathVariable String contiId){
         return ResponseEntity.ok(contiService.deleteConti(contiId));
     }

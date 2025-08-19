@@ -14,7 +14,7 @@ import java.util.Set;
 
 @Table(name = "conti",
         indexes = {
-                @Index(name = "index_praise_team", columnList = "praise_team"),
+                @Index(name = "index_creator", columnList = "creator"),
         })
 @Entity
 @Getter

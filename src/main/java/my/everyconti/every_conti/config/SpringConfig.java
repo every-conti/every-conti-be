@@ -94,22 +94,20 @@ public class SpringConfig {
                 .authorizeHttpRequests(auth -> auth
                             // auth
                             .requestMatchers("/api/auth/**").permitAll()
+                            // bible
+                            .requestMatchers(HttpMethod.GET, "/api/bible/**").permitAll()
+                            // conti
+                            .requestMatchers(HttpMethod.GET, "/api/conti/{contiId}", "/api/conti/praise-teams/famous/last-conti", "/api/conti/search", "/api/conti/properties").permitAll()
                             // logging
                             .requestMatchers("/api/logging/**").hasAuthority(RoleType.ROLE_ADMIN.toString())
                             // mail
                             .requestMatchers("/api/mail/**").permitAll()
                             // member
-                            .requestMatchers("/api/member/**").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/api/member/me").permitAll()
+                            // recommendation
+                            .requestMatchers(HttpMethod.GET, "/api/recommendation/co-used-songs/**").permitAll()
                             // song
-                            .requestMatchers("/api/song/lists", "api/song/properties", "/api/song/search/**").permitAll()
-                            // conti
-                            .requestMatchers("/api/conti/{contiId}", "/api/praise-teams/last-conti").permitAll()
-                            // bible
-                            .requestMatchers("/api/bible/**").permitAll()
-
-
-                            // dev(html)
-                             .requestMatchers("**").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/api/song/detail/**", "api/song/properties", "/api/song/youtube-v-id/check/**", "/api/song/search/**", "api/song/lasts").permitAll()
 
                             // preflight 허용
                             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()

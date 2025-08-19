@@ -199,7 +199,6 @@ public class ContiRepositoryImpl implements ContiRepositoryCustom {
         }
 
         if (praiseTeamId != null) {
-            System.out.println("praiseTeamId = " + praiseTeamId);
             builder.and(creator.praiseTeam.id.eq(hashIdUtil.decode(praiseTeamId)));
         }
 

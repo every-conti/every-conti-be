@@ -49,7 +49,7 @@ public class ContiService {
         Member member = memberRepository.findById(hashIdUtil.decode(createContiDto.getMemberId())).orElseThrow();
 
         // 자신의 이메일인지 확인
-//        SecurityUtil.userMatchOrAdmin(member.getEmail());
+        SecurityUtil.userMatchOrAdmin(member.getEmail());
 
         Conti conti = Conti.builder()
                 .title(createContiDto.getTitle())
@@ -63,6 +63,15 @@ public class ContiService {
         publisher.publishEvent(new ContiCreatedEvent(conti.getId(), conti.getTitle()));
 
         return new ContiSimpleDto(createdConti, hashIdUtil);
+    }
+
+    public List<ContiSimpleDto> getMyContiList(String memberId){
+        Member member = memberRepository.findById(hashIdUtil.decode(memberId)).orElseThrow();
+
+        SecurityUtil.userMatchOrAdmin(member.getEmail());
+
+        List<Conti> contis = contiRepository.findContiByCreatorId(member.getId());
+        return contis.stream().map(conti -> new ContiSimpleDto(conti, hashIdUtil)).collect(Collectors.toList());
     }
 
     public ContiWithSongDto getContiDetail(String contiId){
@@ -112,7 +121,7 @@ public class ContiService {
         SecurityUtil.userMatchOrAdmin(conti.getCreator().getEmail());
 
         List<String> contiSongIds = updateContiOrderDto.getContiSongIds();
-        List<Long> contiSongIdsLong =  contiSongIds.stream().map(id -> hashIdUtil.decode(id)).toList();
+        List<Long> contiSongIdsLong = contiSongIds.stream().map(id -> hashIdUtil.decode(id)).toList();
 
         if (contiSongIds.size() != conti.getContiSongs().size()) {
             throw new IllegalArgumentException("전달된 곡 ID 목록이 기존과 일치하지 않습니다.");
