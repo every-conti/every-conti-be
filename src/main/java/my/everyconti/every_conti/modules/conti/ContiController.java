@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import my.everyconti.every_conti.common.dto.response.CommonPaginationDto;
 import my.everyconti.every_conti.common.dto.response.CommonResponseDto;
+import my.everyconti.every_conti.modules.conti.dto.request.CopyContiDto;
 import my.everyconti.every_conti.modules.conti.dto.request.CreateContiDto;
 import my.everyconti.every_conti.modules.conti.dto.request.SearchContiDto;
 import my.everyconti.every_conti.modules.conti.dto.request.UpdateContiOrderDto;
@@ -25,14 +26,20 @@ public class ContiController {
 
     @PostMapping("")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    public ResponseEntity<ContiSimpleDto> createConti(@Valid @RequestBody CreateContiDto createContiDto){
+    public ResponseEntity<ContiSimpleDto> createConti(@Valid @RequestBody CreateContiDto createContiDto) {
          return ResponseEntity.ok(contiService.createConti(createContiDto));
+    }
+
+    @PostMapping("/copy")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    public ResponseEntity<ContiSimpleDto> copyConti(@Valid @RequestBody CopyContiDto copyContiDto){
+        return ResponseEntity.ok(contiService.copyConti(copyContiDto));
     }
 
     @GetMapping("/{memberId}/mine")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    public ResponseEntity<List<ContiSimpleDto>> getMyContiList(@PathVariable String memberId){
-        return ResponseEntity.ok(contiService.getMyContiList(memberId));
+    public ResponseEntity<CommonPaginationDto<ContiWithSongDto>> getMyContiList(@PathVariable String memberId, @RequestParam Long offset){
+        return ResponseEntity.ok(contiService.getMyContiList(memberId, offset));
     }
 
     @GetMapping("/{contiId}")

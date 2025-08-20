@@ -12,4 +12,5 @@ public interface ContiRepositoryCustom {
     Conti getContiDetail(Long innerContiId);
     List<Conti> findLastContiOfFamousPraiseTeams();
     List<Conti> findContisWithSearchParams(SearchContiDto searchContiDto);
+    List<Conti> findContisWithMemberId(Long memberId, Long offset);
 }

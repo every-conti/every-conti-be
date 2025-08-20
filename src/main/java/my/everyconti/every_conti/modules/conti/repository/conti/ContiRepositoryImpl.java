@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import my.everyconti.every_conti.common.exception.types.NotFoundException;
 import my.everyconti.every_conti.common.utils.HashIdUtil;
 import my.everyconti.every_conti.constant.ResponseMessage;
-import my.everyconti.every_conti.constant.song.SongType;
 import my.everyconti.every_conti.modules.conti.domain.Conti;
 import my.everyconti.every_conti.modules.conti.domain.QConti;
 import my.everyconti.every_conti.modules.conti.domain.QContiSong;
@@ -19,7 +18,6 @@ import my.everyconti.every_conti.modules.member.domain.QMember;
 import my.everyconti.every_conti.modules.song.domain.QPraiseTeam;
 import my.everyconti.every_conti.modules.song.domain.QSong;
 import my.everyconti.every_conti.modules.song.domain.QSongSongTheme;
-import my.everyconti.every_conti.modules.song.domain.es.SongDocument;
 
 import java.util.Collections;
 import java.util.List;
@@ -149,12 +147,32 @@ public class ContiRepositoryImpl implements ContiRepositoryCustom {
     }
 
     @Override
+    public List<Conti> findContisWithMemberId(Long memberId, Long offset){
+        QConti conti = QConti.conti;
+        QMember creator = QMember.member;
+        QContiSong contiSong = QContiSong.contiSong;
+        QPraiseTeam praiseTeam = QPraiseTeam.praiseTeam;
+
+        List<Conti> contis = queryFactory
+                .selectFrom(conti)
+                .leftJoin(conti.creator, creator).fetchJoin()
+                .leftJoin(conti.contiSongs, contiSong).fetchJoin()
+                .leftJoin(contiSong.song).fetchJoin()
+                .leftJoin(conti.creator.praiseTeam, praiseTeam).fetchJoin()
+                .where(conti.creator.id.eq(memberId))
+                .orderBy(conti.date.desc())
+                .offset(offset)
+                .limit(11)
+                .fetch();
+        return contis;
+    }
+
+    @Override
     public List<Conti> findContisWithSearchParams(SearchContiDto searchContiDto){
         String text = searchContiDto.getText();
         List<String> songIds = searchContiDto.getSongIds();
         String praiseTeamId = searchContiDto.getPraiseTeamId();
         Boolean isFamous = searchContiDto.getIsFamous();
-        SongType songType = searchContiDto.getSongType();
         Boolean includePersonalConti = searchContiDto.getIncludePersonalConti();
         Integer minTotalDuration = searchContiDto.getMinTotalDuration();
         Integer maxTotalDuration = searchContiDto.getMaxTotalDuration();
@@ -189,7 +207,7 @@ public class ContiRepositoryImpl implements ContiRepositoryCustom {
         JPAQuery<Long> query = queryFactory
                 .select(conti.id)
                 .from(conti)
-                .leftJoin(conti.contiSongs, contiSong)
+                .join(conti.contiSongs, contiSong)
                 .leftJoin(contiSong.song, song)
                 .leftJoin(conti.creator, creator)
                 .leftJoin(creator.praiseTeam, praiseTeam);

@@ -15,10 +15,23 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(
+        name = "conti_song",
+        indexes = {
+                @Index(name = "idx_conti_song__conti_order", columnList = "conti, order_index"),
+                @Index(name = "idx_conti_song__song", columnList = "song") // 선택
+        },
+        uniqueConstraints = {
+                // 선택: 같은 콘티 내 order_index 중복 방지
+                @UniqueConstraint(name = "ux_conti_song__conti_order", columnNames = {"conti", "order_index"}),
+                // 선택: 같은 콘티 내 동일 곡 중복 방지
+                // @UniqueConstraint(name = "ux_conti_song__conti_song", columnNames = {"conti", "song"})
+        }
+)
 public class ContiSong extends NowTimeForJpa {
     @JsonIgnore
     @Id
-    @Column(name = "conti_id")
+    @Column(name = "conti_song_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 

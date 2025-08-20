@@ -10,17 +10,9 @@ import java.util.List;
 
 @Getter
 @Builder
-public class CreateContiDto {
-    @NotBlank
-    @Size(max = 100)
-    private String title;
-
-    @Size(max = 300)
-    private String description;
-
-    private LocalDate date;
-
+public class CopyContiDto {
     private String memberId;
-
+    private String copiedContiId;
+    private String targetContiId;
     private List<String> songIds;
 }

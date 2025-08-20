@@ -24,8 +24,7 @@ public class ResponseMessage {
     public static final String INVALID_JWT = "만료되었거나 유효하지 않은 토큰입니다.";
 
     // entity 404
-    public static final String ENTITY_NOT_FOUND = "존재하지 않는 ";
     public static String notFoundMessage(String entityName) {
-        return ENTITY_NOT_FOUND + entityName + "입니다.";
+        return "존재하지 않는 " + entityName + "입니다.";
     }
 }

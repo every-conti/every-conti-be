@@ -11,6 +11,4 @@ public interface ContiRepository extends JpaRepository<Conti, Long>, ContiReposi
     Conti save(Conti conti);
 
     Conti findContiById(Long id);
-
-    List<Conti> findContiByCreatorId(Long id);
 }
