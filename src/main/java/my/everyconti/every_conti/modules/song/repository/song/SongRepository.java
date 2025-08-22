@@ -2,6 +2,9 @@ package my.everyconti.every_conti.modules.song.repository.song;
 
 import my.everyconti.every_conti.modules.song.domain.Song;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Collection;
 import java.util.List;
@@ -18,6 +21,8 @@ public interface SongRepository extends JpaRepository<Song, Long>, SongRepositor
     Song findByYoutubeVId(String youtubeVId);
 
     List<Song> findByIdIn(Collection<Long> ids);
-//    @EntityGraph
-//    Optional<Member> findOneWithRolesByEmail(String email);
+
+    @Modifying(clearAutomatically = false, flushAutomatically = false)
+    @Query("update Song s set s.creator = null where s.creator.id = :memberId")
+    int detachMemberFromSongs(@Param("memberId") Long memberId);
 }

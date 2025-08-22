@@ -121,7 +121,7 @@ public class ContiService {
     }
 
     @Transactional
-    public ContiSimpleDto updateConti(String contiIdHashed, UpdateContiDto dto) {
+    public ContiWithSongDto updateConti(String contiIdHashed, UpdateContiDto dto) {
         Long contiId = hashIdUtil.decode(contiIdHashed);
         Conti conti = contiRepository.getContiAndContiSongByContiId(contiId);
         if (conti == null) throw new NotFoundException("콘티를 찾을 수 없습니다.");
@@ -174,7 +174,7 @@ public class ContiService {
         }
 
         contiRepository.save(conti);
-        return new ContiSimpleDto(conti, hashIdUtil);
+        return new ContiWithSongDto(conti, hashIdUtil);
     }
 
     @Transactional
@@ -235,6 +235,8 @@ public class ContiService {
 
         if (!toAppend.isEmpty()) {
             contiSongRepository.saveAll(toAppend);
+            // 필요 시 이벤트
+            // publisher.publishEvent(new ContiUpdatedEvent(dst.getId(), "songs_appended_from_conti_copy"));
         }
 
         return new ContiSimpleDto(dst, hashIdUtil);

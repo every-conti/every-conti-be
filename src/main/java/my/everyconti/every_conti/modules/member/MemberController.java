@@ -25,6 +25,13 @@ public class MemberController {
         return ResponseEntity.ok(new CommonResponseDto(true, memberService.signUp(signUpDto)));
     }
 
+    @DeleteMapping("/{memberId}")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public ResponseEntity<CommonResponseDto<String>> deleteMember(@PathVariable String memberId){
+        return ResponseEntity.ok(memberService.deleteMember(memberId));
+    }
+
+
     @GetMapping("/me")
     public ResponseEntity<MemberDto> getMemberWithRoles() {
         return ResponseEntity.ok(memberService.getMemberWithRoles());

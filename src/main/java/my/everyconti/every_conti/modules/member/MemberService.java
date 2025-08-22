@@ -1,6 +1,10 @@
 package my.everyconti.every_conti.modules.member;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import my.everyconti.every_conti.common.dto.response.CommonResponseDto;
 import my.everyconti.every_conti.common.exception.types.*;
 import my.everyconti.every_conti.common.exception.types.custom.EmailNotVerifiedException;
 import my.everyconti.every_conti.common.utils.HashIdUtil;
@@ -9,6 +13,8 @@ import my.everyconti.every_conti.constant.ResponseMessage;
 import my.everyconti.every_conti.constant.redis.EmailVerified;
 import my.everyconti.every_conti.constant.role.RoleType;
 import my.everyconti.every_conti.modules.auth.domain.Role;
+import my.everyconti.every_conti.modules.conti.repository.conti.ContiRepository;
+import my.everyconti.every_conti.modules.conti.repository.contiSong.ContiSongRepository;
 import my.everyconti.every_conti.modules.member.domain.Member;
 import my.everyconti.every_conti.modules.member.domain.MemberFollow;
 import my.everyconti.every_conti.modules.member.domain.MemberRole;
@@ -18,6 +24,7 @@ import my.everyconti.every_conti.modules.member.dto.SignUpDto;
 import my.everyconti.every_conti.modules.member.repository.MemberFollowRepository;
 import my.everyconti.every_conti.modules.member.repository.member.MemberRepository;
 import my.everyconti.every_conti.modules.redis.RedisService;
+import my.everyconti.every_conti.modules.song.repository.song.SongRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +41,11 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final HashIdUtil hashIdUtil;
     private final MemberFollowRepository memberFollowRepository;
+    private final SongRepository songRepository;
+    private final ContiSongRepository contiSongRepository;
+    private final ContiRepository contiRepository;
+    @PersistenceContext
+    private final EntityManager em;
 
     public MemberDto signUp(SignUpDto signUpDto){
         String email = signUpDto.getEmail();
@@ -97,5 +109,34 @@ public class MemberService {
 
         Member member = memberRepository.findByEmail(email).orElseThrow();
         return memberFollowRepository.findMemberFollowByFollowing(member).stream().map(f -> new MemberFollowDto(f, hashIdUtil)).toList();
+    }
+
+    @Transactional
+    public CommonResponseDto<String> deleteMember(String memberId){
+        Long innerMemberId = hashIdUtil.decode(memberId);
+        Member member = memberRepository.findById(innerMemberId).orElseThrow();
+
+        // 본인인지 확인
+        SecurityUtil.userMatchOrAdmin(member.getEmail());
+
+        // 등록한 노래 fk null로 만들기
+        int affected = songRepository.detachMemberFromSongs(innerMemberId);
+        em.flush();
+        em.clear();
+
+        // 등록한 콘티송 삭제
+        int csDeleted = contiSongRepository.deleteAllByMemberId(innerMemberId);
+        em.flush();
+        em.clear();
+
+        // 등록한 콘티 삭제
+        int contiDeleted = contiRepository.deleteAllByMemberId(innerMemberId);
+        em.flush();
+        em.clear();
+
+        // 멤버 삭제
+        memberRepository.delete(member);
+
+        return new CommonResponseDto<>(true,  ResponseMessage.SUCCESS);
     }
 }

@@ -29,9 +29,8 @@ public class ContiController {
 
     @PutMapping("/{contiId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    public CommonResponseDto<ContiSimpleDto> updateConti(@PathVariable String contiId, @RequestBody UpdateContiDto updateContiDto) {
-        ContiSimpleDto updated = contiService.updateConti(contiId, updateContiDto);
-        return new CommonResponseDto<>(true, updated);
+    public ResponseEntity<ContiWithSongDto> updateConti(@PathVariable String contiId, @RequestBody UpdateContiDto updateContiDto) {
+        return ResponseEntity.ok(contiService.updateConti(contiId, updateContiDto));
     }
 
     @PostMapping("/copy")
