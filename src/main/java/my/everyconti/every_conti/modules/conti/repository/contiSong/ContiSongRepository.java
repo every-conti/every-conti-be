@@ -8,4 +8,6 @@ public interface ContiSongRepository extends JpaRepository<ContiSong, Long>, Con
 
     @Override
     ContiSong save(ContiSong contiSong);
+
+    void deleteByContiId(Long contiId);
 }

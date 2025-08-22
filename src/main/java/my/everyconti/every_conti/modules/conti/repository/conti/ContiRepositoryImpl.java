@@ -247,6 +247,7 @@ public class ContiRepositoryImpl implements ContiRepositoryCustom {
                 .leftJoin(conti.contiSongs, contiSong).fetchJoin()
                 .leftJoin(contiSong.song, song).fetchJoin()
                 .where(conti.id.in(contiIds))
+                .orderBy(conti.date.desc())
                 .fetch();
         return contis;
     }

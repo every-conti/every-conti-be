@@ -27,6 +27,10 @@ public class SignUpDto {
     private String password;
 
     @NotBlank
+    @Size(min = 3, max = 15)
+    private String name;
+
+    @NotBlank
     @Size(min = 3, max = 15, message = "사용자 이름은 15글자 이하로 입력해야 합니다.")
     private String nickname;
 

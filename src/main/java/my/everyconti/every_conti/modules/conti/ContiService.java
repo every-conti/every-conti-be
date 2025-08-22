@@ -1,5 +1,7 @@
 package my.everyconti.every_conti.modules.conti;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import my.everyconti.every_conti.common.dto.response.CommonPaginationDto;
@@ -10,10 +12,7 @@ import my.everyconti.every_conti.common.utils.HashIdUtil;
 import my.everyconti.every_conti.common.utils.SecurityUtil;
 import my.everyconti.every_conti.constant.ResponseMessage;
 import my.everyconti.every_conti.modules.conti.domain.*;
-import my.everyconti.every_conti.modules.conti.dto.request.CopyContiDto;
-import my.everyconti.every_conti.modules.conti.dto.request.CreateContiDto;
-import my.everyconti.every_conti.modules.conti.dto.request.SearchContiDto;
-import my.everyconti.every_conti.modules.conti.dto.request.UpdateContiOrderDto;
+import my.everyconti.every_conti.modules.conti.dto.request.*;
 import my.everyconti.every_conti.modules.conti.dto.response.ContiPropertiesDto;
 import my.everyconti.every_conti.modules.conti.dto.response.ContiSimpleDto;
 import my.everyconti.every_conti.modules.conti.dto.response.ContiWithSongDto;
@@ -46,6 +45,8 @@ public class ContiService {
     private final ContiSongRepository contiSongRepository;
     private final PraiseTeamRepository praiseTeamRepository;
     private final ApplicationEventPublisher publisher;
+    @PersistenceContext
+    private EntityManager em;
 
 
     @Transactional
@@ -120,6 +121,63 @@ public class ContiService {
     }
 
     @Transactional
+    public ContiSimpleDto updateConti(String contiIdHashed, UpdateContiDto dto) {
+        Long contiId = hashIdUtil.decode(contiIdHashed);
+        Conti conti = contiRepository.getContiAndContiSongByContiId(contiId);
+        if (conti == null) throw new NotFoundException("콘티를 찾을 수 없습니다.");
+
+        SecurityUtil.userMatchOrAdmin(conti.getCreator().getEmail());
+
+        if (dto.getTitle() != null) conti.setTitle(dto.getTitle());
+        if (dto.getDescription() != null) conti.setDescription(dto.getDescription());
+        if (dto.getDate() != null) conti.setDate(dto.getDate());
+
+        if (dto.getSongIds() != null) {
+            // 1) 기존 곡 모두 삭제 (bulk) + 즉시 flush
+            contiSongRepository.deleteByContiId(contiId);
+            conti.getContiSongs().clear();
+            em.flush();
+            em.clear();
+
+            // 2) 요청된 곡들 준비 (중복 제거 + 순서 유지)
+            List<String> dedupHashed = new ArrayList<>(new LinkedHashSet<>(dto.getSongIds()));
+            List<Long> songIds = dedupHashed.stream().map(hashIdUtil::decode).toList();
+
+            // 3) 존재 검증
+            List<Song> songs = songRepository.findAllById(songIds);
+            if (songs.size() != songIds.size()) {
+                Set<Long> found = songs.stream().map(Song::getId).collect(Collectors.toSet());
+                List<String> missing = new ArrayList<>();
+                for (String h : dedupHashed) {
+                    Long id = hashIdUtil.decode(h);
+                    if (!found.contains(id)) missing.add(h);
+                }
+                throw new IllegalArgumentException("존재하지 않는 곡 ID 포함: " + missing);
+            }
+            Map<Long, Song> songMap = songs.stream()
+                    .collect(Collectors.toMap(Song::getId, Function.identity()));
+
+            // 4) 새 insert (orderIndex 0..N-1 또는 1..N으로 "통일")
+            List<ContiSong> toInsert = new ArrayList<>(songIds.size());
+            for (int i = 0; i < songIds.size(); i++) {
+                Long sid = songIds.get(i);
+                toInsert.add(
+                        ContiSong.builder()
+                                .conti(conti)
+                                .song(songMap.get(sid))
+                                .orderIndex(i)
+                                .build()
+                );
+            }
+            contiSongRepository.saveAll(toInsert);
+            conti.getContiSongs().addAll(toInsert);
+        }
+
+        contiRepository.save(conti);
+        return new ContiSimpleDto(conti, hashIdUtil);
+    }
+
+    @Transactional
     public ContiSimpleDto copyConti(CopyContiDto dto) {
         // 0) 호출자 검증
         Member member = memberRepository
@@ -177,8 +235,6 @@ public class ContiService {
 
         if (!toAppend.isEmpty()) {
             contiSongRepository.saveAll(toAppend);
-            // 필요 시 이벤트
-            // publisher.publishEvent(new ContiUpdatedEvent(dst.getId(), "songs_appended_from_conti_copy"));
         }
 
         return new ContiSimpleDto(dst, hashIdUtil);
@@ -236,35 +292,6 @@ public class ContiService {
         conti.getContiSongs().add(contiSong);
         contiSongRepository.save(contiSong);
         contiRepository.save(conti);
-
-        return new ContiSimpleDto(conti, hashIdUtil);
-    }
-
-    @Transactional
-    public ContiSimpleDto updateContiOrder(String contiId, UpdateContiOrderDto updateContiOrderDto){
-        Conti conti = contiRepository.getContiAndContiSongByContiId(hashIdUtil.decode(contiId));
-
-        // creator인지 확인
-        SecurityUtil.userMatchOrAdmin(conti.getCreator().getEmail());
-
-        List<String> contiSongIds = updateContiOrderDto.getContiSongIds();
-        List<Long> contiSongIdsLong = contiSongIds.stream().map(id -> hashIdUtil.decode(id)).toList();
-
-        if (contiSongIds.size() != conti.getContiSongs().size()) {
-            throw new IllegalArgumentException("전달된 곡 ID 목록이 기존과 일치하지 않습니다.");
-        }
-
-        // 순서 재설정
-        Map<Long, ContiSong> songMap = conti.getContiSongs().stream()
-                .collect(Collectors.toMap(ContiSong::getId, cs -> cs));
-
-        for (int i = 0; i < contiSongIdsLong.size(); i++) {
-            Long id = contiSongIdsLong.get(i);
-            ContiSong cs = songMap.get(id);
-            cs.setOrderIndex(i+1);
-        }
-
-        contiSongRepository.saveAll(songMap.values());
 
         return new ContiSimpleDto(conti, hashIdUtil);
     }

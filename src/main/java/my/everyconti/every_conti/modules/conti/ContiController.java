@@ -4,10 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import my.everyconti.every_conti.common.dto.response.CommonPaginationDto;
 import my.everyconti.every_conti.common.dto.response.CommonResponseDto;
-import my.everyconti.every_conti.modules.conti.dto.request.CopyContiDto;
-import my.everyconti.every_conti.modules.conti.dto.request.CreateContiDto;
-import my.everyconti.every_conti.modules.conti.dto.request.SearchContiDto;
-import my.everyconti.every_conti.modules.conti.dto.request.UpdateContiOrderDto;
+import my.everyconti.every_conti.modules.conti.dto.request.*;
 import my.everyconti.every_conti.modules.conti.dto.response.ContiPropertiesDto;
 import my.everyconti.every_conti.modules.conti.dto.response.ContiSimpleDto;
 import my.everyconti.every_conti.modules.conti.dto.response.ContiWithSongDto;
@@ -28,6 +25,13 @@ public class ContiController {
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<ContiSimpleDto> createConti(@Valid @RequestBody CreateContiDto createContiDto) {
          return ResponseEntity.ok(contiService.createConti(createContiDto));
+    }
+
+    @PutMapping("/{contiId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    public CommonResponseDto<ContiSimpleDto> updateConti(@PathVariable String contiId, @RequestBody UpdateContiDto updateContiDto) {
+        ContiSimpleDto updated = contiService.updateConti(contiId, updateContiDto);
+        return new CommonResponseDto<>(true, updated);
     }
 
     @PostMapping("/copy")
@@ -57,12 +61,6 @@ public class ContiController {
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<ContiSimpleDto> addSongToConti(@PathVariable String contiId, @PathVariable String songId) {
         return ResponseEntity.ok(contiService.addSongToConti(contiId, songId));
-    }
-
-    @PatchMapping("/{contiId}/songs/order")
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    public ResponseEntity<ContiSimpleDto> updateContiOrder(@Valid @PathVariable String contiId, @RequestBody UpdateContiOrderDto updateContiOrderDto){
-        return ResponseEntity.ok(contiService.updateContiOrder(contiId, updateContiOrderDto));
     }
 
     @GetMapping("/praise-teams/famous/last-conti")

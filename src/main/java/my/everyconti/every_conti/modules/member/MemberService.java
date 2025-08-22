@@ -44,6 +44,7 @@ public class MemberService {
             throw new AlreadyExistElementException(ResponseMessage.CONFLICT);
         }
         Member member = Member.builder()
+                .name(signUpDto.getName())
                 .nickname(signUpDto.getNickname())
                 .password(passwordEncoder.encode(signUpDto.getPassword()))
                 .email(signUpDto.getEmail())
