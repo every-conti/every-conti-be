@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import my.everyconti.every_conti.common.dto.error.ErrorResponseDto;
 import my.everyconti.every_conti.common.exception.types.*;
 import my.everyconti.every_conti.common.exception.types.custom.CustomAuthException;
+import my.everyconti.every_conti.common.exception.types.custom.LimitExceededException;
 import my.everyconti.every_conti.common.utils.ExceptionUtil;
 import my.everyconti.every_conti.constant.ResponseMessage;
 import org.springframework.beans.factory.annotation.Value;
@@ -106,6 +107,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return buildErrorResponse(exception, ResponseMessage.CONFLICT, HttpStatus.CONFLICT, request);
     }
 
+    @ExceptionHandler(LimitExceededException.class)
+    public ResponseEntity<Object> handleLimitExceeded(LimitExceededException ex, WebRequest request) {
+        return buildErrorResponse(ex, ex.getMessage(), HttpStatus.CONFLICT, request);
+    }
+
     // 412 Validate Exception
     @Override
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
@@ -124,5 +130,4 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         log.error(ResponseMessage.INTERNAL_SERVER_ERROR, exception);
         return buildErrorResponse(exception, ResponseMessage.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
-
 }

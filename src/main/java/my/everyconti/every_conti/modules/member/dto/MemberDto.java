@@ -3,7 +3,6 @@ package my.everyconti.every_conti.modules.member.dto;
 import lombok.Getter;
 import my.everyconti.every_conti.common.utils.HashIdUtil;
 import my.everyconti.every_conti.modules.member.domain.Member;
-import my.everyconti.every_conti.modules.song.dto.response.PraiseTeamDto;
 
 import java.util.List;
 import java.util.stream.Collectors;

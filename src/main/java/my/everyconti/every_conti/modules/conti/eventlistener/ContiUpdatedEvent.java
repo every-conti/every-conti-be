@@ -7,7 +7,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ContiCreatedEvent {
+public class ContiUpdatedEvent {
     private Long id;
     private String title;
+
 }

@@ -22,6 +22,7 @@ public class ResponseMessage {
     public static final String USER_NOT_EXIST = "일치하는 유저정보가 없습니다.";
     public static final String DELETED = "삭제 완료 되었습니다.";
     public static final String INVALID_JWT = "만료되었거나 유효하지 않은 토큰입니다.";
+    public static final String CONTI_SONG_LIMIT_EXCEEDED = "최대 30곡을 담을 수 있습니다.";
 
     // entity 404
     public static String notFoundMessage(String entityName) {

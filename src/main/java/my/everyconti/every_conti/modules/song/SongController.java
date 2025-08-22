@@ -28,15 +28,20 @@ public class SongController {
         return ResponseEntity.ok(songService.createSong(createSongDto));
     }
 
-    @GetMapping("/detail/{songId}")
-    public ResponseEntity<SongDto> getSongDetailInfo(@PathVariable("songId") String songId){
-        return ResponseEntity.ok(songService.getSongDetailInfo(songId));
+    @GetMapping("/lasts")
+    public ResponseEntity<List<MinimumSongToPlayDto>> getLastFourSongs(){
+        return ResponseEntity.ok(songService.getLastFourSongs());
     }
 
     // 찬양 생성／검색을 위한 조건
     @GetMapping("/properties")
     public ResponseEntity<SongPropertiesDto> getSongProperties(){
         return ResponseEntity.ok(songService.getSongProperties());
+    }
+
+    @GetMapping("/detail/{songId}")
+    public ResponseEntity<SongDto> getSongDetailInfo(@PathVariable("songId") String songId){
+        return ResponseEntity.ok(songService.getSongDetailInfo(songId));
     }
 
     @GetMapping("/youtube-v-id/check/{youtubeVId}")
@@ -55,11 +60,6 @@ public class SongController {
     @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<CommonResponseDto<String>> createSong(@PathVariable Long innerSongId) {
         return ResponseEntity.ok(songService.deleteSong(innerSongId));
-    }
-
-    @GetMapping("/lasts")
-    public ResponseEntity<List<MinimumSongToPlayDto>> getLastFourSongs(){
-        return ResponseEntity.ok(songService.getLastFourSongs());
     }
 //    @GetMapping("/praiseTeams")
 //    public ResponseEntity<List<PraiseTeamDto>> getPraiseTeamLists(){

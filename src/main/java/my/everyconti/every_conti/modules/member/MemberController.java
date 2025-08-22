@@ -4,9 +4,7 @@ package my.everyconti.every_conti.modules.member;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import my.everyconti.every_conti.common.dto.response.CommonResponseDto;
-import my.everyconti.every_conti.modules.member.dto.MemberDto;
-import my.everyconti.every_conti.modules.member.dto.MemberFollowDto;
-import my.everyconti.every_conti.modules.member.dto.SignUpDto;
+import my.everyconti.every_conti.modules.member.dto.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +27,17 @@ public class MemberController {
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<CommonResponseDto<String>> deleteMember(@PathVariable String memberId){
         return ResponseEntity.ok(memberService.deleteMember(memberId));
+    }
+
+    @PatchMapping("/{memberId}/password")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public ResponseEntity<CommonResponseDto<String>> updatePassword(@PathVariable String memberId, @RequestBody UpdatePasswordDto updatePasswordDto){
+        return ResponseEntity.ok(memberService.updatePassword(memberId, updatePasswordDto));
+    }
+    @PatchMapping("/{memberId}/nickname")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public ResponseEntity<CommonResponseDto<String>> updateNickname(@PathVariable String memberId, @Valid @RequestBody UpdateNicknameDto updateNicknameDto){
+        return ResponseEntity.ok(memberService.updateNickname(memberId, updateNicknameDto));
     }
 
 

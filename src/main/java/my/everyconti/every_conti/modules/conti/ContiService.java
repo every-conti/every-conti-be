@@ -8,6 +8,7 @@ import my.everyconti.every_conti.common.dto.response.CommonPaginationDto;
 import my.everyconti.every_conti.common.dto.response.CommonResponseDto;
 import my.everyconti.every_conti.common.exception.types.AlreadyExistElementException;
 import my.everyconti.every_conti.common.exception.types.NotFoundException;
+import my.everyconti.every_conti.common.exception.types.custom.LimitExceededException;
 import my.everyconti.every_conti.common.utils.HashIdUtil;
 import my.everyconti.every_conti.common.utils.SecurityUtil;
 import my.everyconti.every_conti.constant.ResponseMessage;
@@ -17,6 +18,7 @@ import my.everyconti.every_conti.modules.conti.dto.response.ContiPropertiesDto;
 import my.everyconti.every_conti.modules.conti.dto.response.ContiSimpleDto;
 import my.everyconti.every_conti.modules.conti.dto.response.ContiWithSongDto;
 import my.everyconti.every_conti.modules.conti.eventlistener.ContiCreatedEvent;
+import my.everyconti.every_conti.modules.conti.eventlistener.ContiUpdatedEvent;
 import my.everyconti.every_conti.modules.conti.repository.conti.ContiRepository;
 import my.everyconti.every_conti.modules.conti.repository.contiSong.ContiSongRepository;
 import my.everyconti.every_conti.modules.member.domain.Member;
@@ -33,6 +35,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static my.everyconti.every_conti.constant.ResponseMessage.notFoundMessage;
+import static my.everyconti.every_conti.constant.song.MaxSongsPerConti.MAX_SONGS_PER_CONTI;
 
 
 @Service
@@ -54,6 +57,10 @@ public class ContiService {
         Member member = memberRepository
                 .findById(hashIdUtil.decode(createContiDto.getMemberId()))
                 .orElseThrow();
+
+        if (createContiDto.getSongIds().size() >= MAX_SONGS_PER_CONTI){
+            throw new LimitExceededException(ResponseMessage.CONTI_SONG_LIMIT_EXCEEDED);
+        }
 
         // 자신의 이메일인지 확인
         SecurityUtil.userMatchOrAdmin(member.getEmail());
@@ -124,7 +131,7 @@ public class ContiService {
     public ContiWithSongDto updateConti(String contiIdHashed, UpdateContiDto dto) {
         Long contiId = hashIdUtil.decode(contiIdHashed);
         Conti conti = contiRepository.getContiAndContiSongByContiId(contiId);
-        if (conti == null) throw new NotFoundException("콘티를 찾을 수 없습니다.");
+        if (conti == null) throw new NotFoundException(ResponseMessage.notFoundMessage("콘티"));
 
         SecurityUtil.userMatchOrAdmin(conti.getCreator().getEmail());
 
@@ -174,11 +181,18 @@ public class ContiService {
         }
 
         contiRepository.save(conti);
+
+        if (dto.getTitle() != null){
+            publisher.publishEvent(new ContiUpdatedEvent(contiId, dto.getTitle()));
+        }
+
         return new ContiWithSongDto(conti, hashIdUtil);
     }
 
     @Transactional
     public ContiSimpleDto copyConti(CopyContiDto dto) {
+        final int MAX_SONGS_PER_CONTI = 30;
+
         // 0) 호출자 검증
         Member member = memberRepository
                 .findById(hashIdUtil.decode(dto.getMemberId()))
@@ -186,11 +200,10 @@ public class ContiService {
         SecurityUtil.userMatchOrAdmin(member.getEmail());
 
         // 1) IDs 디코드
-        Long srcContiId = hashIdUtil.decode(dto.getCopiedContiId());  // 곡을 가져올 콘티
-        Long dstContiId = hashIdUtil.decode(dto.getTargetContiId());  // 곡을 붙일 콘티
+        Long srcContiId = hashIdUtil.decode(dto.getCopiedContiId());
+        Long dstContiId = hashIdUtil.decode(dto.getTargetContiId());
 
         if (srcContiId.equals(dstContiId)) {
-            // 자기 자신에게 복사면 할 게 없음
             Conti same = contiRepository.findById(dstContiId)
                     .orElseThrow(() -> new NotFoundException(notFoundMessage("콘티")));
             return new ContiSimpleDto(same, hashIdUtil);
@@ -202,28 +215,26 @@ public class ContiService {
         Conti dst = contiRepository.findById(dstContiId)
                 .orElseThrow(() -> new NotFoundException(notFoundMessage("대상 콘티")));
 
-        // 3) 원본 곡 목록(순서대로) 조회
+        // 3) 원본 곡 목록(순서대로)
         List<ContiSong> srcSongs = contiSongRepository
                 .findAllByContiIdOrderByOrderIndexAsc(src.getId());
-
         if (srcSongs.isEmpty()) {
-            // 원본에 곡이 없으면 그대로 반환
             return new ContiSimpleDto(dst, hashIdUtil);
         }
 
-        // 4) 대상 콘티의 마지막 orderIndex 및 기존 포함 곡 수집
+        // 4) 대상 마지막 orderIndex & 기존 포함 곡 수집
         int maxOrder = Optional.ofNullable(
                 contiSongRepository.findMaxOrderIndexByContiId(dst.getId())
         ).orElse(-1);
         Set<Long> existingSongIds = contiSongRepository.findSongIdsByContiId(dst.getId());
+        int existingCount = existingSongIds.size();
 
-        // 5) Append 목록 생성 (중복 곡은 스킵)
+        // 5) Append 목록 생성 (src 내 중복까지 제거하려고 seen 사용)
+        Set<Long> seen = new HashSet<>(existingSongIds);
         List<ContiSong> toAppend = new ArrayList<>(srcSongs.size());
         for (ContiSong cs : srcSongs) {
             Long songId = cs.getSong().getId();
-
-            // 중복 허용하려면 이 조건을 제거
-            if (existingSongIds.contains(songId)) continue;
+            if (!seen.add(songId)) continue;
 
             ContiSong clone = ContiSong.builder()
                     .conti(dst)
@@ -233,16 +244,19 @@ public class ContiService {
             toAppend.add(clone);
         }
 
+        // 6) 개수 제한 체크 (최대 30곡 허용: 최종 개수가 31 이상이면 예외)
+        int finalCount = existingCount + toAppend.size();
+        if (finalCount > MAX_SONGS_PER_CONTI) {
+            throw new LimitExceededException(ResponseMessage.CONTI_SONG_LIMIT_EXCEEDED);
+        }
+
         if (!toAppend.isEmpty()) {
             contiSongRepository.saveAll(toAppend);
-            // 필요 시 이벤트
-            // publisher.publishEvent(new ContiUpdatedEvent(dst.getId(), "songs_appended_from_conti_copy"));
+//            publisher.publishEvent(new ContiUpdatedEvent(dst.getId(), "songs_appended_from_conti_copy"));
         }
 
         return new ContiSimpleDto(dst, hashIdUtil);
     }
-
-
 
     public CommonPaginationDto<ContiWithSongDto> getMyContiList(String memberId, Long offset){
         Member member = memberRepository.findById(hashIdUtil.decode(memberId)).orElseThrow();
@@ -272,6 +286,10 @@ public class ContiService {
         Conti conti = contiRepository.getContiByIdWithJoin(innerContiId);
         // creator인지 확인
         SecurityUtil.userMatchOrAdmin(conti.getCreator().getEmail());
+
+        if (conti.getContiSongs().size() >= MAX_SONGS_PER_CONTI) {
+            throw new LimitExceededException(ResponseMessage.CONTI_SONG_LIMIT_EXCEEDED);
+        }
 
         boolean alreadyExists = conti.getContiSongs().stream()
                 .anyMatch(cs -> cs.getSong().getId().equals(innerSongId));

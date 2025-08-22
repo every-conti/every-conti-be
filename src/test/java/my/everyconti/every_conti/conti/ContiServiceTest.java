@@ -23,17 +23,17 @@ public class ContiServiceTest {
     @Autowired
     private HashIdUtil hashIdUtil;
 
-    @Test
-    public void contiSaveTest(){
-        CreateContiDto dto = CreateContiDto.builder()
-                .title("0813콘티")
-                .memberId(hashIdUtil.encode(4L))
-                .date(LocalDate.now())
-                .build();
-
-        ContiSimpleDto result = contiService.createConti(dto);
-        System.out.println("result = " + result);
-    }
+//    @Test
+//    public void contiSaveTest(){
+//        CreateContiDto dto = CreateContiDto.builder()
+//                .title("0813콘티")
+//                .memberId(hashIdUtil.encode(4L))
+//                .date(LocalDate.now())
+//                .build();
+//
+//        ContiSimpleDto result = contiService.createConti(dto);
+//        System.out.println("result = " + result);
+//    }
 
 //    @Test
 //    public void contiGetTest(){

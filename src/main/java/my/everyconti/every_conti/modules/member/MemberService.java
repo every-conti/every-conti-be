@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import my.everyconti.every_conti.common.dto.response.CommonResponseDto;
 import my.everyconti.every_conti.common.exception.types.*;
+import my.everyconti.every_conti.common.exception.types.custom.CustomAuthException;
 import my.everyconti.every_conti.common.exception.types.custom.EmailNotVerifiedException;
 import my.everyconti.every_conti.common.utils.HashIdUtil;
 import my.everyconti.every_conti.common.utils.SecurityUtil;
@@ -18,9 +19,7 @@ import my.everyconti.every_conti.modules.conti.repository.contiSong.ContiSongRep
 import my.everyconti.every_conti.modules.member.domain.Member;
 import my.everyconti.every_conti.modules.member.domain.MemberFollow;
 import my.everyconti.every_conti.modules.member.domain.MemberRole;
-import my.everyconti.every_conti.modules.member.dto.MemberDto;
-import my.everyconti.every_conti.modules.member.dto.MemberFollowDto;
-import my.everyconti.every_conti.modules.member.dto.SignUpDto;
+import my.everyconti.every_conti.modules.member.dto.*;
 import my.everyconti.every_conti.modules.member.repository.MemberFollowRepository;
 import my.everyconti.every_conti.modules.member.repository.member.MemberRepository;
 import my.everyconti.every_conti.modules.redis.RedisService;
@@ -137,6 +136,41 @@ public class MemberService {
         // 멤버 삭제
         memberRepository.delete(member);
 
+        return new CommonResponseDto<>(true,  ResponseMessage.SUCCESS);
+    }
+
+    public CommonResponseDto<String> updatePassword(String memberId, UpdatePasswordDto updatePasswordDto){
+        Long innerMemberId = hashIdUtil.decode(memberId);
+        Member member = memberRepository.findById(innerMemberId).orElseThrow();
+
+        // 본인인지 확인
+        SecurityUtil.userMatchOrAdmin(member.getEmail());
+
+        String currentPassword = updatePasswordDto.getCurrentPassword();
+        String newPassword = updatePasswordDto.getNewPassword();
+
+        if (!passwordEncoder.matches(currentPassword, member.getPassword())) {
+            throw new CustomAuthException("현재 비밀번호가 일치하지 않습니다.");
+        }
+
+        if (passwordEncoder.matches(newPassword, member.getPassword())) {
+            throw new CustomAuthException("이전 비밀번호와 동일한 비밀번호는 사용할 수 없습니다.");
+        }
+
+        member.setPassword(passwordEncoder.encode(newPassword));
+        memberRepository.save(member);
+        return new CommonResponseDto<>(true,  ResponseMessage.SUCCESS);
+    }
+
+    public CommonResponseDto<String> updateNickname(String memberId, UpdateNicknameDto updateNicknameDto){
+        Long innerMemberId = hashIdUtil.decode(memberId);
+        Member member = memberRepository.findById(innerMemberId).orElseThrow();
+
+        // 본인인지 확인
+        SecurityUtil.userMatchOrAdmin(member.getEmail());
+
+        member.setNickname(updateNicknameDto.getNickname());
+        memberRepository.save(member);
         return new CommonResponseDto<>(true,  ResponseMessage.SUCCESS);
     }
 }

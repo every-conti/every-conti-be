@@ -67,7 +67,7 @@ public class SongDto {
         youtubeVId = song.getYoutubeVId();
         songType = song.getSongType();
         praiseTeam = new PraiseTeamDto(song.getPraiseTeam(), hashIdUtil);
-        creatorNickname = new MemberNicknameDto(song.getCreator());
+        creatorNickname = song.getCreator() != null ? new MemberNicknameDto(song.getCreator()) : null;
         songThemes = song.getSongThemes().stream()
                 .map(s -> new SongThemeDto(s.getSongTheme(), hashIdUtil))
                 .collect(Collectors.toList());
