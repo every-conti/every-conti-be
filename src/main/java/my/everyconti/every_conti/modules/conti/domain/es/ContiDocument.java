@@ -8,7 +8,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.Setting;
 
 @Document(indexName = "contis")
-@Setting(settingPath = "/elasticsearch/full-text-settings.json")  // 설정 파일 경로
+@Setting(settingPath = "/elasticsearch/conti-full-text-settings.json")  // 설정 파일 경로
 @Getter
 @Setter
 @NoArgsConstructor

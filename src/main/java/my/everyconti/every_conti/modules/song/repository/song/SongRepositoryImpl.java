@@ -99,14 +99,14 @@ public class SongRepositoryImpl implements SongRepositoryCustom {
         QSong song = QSong.song;
         BooleanBuilder builder = new BooleanBuilder();
 
+        List<Long> idsInOrder = null;
         if (text != null && !text.isBlank()) {
-            List<SongDocument> docs = songSearchRepository.fullTextSearch(text);
-            List<Long> ids = docs.stream().map(SongDocument::getId).toList();
-            if (ids.isEmpty()) {
-                return List.of(); // 검색결과 없으면 조기 종료
-            }
+            int pageIndex = (int)(offset / 21);
+            var page = songSearchRepository.fullTextSearch(text, org.springframework.data.domain.PageRequest.of(pageIndex, 21));
+            idsInOrder = page.getContent().stream().map(SongDocument::getId).toList();
 
-            builder.and(song.id.in(ids));
+            if (idsInOrder.isEmpty()) return List.of();
+            builder.and(song.id.in(idsInOrder));
         }
 
         if (songType != null) {
@@ -152,8 +152,7 @@ public class SongRepositoryImpl implements SongRepositoryCustom {
                 .leftJoin(song.season).fetchJoin()
                 .leftJoin(song.bible).fetchJoin()
                 .leftJoin(song.bibleChapter).fetchJoin()
-                .leftJoin(song.bibleVerse).fetchJoin()
-                .distinct();
+                .leftJoin(song.bibleVerse).fetchJoin();
 
         if (themeIds != null && !themeIds.isEmpty()) {
             Set<Long> themeIdLongs = new HashSet<>(themeIds.stream().map(hashIdUtil::decode).toList());
@@ -174,11 +173,25 @@ public class SongRepositoryImpl implements SongRepositoryCustom {
             query.where(song.id.in(matchedSongIds));
         }
 
-        return query
-                .where(builder)
-                .offset(offset)
-                .limit(21)
-                .orderBy(song.id.desc())
-                .fetch();
+        query
+            .where(builder)
+            .offset(offset)
+            .limit(21);
+
+        if (idsInOrder != null) {
+            com.querydsl.core.types.dsl.NumberExpression<Integer> orderExpr =
+                    com.querydsl.core.types.dsl.Expressions.asNumber(Integer.MAX_VALUE);
+            for (int i = idsInOrder.size() - 1; i >= 0; i--) {
+                Long id = idsInOrder.get(i);
+                orderExpr = new com.querydsl.core.types.dsl.CaseBuilder()
+                        .when(song.id.eq(id)).then(i)
+                        .otherwise(orderExpr);
+            }
+            query.orderBy(orderExpr.asc(), song.id.desc());
+        } else {
+            query.orderBy(song.id.desc());
+        }
+
+        return query.fetch();
     }
 }

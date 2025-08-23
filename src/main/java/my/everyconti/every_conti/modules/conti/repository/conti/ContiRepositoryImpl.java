@@ -168,87 +168,102 @@ public class ContiRepositoryImpl implements ContiRepositoryCustom {
     }
 
     @Override
-    public List<Conti> findContisWithSearchParams(SearchContiDto searchContiDto){
-        String text = searchContiDto.getText();
-        List<String> songIds = searchContiDto.getSongIds();
-        String praiseTeamId = searchContiDto.getPraiseTeamId();
-        Boolean isFamous = searchContiDto.getIsFamous();
-        Boolean includePersonalConti = searchContiDto.getIncludePersonalConti();
-        Integer minTotalDuration = searchContiDto.getMinTotalDuration();
-        Integer maxTotalDuration = searchContiDto.getMaxTotalDuration();
-        Long offset = searchContiDto.getOffset() != null ? searchContiDto.getOffset() : 0;
+    public List<Conti> findContisWithSearchParams(SearchContiDto dto) {
+        String text = dto.getText();
+        List<String> songIds = dto.getSongIds();
+        String praiseTeamId = dto.getPraiseTeamId();
+        Boolean isFamous = dto.getIsFamous();
+        Boolean includePersonalConti = dto.getIncludePersonalConti();
+        Integer minTotalDuration = dto.getMinTotalDuration();
+        Integer maxTotalDuration = dto.getMaxTotalDuration();
+        long offset = dto.getOffset() != null ? dto.getOffset() : 0L;
 
+        final int LIMIT = 21;
 
         QConti conti = QConti.conti;
         QContiSong contiSong = QContiSong.contiSong;
-        QSong  song = QSong.song;
-//        QConti contiSub = new QConti("contiSub");
+        QSong song = QSong.song;
         QMember creator = QMember.member;
         QPraiseTeam praiseTeam = QPraiseTeam.praiseTeam;
 
-        BooleanBuilder builder = new BooleanBuilder();
+        BooleanBuilder where = new BooleanBuilder();
 
+        List<Long> esOrderedIds = null;
         if (text != null && !text.isBlank()) {
-            List<ContiDocument> docs = contiSearchRepository.fullTextSearch(text);
-            List<Long> ids = docs.stream().map(ContiDocument::getId).toList();
-            if (ids.isEmpty()) {
-                return List.of(); // 검색결과 없으면 조기 종료
-            }
+            int pageIndex = (int) (offset / LIMIT);
+            var page = contiSearchRepository.fullTextSearch(
+                    text, org.springframework.data.domain.PageRequest.of(pageIndex, LIMIT));
+            esOrderedIds = page.getContent().stream().map(ContiDocument::getId).toList();
+            if (esOrderedIds.isEmpty()) return List.of();
 
-            builder.and(conti.id.in(ids));
+            where.and(conti.id.in(esOrderedIds));
         }
 
         if (songIds != null && !songIds.isEmpty()) {
-            List<Long> songIdsLong = songIds.stream().map(hashIdUtil::decode).toList();
-            builder.and(contiSong.song.id.in(songIdsLong));
+            List<Long> songIdLongs = songIds.stream().map(hashIdUtil::decode).toList();
+            where.and(contiSong.song.id.in(songIdLongs));
         }
-
-        // 본 쿼리에서는 해당 ID들만 가져오고 필요한 데이터 fetchJoin
-        JPAQuery<Long> query = queryFactory
-                .select(conti.id)
-                .from(conti)
-                .join(conti.contiSongs, contiSong)
-                .leftJoin(contiSong.song, song)
-                .leftJoin(conti.creator, creator)
-                .leftJoin(creator.praiseTeam, praiseTeam);
 
         if (isFamous != null) {
-            builder.and(praiseTeam.isFamous.eq(isFamous));
+            where.and(praiseTeam.isFamous.eq(isFamous));
         }
 
-        if (praiseTeamId != null) {
-            builder.and(creator.praiseTeam.id.eq(hashIdUtil.decode(praiseTeamId)));
+        if (praiseTeamId != null && !praiseTeamId.isBlank()) {
+            where.and(creator.praiseTeam.id.eq(hashIdUtil.decode(praiseTeamId)));
         }
 
         if (Boolean.FALSE.equals(includePersonalConti)) {
-            builder.and(creator.praiseTeam.isNotNull());
+            where.and(creator.praiseTeam.isNotNull());
         }
 
-        if (minTotalDuration != null & maxTotalDuration != null) {
-            query
-                .groupBy(conti.id)
-                .having(song.duration.sum().between(minTotalDuration, maxTotalDuration));
+        List<Long> contiIds;
+        if (esOrderedIds == null) {
+            JPAQuery<Long> idQuery = queryFactory
+                    .select(conti.id)
+                    .from(conti)
+                    .join(conti.contiSongs, contiSong)
+                    .leftJoin(contiSong.song, song)
+                    .leftJoin(conti.creator, creator)
+                    .leftJoin(creator.praiseTeam, praiseTeam)
+                    .where(where);
+
+            if (minTotalDuration != null && maxTotalDuration != null) {
+                idQuery.groupBy(conti.id, conti.date)
+                        .having(song.duration.sum().between(minTotalDuration, maxTotalDuration));
+            } else {
+                idQuery.groupBy(conti.id, conti.date);
+            }
+
+            contiIds = idQuery
+                    .orderBy(conti.date.desc())
+                    .offset(offset)
+                    .limit(LIMIT)
+                    .fetch();
+
+            if (contiIds.isEmpty()) return List.of();
+        } else {
+            contiIds = esOrderedIds;
         }
 
-        List<Long> contiIds = query
-                .where(builder)
-                .groupBy(conti.id, conti.date)
-                .orderBy(conti.date.desc())
-                .offset(offset)
-                .limit(21)
-                .fetch();
+        // CASE 정렬식 구성 (없으면 뒤로 보내기)
+        com.querydsl.core.types.dsl.NumberExpression<Integer> orderExpr =
+                com.querydsl.core.types.dsl.Expressions.asNumber(Integer.MAX_VALUE);
+        for (int i = contiIds.size() - 1; i >= 0; i--) {
+            Long id = contiIds.get(i);
+            orderExpr = new com.querydsl.core.types.dsl.CaseBuilder()
+                    .when(conti.id.eq(id)).then(i)
+                    .otherwise(orderExpr);
+        }
 
-        if (contiIds.isEmpty()) return Collections.emptyList();
-
-        List<Conti> contis = queryFactory
+        var fetchQuery = queryFactory
                 .selectFrom(conti)
                 .leftJoin(conti.creator, creator).fetchJoin()
                 .leftJoin(creator.praiseTeam, praiseTeam).fetchJoin()
                 .leftJoin(conti.contiSongs, contiSong).fetchJoin()
                 .leftJoin(contiSong.song, song).fetchJoin()
                 .where(conti.id.in(contiIds))
-                .orderBy(conti.date.desc())
-                .fetch();
-        return contis;
+                .orderBy(orderExpr.asc(), conti.date.desc());
+
+        return fetchQuery.fetch();
     }
 }
