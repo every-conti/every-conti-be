@@ -43,5 +43,4 @@ jobs:
         with:
           app-name: 'everyconti-product-server'
           slot-name: 'Production'
-          package: 'build/libs/*.jar'
-          # startup-command: 'java -XX:MaxRAMPercentage=75 -jar /home/site/wwwroot/*.jar' # 필요 시
+          package: 'build/libs/*SNAPSHOT.jar'
