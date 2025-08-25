@@ -35,13 +35,16 @@ spring:
 
   data:
     redis:
-      host: localhost
-      port: 6379
+      host: ${SPRING_DATASOURCE_REDIS_HOST}
+      port: 6380
+      key: ${SPRING_DATASOURCE_REDIS_KEY}
       ssl:
         enabled: true
       # password: <your-redis-password>
-    elasticsearch:
-      uris: http://localhost:9200
+      elasticsearch:
+        api-key: ${SPRING_DATASOURCE_ELASTICSEARCH_APIKEY}
+        uris: ${SPRING_DATASOURCE_ELASTICSEARCH_URIS}
+
 
   jpa:
     database: postgresql
