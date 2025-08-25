@@ -1,0 +1,81 @@
+security:
+  jwt:
+    access-secret-key:
+      ${SPRING_DATASOURCE_ACCESS_SECRET_KEY}
+    refresh-secret-key:
+      ${SPRING_DATASOURCE_REFRESH_SECRET_KEY}
+
+web:
+  cors:
+    origins:
+      - ${SPRING_DATASOURCE_WEB_CORS_ORIGINS}
+
+spring:
+  application:
+    name: every-conti
+    env: oper  # dev 환경 설정 (oper로 바꾸려면 여기를 변경)
+
+  org:
+    hashids:
+      hash-id-salt: ${SPRING_DATASOURCE_HASHID_SALT}  # 여기에 salt 입력
+
+  devtools:
+    livereload:
+      enabled: true
+    restart:
+      enabled: true
+
+  datasource:
+    url: ${SPRING_DATASOURCE_POSTGRES_URL}
+    username: ${SPRING_DATASOURCE_POSTGRES_USER_NAME}
+    password: ${SPRING_DATASOURCE_POSTGRES_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 4
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      ssl:
+        enabled: true
+      # password: <your-redis-password>
+    elasticsearch:
+      uris: http://localhost:9200
+
+  jpa:
+    database: postgresql
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: false
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: everyconti@gmail.com
+    password: ${SPRING_DATASOURCE_MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          timeout: 5000
+          starttls:
+            enable: true
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: WARN
+        type:
+          descriptor:
+            sql:
+              BasicBinder: WARN
+      org.elasticsearch.client: TRACE
+
+api:
+  youtube:
+    api-key: ${SPRING_DATASOURCE_YOUTUBE_API_KEY}
