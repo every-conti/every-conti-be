@@ -57,7 +57,13 @@ public class SpringConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(webProperties.getOrigins());
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowedHeaders(List.of(
+                "Authorization",
+                "Content-Type",
+                "Accept",
+                "Origin",
+                "X-Requested-With"
+        ));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -106,7 +112,7 @@ public class SpringConfig {
                             // recommendation
                             .requestMatchers(HttpMethod.GET, "/api/recommendation/co-used-songs/**").permitAll()
                             // song
-                            .requestMatchers(HttpMethod.GET, "/api/song/detail/**", "api/song/properties", "/api/song/youtube-v-id/check/**", "/api/song/search/**", "api/song/lasts").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/api/song/detail/**", "/api/song/properties", "/api/song/youtube-v-id/check/**", "/api/song/search/**", "api/song/lasts").permitAll()
 
                             // preflight 허용
                             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()

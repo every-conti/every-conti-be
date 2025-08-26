@@ -32,7 +32,7 @@ public class BibleService {
         QBible bible = QBible.bible;
         List<Bible> bibles = queryFactory
                 .selectFrom(bible)
-                .distinct()
+                .orderBy(bible.id.asc())
                 .fetch();
         return bibles.stream().map(b ->
                 BibleDto.builder()
