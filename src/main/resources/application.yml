@@ -41,9 +41,9 @@ spring:
       ssl:
         enabled: true
       # password: <your-redis-password>
-      elasticsearch:
-        api-key: ${SPRING_DATASOURCE_ELASTICSEARCH_APIKEY}
-        uris: ${SPRING_DATASOURCE_ELASTICSEARCH_URIS}
+    elasticsearch:
+      api-key: ${SPRING_DATASOURCE_ELASTICSEARCH_APIKEY}
+      uris: ${SPRING_DATASOURCE_ELASTICSEARCH_URIS}
 
 
   jpa:
