@@ -39,7 +39,6 @@ out/
 ### configuration ###
 application.properties
 #application.yml
-application_for_local.yml
 
 ### log ###
 *.log
