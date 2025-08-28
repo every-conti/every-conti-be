@@ -1,46 +1,71 @@
+version: "3.9"
+
 services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.13.2
-    container_name: elasticsearch
+    container_name: es
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
-      - ES_JAVA_OPTS=-Xms512m -Xmx512m  # 💡 Heap 메모리 줄이기
-    ports:
-      - "9200:9200"
+      - bootstrap.memory_lock=true
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+    ulimits:
+      memlock: { soft: -1, hard: -1 }
     volumes:
       - esdata:/usr/share/elasticsearch/data
-    command:
-      - bash
-      - -c
-      - |
-        if [ ! -d "/usr/share/elasticsearch/plugins/analysis-nori" ]; then
+      - esplugins:/usr/share/elasticsearch/plugins
+    ports:
+      - "127.0.0.1:9200:9200"
+    command: >
+      bash -lc "
+        if [ ! -d plugins/analysis-nori ]; then
           bin/elasticsearch-plugin install --batch analysis-nori;
         fi
         exec bin/elasticsearch
-    deploy:
-      resources:
-        limits:
-          memory: 1g
+      "
+    restart: unless-stopped
 
   redis:
-    image: redis
-    container_name: redis
+    image: redis:7.2
+    command: ["redis-server","--appendonly","yes","--requirepass","${REDIS_PASSWORD}"]
+    volumes:
+      - redisdata:/data
     ports:
-      - "6379:6379"
-#    volumes:
-#      - redisdata:/data
-    command: ["redis-server", "--appendonly", "yes"]
+      - "127.0.0.1:6379:6379"
+    restart: unless-stopped
 
   app:
-    build:
-      context: .
-    container_name: spring-app
-    ports:
-      - "8080:8080"
+    image: ${ACR_LOGIN_SERVER}/everyconti-product-server:${APP_TAG}
+    container_name: everyconti-app
     depends_on:
-      - elasticsearch
       - redis
+      - elasticsearch
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
+      - ELASTIC_URL=http://elasticsearch:9200
+      - DATABASE_URL=${DATABASE_URL}
+    expose:
+      - "8080"   # 내부 노출만, 외부는 Caddy 통해 접근
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2.8
+    container_name: caddy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+    restart: unless-stopped
 
 volumes:
   esdata:
+  esplugins:
+  redisdata:
+  caddy_data:
+  caddy_config:

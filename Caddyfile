@@ -1,0 +1,10 @@
+api.everyconti.com {
+    reverse_proxy app:8080
+
+    log {
+        output stdout
+        format console
+    }
+
+    encode gzip zstd
+}

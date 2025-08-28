@@ -1,4 +1,4 @@
-name: Build and deploy JAR app to Azure Web App - everyconti-product-server
+name: Build and deploy JAR app to Azure VM
 
 on:
   push:
@@ -8,9 +8,6 @@ on:
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
 
     steps:
       - uses: actions/checkout@v4
@@ -22,25 +19,29 @@ jobs:
           java-version: '21'
           cache: gradle
 
-      - name: Grant execute permission for Gradle wrapper
-        run: chmod +x ./gradlew || true
-
       - name: Build with Gradle (bootJar)
         run: ./gradlew clean bootJar -x test
 
       - name: Show build outputs (debug)
         run: ls -la build/libs
 
-      - name: Login to Azure
-        uses: azure/login@v2
+      # VM에 jar 업로드
+      - name: Copy JAR to VM
+        uses: appleboy/scp-action@v0.1.7
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_84B91C0844024597BC07D74E239C6312 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_9A92752F78DF49E09103E1A4F4188B61 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_217F3D460EEA4C8EAF7609BF7C4AAA7F }}
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          source: "build/libs/*SNAPSHOT.jar"
+          target: "/home/ubuntu/app/"
 
-      - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v3
+      # VM에서 실행 (기존 프로세스 죽이고 새로 실행)
+      - name: Restart app on VM
+        uses: appleboy/ssh-action@v0.1.10
         with:
-          app-name: 'everyconti-product-server'
-          slot-name: 'Production'
-          package: 'build/libs/*SNAPSHOT.jar'
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          script: |
+            pkill -f SNAPSHOT.jar || true
+            nohup java -jar /home/ubuntu/app/*SNAPSHOT.jar > /home/ubuntu/app/app.log 2>&1 &
