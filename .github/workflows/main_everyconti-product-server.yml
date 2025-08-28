@@ -36,7 +36,7 @@ jobs:
           username: ${{ secrets.VM_USER }}
           key: ${{ secrets.VM_SSH_KEY }}
           source: "build/libs/*SNAPSHOT.jar"
-          target: "/home/ubuntu/app/"
+          target: "/home/${{ secrets.VM_USER }}/everyconti/"
 
       # VM에서 실행 (기존 프로세스 죽이고 새로 실행)
       - name: Restart app on VM
@@ -47,4 +47,4 @@ jobs:
           key: ${{ secrets.VM_SSH_KEY }}
           script: |
             pkill -f SNAPSHOT.jar || true
-            nohup java -jar /home/ubuntu/app/*SNAPSHOT.jar > /home/ubuntu/app/app.log 2>&1 &
+            nohup java -jar /home/${{ secrets.VM_USER }}/everyconti/*SNAPSHOT.jar > /home/${{ secrets.VM_USER }}/everyconti/app.log 2>&1 &
