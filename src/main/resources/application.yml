@@ -35,15 +35,15 @@ spring:
 
   data:
     redis:
-      host: ${SPRING_DATASOURCE_REDIS_HOST}
-      port: 6380
-      key: ${SPRING_DATASOURCE_REDIS_KEY}
+      host: ${SPRING_DATA_REDIS_HOST:redis}
+      port: ${SPRING_DATA_REDIS_PORT:6379}
+      password: ${SPRING_DATA_REDIS_PASSWORD:}
       ssl:
-        enabled: true
-      # password: <your-redis-password>
+        enabled: false   # Docker 내부 통신이므로 SSL 불필요
     elasticsearch:
-      api-key: ${SPRING_DATASOURCE_ELASTICSEARCH_APIKEY}
-      uris: ${SPRING_DATASOURCE_ELASTICSEARCH_URIS}
+      uris: ${SPRING_ELASTICSEARCH_URIS:http://elasticsearch:9200}
+      username: ${SPRING_ELASTICSEARCH_USERNAME:elastic}
+      password: ${SPRING_ELASTICSEARCH_PASSWORD:}
 
 
   jpa:
