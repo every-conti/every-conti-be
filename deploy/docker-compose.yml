@@ -48,7 +48,7 @@ services:
     expose:
       - "8080"   # 내부 노출만, 외부는 Caddy 통해 접근
     volumes:
-      - ./log:/app/log
+      - /home/azureuser/everyconti/log:/app/log
     restart: unless-stopped
 
   caddy:
