@@ -39,6 +39,7 @@ out/
 ### configuration ###
 application.properties
 #application.yml
+.env
 
 ### log ###
 *.log
