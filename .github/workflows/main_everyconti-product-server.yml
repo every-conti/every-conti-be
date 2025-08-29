@@ -50,6 +50,7 @@ jobs:
           key: ${{ secrets.AZURE_VM_SSH_KEY }}
           source: deploy/docker-compose.yml
           target: "/home/azureuser/everyconti/"
+          strip_components: 1
 
       - name: Deploy on Azure VM
         uses: appleboy/ssh-action@v1.2.0
