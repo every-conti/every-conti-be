@@ -1,14 +1,14 @@
 security:
   jwt:
     access-secret-key:
-      ${SPRING_DATASOURCE_ACCESS_SECRET_KEY}
+      ${SPRING_JWT_ACCESS_SECRET_KEY}
     refresh-secret-key:
-      ${SPRING_DATASOURCE_REFRESH_SECRET_KEY}
+      ${SPRING_JWT_REFRESH_SECRET_KEY}
 
 web:
   cors:
     origins:
-      - ${SPRING_DATASOURCE_WEB_CORS_ORIGINS}
+      - ${SPRING_WEB_CORS_ORIGINS}
 
 spring:
   application:
@@ -17,7 +17,7 @@ spring:
 
   org:
     hashids:
-      hash-id-salt: ${SPRING_DATASOURCE_HASHID_SALT}  # 여기에 salt 입력
+      hash-id-salt: ${SPRING_HASHID_SALT}  # 여기에 salt 입력
 
   devtools:
     livereload:
@@ -26,9 +26,9 @@ spring:
       enabled: true
 
   datasource:
-    url: ${SPRING_DATASOURCE_POSTGRES_URL}
-    username: ${SPRING_DATASOURCE_POSTGRES_USER_NAME}
-    password: ${SPRING_DATASOURCE_POSTGRES_PASSWORD}
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 4
@@ -59,7 +59,7 @@ spring:
     host: smtp.gmail.com
     port: 587
     username: everyconti@gmail.com
-    password: ${SPRING_DATASOURCE_MAIL_PASSWORD}
+    password: ${SPRING_MAIL_PASSWORD}
     properties:
       mail:
         smtp:
@@ -81,4 +81,4 @@ logging:
 
 api:
   youtube:
-    api-key: ${SPRING_DATASOURCE_YOUTUBE_API_KEY}
+    api-key: ${SPRING_YOUTUBE_API_KEY}
