@@ -11,6 +11,8 @@ FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 # 타임존(서울)
 RUN apk add --no-cache tzdata && ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
+# 로그 디렉토리 생성 및 권한 설정
+RUN mkdir -p /app/log && chown -R spring:spring /app/log
 # 보안: nobody 유저
 RUN addgroup -S spring && adduser -S spring -G spring
 COPY --from=build /workspace/build/libs/*.jar app.jar
