@@ -3,12 +3,12 @@ FROM gradle:8.8-jdk21-alpine AS build
 WORKDIR /workspace
 COPY . .
 # 캐시 활용
-RUN --mount=type=cache,target=/root/.gradle ./gradlew clean bootJar -x test
+RUN chmod +x ./gradlew
+RUN ./gradlew clean bootJar -x test
 
 # ---------- Runtime stage ----------
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
-RUN chmod +x ./gradlew
 # 타임존(서울)
 RUN apk add --no-cache tzdata && ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 # 보안: nobody 유저
