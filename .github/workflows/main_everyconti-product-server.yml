@@ -1,37 +1,60 @@
-name: Build & Push Backend Image
+name: Build and Deploy Backend
 
 on:
   push:
     branches: [ main ]
-  workflow_dispatch:
 
 jobs:
-  docker:
+  build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write   # GHCR 푸시에 필요
+
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to GHCR
+      - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: ${{ github.actor }}
+          username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build & Push (Backend)
-        uses: docker/build-push-action@v6
+      - name: Build and Push Docker image
+        uses: docker/build-push-action@v5
         with:
-          context: ./
-          file: ./Dockerfile
+          context: ./backend
+          file: ./backend/Dockerfile
           push: true
           tags: |
             ghcr.io/${{ github.repository_owner }}/everyconti-backend:latest
             ghcr.io/${{ github.repository_owner }}/everyconti-backend:${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout repo (to get docker-compose.yml)
+        uses: actions/checkout@v4
+
+      - name: Copy docker-compose.yml to Azure VM
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.AZURE_VM_HOST }}
+          username: ${{ secrets.AZURE_VM_USER }}
+          key: ${{ secrets.AZURE_VM_SSH_KEY }}
+          source: "docker-compose.yml"
+          target: "/home/azureuser/everyconti/"
+
+      - name: Deploy on Azure VM
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.AZURE_VM_HOST }}
+          username: ${{ secrets.AZURE_VM_USER }}
+          key: ${{ secrets.AZURE_VM_SSH_KEY }}
+          script: |
+            cd /home/azureuser/everyconti
+            docker compose pull
+            docker compose up -d
