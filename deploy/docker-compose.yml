@@ -47,9 +47,12 @@ services:
       - ELASTIC_URL=http://elasticsearch:9200
     expose:
       - "8080"   # 내부 노출만, 외부는 Caddy 통해 접근
-    volumes:
-      - /home/azureuser/everyconti/log:/app/log
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "10"
 
   caddy:
     image: caddy:2.8
