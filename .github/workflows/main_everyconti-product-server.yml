@@ -49,8 +49,8 @@ jobs:
           username: ${{ secrets.AZURE_VM_USER }}
           key: ${{ secrets.AZURE_VM_SSH_KEY }}
           source: |
-            docker-compose.yml
-            Caddyfile
+            ./docker-compose.yml
+            ./Caddyfile
           target: "/home/azureuser/everyconti/"
 
       - name: Deploy on Azure VM
