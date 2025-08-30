@@ -8,7 +8,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.Setting;
 
 @Document(indexName = "contis")
-@Setting(settingPath = "/elasticsearch/conti-full-text-settings.json")  // 설정 파일 경로
+@Setting(settingPath = "elasticsearch/contis-full-text-settings.json")  // 설정 파일 경로
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,6 +17,6 @@ import org.springframework.data.elasticsearch.annotations.Setting;
 public class ContiDocument {
     @Id
     private Long id;
-    @Field(type = FieldType.Text, analyzer = "nori")
+    @Field(type = FieldType.Text, analyzer = "nori", searchAnalyzer = "nori")
     private String contiName;
 }

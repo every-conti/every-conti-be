@@ -8,7 +8,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.Setting;
 
 @Document(indexName = "songs")
-@Setting(settingPath = "/elasticsearch/song-full-text-settings.json")  // 설정 파일 경로
+@Setting(settingPath = "elasticsearch/songs-full-text-settings.json")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,8 +17,8 @@ import org.springframework.data.elasticsearch.annotations.Setting;
 public class SongDocument {
     @Id
     private Long id;
-    @Field(type = FieldType.Text, analyzer = "nori")
+    @Field(type = FieldType.Text, analyzer = "nori", searchAnalyzer = "nori")
     private String songName;
-    @Field(type = FieldType.Text, analyzer = "nori")
+    @Field(type = FieldType.Text, analyzer = "nori", searchAnalyzer = "nori")
     private String lyrics;
 }
