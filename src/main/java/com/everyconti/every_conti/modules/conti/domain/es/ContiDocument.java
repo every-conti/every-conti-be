@@ -17,6 +17,6 @@ import org.springframework.data.elasticsearch.annotations.Setting;
 public class ContiDocument {
     @Id
     private Long id;
-    @Field(type = FieldType.Text, analyzer = "nori", searchAnalyzer = "nori")
+    @Field(type = FieldType.Text, analyzer = "nori_index", searchAnalyzer = "nori_search")
     private String contiName;
 }

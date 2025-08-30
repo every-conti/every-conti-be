@@ -6,11 +6,25 @@
         "decompound_mode": "mixed"
       }
     },
+    "filter": {
+      "nori_pos_keep": {
+        "type": "nori_part_of_speech",
+        "stoptags": [
+          "E","IC","J","MM","MAG","NR",
+          "SC","SE","SF","SH","SL","SN","SP","SSC","SSO","SY"
+        ]
+      }
+    },
     "analyzer": {
-      "nori": {
+      "nori_index": {
         "type": "custom",
         "tokenizer": "nori_mixed_tokenizer",
         "filter": ["lowercase"]
+      },
+      "nori_search": {
+        "type": "custom",
+        "tokenizer": "nori_mixed_tokenizer",
+        "filter": ["lowercase", "nori_pos_keep"]
       }
     }
   }
