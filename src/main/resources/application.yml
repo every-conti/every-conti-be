@@ -41,7 +41,7 @@ spring:
       ssl:
         enabled: false   # Docker 내부 통신이므로 SSL 불필요
     elasticsearch:
-      uris: ${SPRING_ELASTICSEARCH_URIS:http://elasticsearch:9200}
+      uris: ${SPRING_ELASTICSEARCH_URIS:http://localhost:9200}
       username: ${SPRING_ELASTICSEARCH_USERNAME:elastic}
       password: ${SPRING_ELASTICSEARCH_PASSWORD:}
 
