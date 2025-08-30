@@ -59,7 +59,7 @@ public class SongController {
     // 찬양 삭제
     @DeleteMapping("/{innerSongId}")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public ResponseEntity<CommonResponseDto<String>> createSong(@PathVariable Long innerSongId) {
+    public ResponseEntity<CommonResponseDto<String>> deleteSong(@PathVariable Long innerSongId) {
         return ResponseEntity.ok(songService.deleteSong(innerSongId));
     }
 //    @GetMapping("/praiseTeams")

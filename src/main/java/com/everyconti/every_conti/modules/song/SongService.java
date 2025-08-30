@@ -89,6 +89,7 @@ public class SongService {
                 .lyrics(createSongDto.getLyrics())
                 .youtubeVId(createSongDto.getYoutubeVId())
                 .songType(createSongDto.getSongType())
+                .key(createSongDto.getKey())
                 .tempo(createSongDto.getTempo())
                 .creator(creator)
                 .praiseTeam(team)
