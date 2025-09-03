@@ -1,4 +1,4 @@
-package com.everyconti.every_conti.modules.song.repository;
+package com.everyconti.every_conti.modules.song.repository.praiseTeam;
 
 import com.everyconti.every_conti.modules.song.domain.PraiseTeam;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -6,16 +6,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface PraiseTeamRepository extends JpaRepository<PraiseTeam, Long> {
+public interface PraiseTeamRepository extends JpaRepository<PraiseTeam, Long>, PraiseTeamRepositoryCustom {
 
     @Override
     PraiseTeam save(PraiseTeam song);
 
     @Override
     Optional<PraiseTeam> findById(Long id);
-
-    @Override
-    List<PraiseTeam> findAll();
 
     List<PraiseTeam> findPraiseTeamsByIsFamousTrue();
     //    @EntityGraph

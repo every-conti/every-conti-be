@@ -25,7 +25,7 @@ import com.everyconti.every_conti.modules.song.dto.request.SearchSongDto;
 import com.everyconti.every_conti.modules.song.dto.response.song.MinimumSongToPlayDto;
 import com.everyconti.every_conti.modules.song.eventlistener.SongCreatedEvent;
 import com.everyconti.every_conti.modules.song.eventlistener.SongDeletedEvent;
-import com.everyconti.every_conti.modules.song.repository.PraiseTeamRepository;
+import com.everyconti.every_conti.modules.song.repository.praiseTeam.PraiseTeamRepository;
 import com.everyconti.every_conti.modules.song.repository.SeasonRepository;
 import com.everyconti.every_conti.modules.song.repository.song.SongRepository;
 import com.everyconti.every_conti.modules.song.repository.SongThemeRepository;
@@ -159,7 +159,7 @@ public class SongService {
                 .build();
     }
     public List<PraiseTeamDto> getPraiseTeamLists(){
-        return praiseTeamRepository.findAll().stream().map(t -> new PraiseTeamDto(t, hashIdUtil)).toList();
+        return praiseTeamRepository.findSearchablePraiseTeams().stream().map(t -> new PraiseTeamDto(t, hashIdUtil)).toList();
     }
     public List<SeasonDto> getSeasonLists(){
         return seasonRepository.findAll().stream().map(s -> new SeasonDto(s, hashIdUtil)).toList();

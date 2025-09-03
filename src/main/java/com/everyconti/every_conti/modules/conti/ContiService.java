@@ -29,7 +29,7 @@ import com.everyconti.every_conti.modules.member.domain.Member;
 import com.everyconti.every_conti.modules.member.repository.member.MemberRepository;
 import com.everyconti.every_conti.modules.song.domain.Song;
 import com.everyconti.every_conti.modules.song.dto.response.PraiseTeamDto;
-import com.everyconti.every_conti.modules.song.repository.PraiseTeamRepository;
+import com.everyconti.every_conti.modules.song.repository.praiseTeam.PraiseTeamRepository;
 import com.everyconti.every_conti.modules.song.repository.song.SongRepository;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;

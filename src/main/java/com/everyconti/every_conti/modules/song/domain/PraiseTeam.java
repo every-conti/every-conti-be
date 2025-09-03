@@ -25,4 +25,7 @@ public class PraiseTeam {
 
     @Column(name = "preview_img")
     private String previewImg;
+
+    @Column(name = "searchable")
+    private Boolean searchable;
 }

@@ -56,7 +56,6 @@ public class MailService {
             redisService.setRedisKeyValue(email, String.valueOf(code), RedisTimeout.EMAIL_VERIFICATION_TIMEOUT);
             javaMailSender.send(message);
         } catch (Exception e){
-            System.out.println("e.getMessage() = " + e.getMessage());
             throw new RuntimeException("이메일 발송 실패");
         }
         return new CommonResponseDto(true, "이메일 발송 완료");
