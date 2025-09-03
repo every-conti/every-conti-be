@@ -109,6 +109,7 @@ public class SpringConfig {
                             .requestMatchers("/api/mail/**").permitAll()
                             // member
                             .requestMatchers(HttpMethod.GET, "/api/member/me").permitAll()
+                            .requestMatchers(HttpMethod.POST, "/api/member").permitAll()
                             // recommendation
                             .requestMatchers(HttpMethod.GET, "/api/recommendation/co-used-songs/**").permitAll()
                             // song
