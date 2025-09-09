@@ -48,7 +48,7 @@ public class MailService {
         return message;
     }
 
-    public CommonResponseDto sendVerificationMail(EmailDto emailDto){
+    public CommonResponseDto<String> sendVerificationMail(EmailDto emailDto){
         int code = createRandomCode();
         String email = emailDto.getEmail();
         try {
@@ -58,18 +58,18 @@ public class MailService {
         } catch (Exception e){
             throw new RuntimeException("이메일 발송 실패");
         }
-        return new CommonResponseDto(true, "이메일 발송 완료");
+        return new CommonResponseDto<String>(true, "이메일 발송 완료");
     }
 
-    public CommonResponseDto verifyCode(EmailVerifyDto emailVerifyDto) {
+    public CommonResponseDto<String> verifyCode(EmailVerifyDto emailVerifyDto) {
         String email = emailVerifyDto.getEmail();
         String numFromRedis = redisService.getRedisValueByKey(email);
 
         boolean isMatch = emailVerifyDto.getUserCode().equals(String.valueOf(numFromRedis));
 
-        if (!isMatch) return new CommonResponseDto(false, "이메일 인증 실패");
+        if (!isMatch) return new CommonResponseDto<String>(false, "이메일 인증 실패");
         redisService.setRedisKeyValue(email, EmailVerified.EMAIL_VERIFIED, RedisTimeout.EMAIL_VERIFICATION_TIMEOUT);
 
-        return new CommonResponseDto(true, String.format("이메일 인증 성공. %d분 간 유효합니다", (int) (RedisTimeout.EMAIL_VERIFICATION_TIMEOUT / 60)));
+        return new CommonResponseDto<String>(true, String.format("이메일 인증 성공. %d분 간 유효합니다", (int) (RedisTimeout.EMAIL_VERIFICATION_TIMEOUT / 60)));
     }
 }

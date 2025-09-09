@@ -31,7 +31,7 @@ public class Conti extends NowTimeForJpa {
     @Column(name = "title", nullable = false, length = 100)
     private String title;
 
-    @Column(name = "description", length= 300)
+    @Column(name = "description", length= 1000)
     private String description;
 
     @Column(name = "date")
